@@ -1,0 +1,17 @@
+targets:
+  $default:
+    sources:
+      - lib/**
+      - pubspec.*
+      - $package$
+    builders:
+      # JSON Serializable
+      json_serializable:
+        enabled: true
+        options:
+          explicit_to_json: true
+          include_if_null: false
+
+      # Retrofit
+      retrofit_generator:
+        enabled: true

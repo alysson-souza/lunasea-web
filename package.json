@@ -1,0 +1,31 @@
+{
+  "name": "lunasea",
+  "description": "Self-Hosted Controller",
+  "version": "11.0.0",
+  "private": true,
+  "scripts": {
+    "build:web": "fvm flutter clean && fvm flutter build web --release",
+    "commit": "git add . && czg",
+    "generate": "npm run generate:environment && npm run generate:assets && npm run generate:build_runner && npm run generate:localization",
+    "generate:assets": "fvm dart pub global activate spider && fvm dart pub global run spider build",
+    "generate:build_runner": "fvm dart run build_runner build",
+    "generate:build_runner:watch": "fvm dart run build_runner watch",
+    "generate:environment": "fvm dart run environment_config:generate",
+    "generate:localization": "fvm dart ./scripts/generate_localization.dart",
+    "prepare": "husky install && fvm flutter pub get",
+    "profile": "fvm flutter run --profile --purge-persistent-cache",
+    "release": "cross-env HUSKY=0 commit-and-tag-version --no-verify --commit-all --sign",
+    "release:changelog": "npm run release -- --dry-run",
+    "release:prepare": "npm run generate && npm run build:web",
+    "version": "npm run version:pubspec",
+    "version:pubspec": "yq -i \".version = \\\"$(jq -r .version package.json)+1\\\"\" pubspec.yaml"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "commit-and-tag-version": "^12.7.3",
+    "cross-env": "^10.1.0",
+    "czg": "^1.13.1",
+    "husky": "^8.0.3"
+  }
+}

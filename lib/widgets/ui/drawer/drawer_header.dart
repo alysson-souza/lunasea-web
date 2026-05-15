@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+import 'package:lunasea/core.dart';
+
+class LunaDrawerHeader extends StatelessWidget {
+  final String page;
+
+  const LunaDrawerHeader({
+    Key? key,
+    required this.page,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProfilesStore>(
+      builder: (context, store, _) => Container(
+        child: LunaAppBar.dropdown(
+          backgroundColor: Colors.transparent,
+          hideLeading: true,
+          useDrawer: false,
+          title: store.size == 1 ? 'LunaSea' : store.activeProfile,
+          profiles: store.profiles,
+          actions: [
+            LunaIconButton(
+              icon: LunaIcons.SETTINGS,
+              onPressed: page == LunaModule.SETTINGS.key
+                  ? Navigator.of(context).pop
+                  : LunaModule.SETTINGS.launch,
+            )
+          ],
+        ),
+        decoration: BoxDecoration(
+          color: LunaColours.accent,
+          image: DecorationImage(
+            image: const AssetImage(LunaAssets.brandingLogo),
+            colorFilter: ColorFilter.mode(
+              LunaColours.primary.withOpacity(0.15),
+              BlendMode.dstATop,
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+}
