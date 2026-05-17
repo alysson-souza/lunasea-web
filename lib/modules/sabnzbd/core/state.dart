@@ -1,12 +1,31 @@
+import 'package:flutter/widgets.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/modules/sabnzbd/core/api.dart';
 
 class SABnzbdState extends LunaModuleState {
-  SABnzbdState() {
+  final LunaServiceInstance? instance;
+
+  SABnzbdState({this.instance}) {
     reset();
   }
 
   @override
   void reset() {}
+
+  SABnzbdAPI api(BuildContext context) {
+    final selected = selectedInstance(context);
+    if (selected != null) return SABnzbdAPI.fromInstance(selected);
+    throw StateError('No enabled SABnzbd service instance is configured.');
+  }
+
+  LunaServiceInstance? selectedInstance(BuildContext context) {
+    final selected = instance;
+    if (selected != null) return selected;
+    final profile = context.read<ProfilesStore>().active;
+    final instances = profile.enabledInstances(LunaModule.SABNZBD);
+    return instances.isEmpty ? null : instances.first;
+  }
 
   bool _error = false;
   bool get error => _error;

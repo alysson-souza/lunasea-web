@@ -23,10 +23,7 @@ class _State extends State<SABnzbdHistoryTile> {
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: widget.data.name,
-      collapsedSubtitles: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      collapsedSubtitles: [_subtitle1(), _subtitle2()],
       expandedTableContent: _expandedTableContent(),
       expandedHighlightedNodes: _expandedHighlightedNodes(),
       expandedTableButtons: _expandedButtons(),
@@ -35,13 +32,15 @@ class _State extends State<SABnzbdHistoryTile> {
   }
 
   TextSpan _subtitle1() {
-    return TextSpan(children: [
-      TextSpan(text: widget.data.completeTimeString),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.data.sizeReadable),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.data.category),
-    ]);
+    return TextSpan(
+      children: [
+        TextSpan(text: widget.data.completeTimeString),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.data.sizeReadable),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.data.category),
+      ],
+    );
   }
 
   TextSpan _subtitle2() {
@@ -57,13 +56,21 @@ class _State extends State<SABnzbdHistoryTile> {
   List<BackendPreferenceGroupContent> _expandedTableContent() {
     return [
       BackendPreferenceGroupContent(
-          title: 'age', body: widget.data.completeTimeString),
+        title: 'age',
+        body: widget.data.completeTimeString,
+      ),
       BackendPreferenceGroupContent(
-          title: 'size', body: widget.data.sizeReadable),
+        title: 'size',
+        body: widget.data.sizeReadable,
+      ),
       BackendPreferenceGroupContent(
-          title: 'category', body: widget.data.category),
+        title: 'category',
+        body: widget.data.category,
+      ),
       BackendPreferenceGroupContent(
-          title: 'path', body: widget.data.storageLocation),
+        title: 'path',
+        body: widget.data.storageLocation,
+      ),
     ];
   }
 
@@ -93,14 +100,15 @@ class _State extends State<SABnzbdHistoryTile> {
   }
 
   Future<void> _enterStages() async {
-    return SABnzbdRoutes.HISTORY_STAGES.go(
-      extra: widget.data,
-    );
+    return SABnzbdRoutes.HISTORY_STAGES.go(extra: widget.data);
   }
 
   Future<void> _handlePopup() async {
     List values = await SABnzbdDialogs.historySettings(
-        context, widget.data.name, widget.data.failed);
+      context,
+      widget.data.name,
+      widget.data.failed,
+    );
     if (values[0])
       switch (values[1]) {
         case 'retry':
@@ -120,43 +128,50 @@ class _State extends State<SABnzbdHistoryTile> {
   Future<void> _delete() async {
     List values = await SABnzbdDialogs.deleteHistory(context);
     if (values[0]) {
-      SABnzbdAPI.from(context.read<ProfilesStore>().active)
+      context
+          .read<SABnzbdState>()
+          .api(context)
           .deleteHistory(widget.data.nzoId)
           .then((_) => _handleRefresh('History Deleted'))
-          .catchError((error) => showLunaErrorSnackBar(
-                title: 'Failed to Delete History',
-                error: error,
-              ));
+          .catchError(
+            (error) => showLunaErrorSnackBar(
+              title: 'Failed to Delete History',
+              error: error,
+            ),
+          );
     }
   }
 
   Future<void> _password() async {
     List values = await SABnzbdDialogs.setPassword(context);
     if (values[0])
-      SABnzbdAPI.from(context.read<ProfilesStore>().active)
+      context
+          .read<SABnzbdState>()
+          .api(context)
           .retryFailedJobPassword(widget.data.nzoId, values[1])
           .then((_) => _handleRefresh('Password Set / Retrying...'))
-          .catchError((error) => showLunaErrorSnackBar(
-                title: 'Failed to Set Password / Retry Job',
-                error: error,
-              ));
+          .catchError(
+            (error) => showLunaErrorSnackBar(
+              title: 'Failed to Set Password / Retry Job',
+              error: error,
+            ),
+          );
   }
 
   Future<void> _retry() async {
-    SABnzbdAPI.from(context.read<ProfilesStore>().active)
+    context
+        .read<SABnzbdState>()
+        .api(context)
         .retryFailedJob(widget.data.nzoId)
         .then((_) => _handleRefresh('Retrying Job'))
-        .catchError((error) => showLunaErrorSnackBar(
-              title: 'Failed to Retry Job',
-              error: error,
-            ));
+        .catchError(
+          (error) =>
+              showLunaErrorSnackBar(title: 'Failed to Retry Job', error: error),
+        );
   }
 
   void _handleRefresh(String title) {
-    showLunaSuccessSnackBar(
-      title: title,
-      message: widget.data.name,
-    );
+    showLunaSuccessSnackBar(title: title, message: widget.data.name);
     widget.refresh();
   }
 }

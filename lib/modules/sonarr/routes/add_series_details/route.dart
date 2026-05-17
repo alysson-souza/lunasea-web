@@ -6,10 +6,7 @@ import 'package:lunasea/widgets/pages/invalid_route.dart';
 class AddSeriesDetailsRoute extends StatefulWidget {
   final SonarrSeries? series;
 
-  const AddSeriesDetailsRoute({
-    Key? key,
-    required this.series,
-  }) : super(key: key);
+  const AddSeriesDetailsRoute({super.key, required this.series});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -38,7 +35,10 @@ class _State extends State<AddSeriesDetailsRoute>
       );
     }
     return ChangeNotifierProvider(
-      create: (_) => SonarrSeriesAddDetailsState(series: widget.series!),
+      create: (_) => SonarrSeriesAddDetailsState(
+        series: widget.series!,
+        instance: context.read<SonarrState>().instance,
+      ),
       builder: (context, _) => LunaScaffold(
         scaffoldKey: _scaffoldKey,
         appBar: _appBar() as PreferredSizeWidget?,
@@ -57,14 +57,12 @@ class _State extends State<AddSeriesDetailsRoute>
 
   Widget _body(BuildContext context) {
     return FutureBuilder(
-      future: Future.wait(
-        [
-          context.watch<SonarrState>().rootFolders!,
-          context.watch<SonarrState>().tags!,
-          context.watch<SonarrState>().qualityProfiles!,
-          context.watch<SonarrState>().languageProfiles!,
-        ],
-      ),
+      future: Future.wait([
+        context.watch<SonarrState>().rootFolders!,
+        context.watch<SonarrState>().tags!,
+        context.watch<SonarrState>().qualityProfiles!,
+        context.watch<SonarrState>().languageProfiles!,
+      ]),
       builder: (context, AsyncSnapshot<List<Object>> snapshot) {
         if (snapshot.hasError) {
           if (snapshot.connectionState != ConnectionState.waiting) {
@@ -101,15 +99,15 @@ class _State extends State<AddSeriesDetailsRoute>
     context.read<SonarrSeriesAddDetailsState>().initializeUseSeasonFolders();
     context.read<SonarrSeriesAddDetailsState>().initializeSeriesType();
     context.read<SonarrSeriesAddDetailsState>().initializeMonitorType();
-    context
-        .read<SonarrSeriesAddDetailsState>()
-        .initializeRootFolder(rootFolders);
-    context
-        .read<SonarrSeriesAddDetailsState>()
-        .initializeQualityProfile(qualityProfiles);
-    context
-        .read<SonarrSeriesAddDetailsState>()
-        .initializeLanguageProfile(languageProfiles);
+    context.read<SonarrSeriesAddDetailsState>().initializeRootFolder(
+      rootFolders,
+    );
+    context.read<SonarrSeriesAddDetailsState>().initializeQualityProfile(
+      qualityProfiles,
+    );
+    context.read<SonarrSeriesAddDetailsState>().initializeLanguageProfile(
+      languageProfiles,
+    );
     context.read<SonarrSeriesAddDetailsState>().initializeTags(tags);
     context.read<SonarrSeriesAddDetailsState>().canExecuteAction = true;
     return LunaListView(

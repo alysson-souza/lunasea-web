@@ -1,9 +1,14 @@
+import 'package:lunasea/database/models/service_instance.dart';
+import 'package:lunasea/modules.dart';
 import 'package:lunasea/vendor.dart';
 
 class LunaProfile {
   static const String DEFAULT_PROFILE = 'default';
 
   String key;
+
+  @JsonKey()
+  List<LunaServiceInstance> serviceInstances;
 
   @JsonKey()
   bool lidarrEnabled;
@@ -139,6 +144,7 @@ class LunaProfile {
 
   LunaProfile._internal({
     required this.key,
+    required this.serviceInstances,
     //Lidarr
     required this.lidarrEnabled,
     required this.lidarrHost,
@@ -195,6 +201,7 @@ class LunaProfile {
 
   factory LunaProfile({
     String? key,
+    List<LunaServiceInstance>? serviceInstances,
     //Lidarr
     bool? lidarrEnabled,
     String? lidarrHost,
@@ -250,6 +257,7 @@ class LunaProfile {
   }) {
     return LunaProfile._internal(
       key: key ?? DEFAULT_PROFILE,
+      serviceInstances: _copyServiceInstances(serviceInstances),
       // Lidarr
       lidarrEnabled: lidarrEnabled ?? false,
       lidarrHost: lidarrHost ?? '',
@@ -309,56 +317,60 @@ class LunaProfile {
   String toString() => json.encode(this.toJson());
 
   Map<String, dynamic> toJson() => {
-        'key': key.toString(),
-        'lidarrEnabled': lidarrEnabled,
-        'lidarrHost': lidarrHost,
-        'lidarrKey': lidarrKey,
-        'lidarrHeaders': lidarrHeaders,
-        'lidarrConnectionMode': lidarrConnectionMode,
-        'lidarrGatewayProfile': lidarrGatewayProfile,
-        'radarrEnabled': radarrEnabled,
-        'radarrHost': radarrHost,
-        'radarrKey': radarrKey,
-        'radarrHeaders': radarrHeaders,
-        'radarrConnectionMode': radarrConnectionMode,
-        'radarrGatewayProfile': radarrGatewayProfile,
-        'sonarrEnabled': sonarrEnabled,
-        'sonarrHost': sonarrHost,
-        'sonarrKey': sonarrKey,
-        'sonarrHeaders': sonarrHeaders,
-        'sonarrConnectionMode': sonarrConnectionMode,
-        'sonarrGatewayProfile': sonarrGatewayProfile,
-        'sabnzbdEnabled': sabnzbdEnabled,
-        'sabnzbdHost': sabnzbdHost,
-        'sabnzbdKey': sabnzbdKey,
-        'sabnzbdHeaders': sabnzbdHeaders,
-        'sabnzbdConnectionMode': sabnzbdConnectionMode,
-        'sabnzbdGatewayProfile': sabnzbdGatewayProfile,
-        'nzbgetEnabled': nzbgetEnabled,
-        'nzbgetHost': nzbgetHost,
-        'nzbgetUser': nzbgetUser,
-        'nzbgetPass': nzbgetPass,
-        'nzbgetHeaders': nzbgetHeaders,
-        'nzbgetConnectionMode': nzbgetConnectionMode,
-        'nzbgetGatewayProfile': nzbgetGatewayProfile,
-        'wakeOnLANEnabled': wakeOnLANEnabled,
-        'wakeOnLANBroadcastAddress': wakeOnLANBroadcastAddress,
-        'wakeOnLANMACAddress': wakeOnLANMACAddress,
-        'tautulliEnabled': tautulliEnabled,
-        'tautulliHost': tautulliHost,
-        'tautulliKey': tautulliKey,
-        'tautulliHeaders': tautulliHeaders,
-        'tautulliConnectionMode': tautulliConnectionMode,
-        'tautulliGatewayProfile': tautulliGatewayProfile,
-        'overseerrEnabled': overseerrEnabled,
-        'overseerrHost': overseerrHost,
-        'overseerrKey': overseerrKey,
-        'overseerrHeaders': overseerrHeaders,
-      };
+    'key': key.toString(),
+    'serviceInstances': serviceInstances
+        .map((instance) => instance.toJson())
+        .toList(),
+    'lidarrEnabled': lidarrEnabled,
+    'lidarrHost': lidarrHost,
+    'lidarrKey': lidarrKey,
+    'lidarrHeaders': lidarrHeaders,
+    'lidarrConnectionMode': lidarrConnectionMode,
+    'lidarrGatewayProfile': lidarrGatewayProfile,
+    'radarrEnabled': radarrEnabled,
+    'radarrHost': radarrHost,
+    'radarrKey': radarrKey,
+    'radarrHeaders': radarrHeaders,
+    'radarrConnectionMode': radarrConnectionMode,
+    'radarrGatewayProfile': radarrGatewayProfile,
+    'sonarrEnabled': sonarrEnabled,
+    'sonarrHost': sonarrHost,
+    'sonarrKey': sonarrKey,
+    'sonarrHeaders': sonarrHeaders,
+    'sonarrConnectionMode': sonarrConnectionMode,
+    'sonarrGatewayProfile': sonarrGatewayProfile,
+    'sabnzbdEnabled': sabnzbdEnabled,
+    'sabnzbdHost': sabnzbdHost,
+    'sabnzbdKey': sabnzbdKey,
+    'sabnzbdHeaders': sabnzbdHeaders,
+    'sabnzbdConnectionMode': sabnzbdConnectionMode,
+    'sabnzbdGatewayProfile': sabnzbdGatewayProfile,
+    'nzbgetEnabled': nzbgetEnabled,
+    'nzbgetHost': nzbgetHost,
+    'nzbgetUser': nzbgetUser,
+    'nzbgetPass': nzbgetPass,
+    'nzbgetHeaders': nzbgetHeaders,
+    'nzbgetConnectionMode': nzbgetConnectionMode,
+    'nzbgetGatewayProfile': nzbgetGatewayProfile,
+    'wakeOnLANEnabled': wakeOnLANEnabled,
+    'wakeOnLANBroadcastAddress': wakeOnLANBroadcastAddress,
+    'wakeOnLANMACAddress': wakeOnLANMACAddress,
+    'tautulliEnabled': tautulliEnabled,
+    'tautulliHost': tautulliHost,
+    'tautulliKey': tautulliKey,
+    'tautulliHeaders': tautulliHeaders,
+    'tautulliConnectionMode': tautulliConnectionMode,
+    'tautulliGatewayProfile': tautulliGatewayProfile,
+    'overseerrEnabled': overseerrEnabled,
+    'overseerrHost': overseerrHost,
+    'overseerrKey': overseerrKey,
+    'overseerrHeaders': overseerrHeaders,
+  };
 
   factory LunaProfile.fromJson(Map<String, dynamic> json) {
     return LunaProfile(
       key: json['key']?.toString(),
+      serviceInstances: _serviceInstances(json['serviceInstances']),
       lidarrEnabled: json['lidarrEnabled'] as bool?,
       lidarrHost: json['lidarrHost']?.toString(),
       lidarrKey: json['lidarrKey']?.toString(),
@@ -415,5 +427,61 @@ class LunaProfile {
     return value.map(
       (key, value) => MapEntry(key.toString(), value.toString()),
     );
+  }
+
+  static List<LunaServiceInstance> _serviceInstances(dynamic value) {
+    if (value is! List) return [];
+    final instances = <LunaServiceInstance>[];
+    for (final item in value) {
+      if (item is! Map) continue;
+      try {
+        instances.add(
+          LunaServiceInstance.fromJson(Map<String, dynamic>.from(item)),
+        );
+      } on Object {
+        continue;
+      }
+    }
+    return instances;
+  }
+
+  static List<LunaServiceInstance> _copyServiceInstances(
+    List<LunaServiceInstance>? value,
+  ) {
+    if (value == null) return [];
+    return value
+        .map((instance) => LunaServiceInstance.fromJson(instance.toJson()))
+        .toList();
+  }
+
+  List<LunaServiceInstance> instancesFor(LunaModule module) {
+    final instances = serviceInstances
+        .where((instance) => instance.module == module)
+        .toList();
+    instances.sort((a, b) {
+      final order = a.sortOrder.compareTo(b.sortOrder);
+      if (order != 0) return order;
+      final name = a.displayName.toLowerCase().compareTo(
+        b.displayName.toLowerCase(),
+      );
+      if (name != 0) return name;
+      return a.id.compareTo(b.id);
+    });
+    return instances;
+  }
+
+  List<LunaServiceInstance> enabledInstances(LunaModule module) {
+    return instancesFor(module).where((instance) => instance.enabled).toList();
+  }
+
+  bool isModuleAvailable(LunaModule module) {
+    return enabledInstances(module).isNotEmpty;
+  }
+
+  LunaServiceInstance? instanceByRef(LunaServiceInstanceRef ref) {
+    for (final instance in serviceInstances) {
+      if (instance.key == ref.key) return instance;
+    }
+    return null;
   }
 }

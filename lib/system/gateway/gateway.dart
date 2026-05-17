@@ -1,27 +1,26 @@
-import 'package:dio/dio.dart';
 import 'package:lunasea/database/models/external_module.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/database/models/log.dart';
 import 'package:lunasea/database/models/profile.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
-import 'package:lunasea/system/gateway/connection_mode.dart';
 import 'package:lunasea/vendor.dart';
 
 class LunaBackendClient {
   final Dio dio;
 
-  LunaBackendClient({
-    Dio? dio,
-  }) : dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: '/_lunasea/api/',
-                connectTimeout: const Duration(seconds: 2),
-                receiveTimeout: const Duration(seconds: 10),
-                responseType: ResponseType.json,
-                contentType: Headers.jsonContentType,
-              ),
-            );
+  LunaBackendClient({Dio? dio})
+    : dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: '/_lunasea/api/',
+              connectTimeout: const Duration(seconds: 2),
+              receiveTimeout: const Duration(seconds: 10),
+              responseType: ResponseType.json,
+              contentType: Headers.jsonContentType,
+            ),
+          );
 
   Future<Map<String, dynamic>> fetchState() async {
     final response = await dio.get('state');
@@ -53,101 +52,317 @@ class LunaGateway {
     }
   }
 
-  static Map<String, dynamic>? serviceConnection({
-    required LunaModule module,
-    required String profile,
-  }) {
-    final connections = (_state['serviceConnections'] as List? ?? const [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .toList();
-    for (final connection in connections) {
-      if (connection['service'] == module.key &&
-          connection['profile'] == profile) {
-        return connection;
+  static Map<String, dynamic>? serviceInstance(LunaServiceInstanceRef ref) {
+    for (final instance in _serviceInstances) {
+      if (instance['service'] == ref.module.key &&
+          instance['profile'] == ref.profileId &&
+          instance['id'] == ref.instanceId) {
+        return instance;
       }
     }
     return null;
   }
 
-  static Future<Map<String, dynamic>?> fetchServiceConnection({
-    required LunaModule module,
+  static Future<Map<String, dynamic>> createServiceInstance({
     required String profile,
-  }) async {
-    final response = await _dio.get('services');
-    _cacheServices(
-      (response.data['services'] as List? ?? const [])
-          .map((item) => Map<String, dynamic>.from(item as Map))
-          .toList(),
-    );
-    return serviceConnection(module: module, profile: profile);
-  }
-
-  static Future<Map<String, dynamic>> putService({
     required LunaModule module,
-    required String profile,
+    String? displayName,
+    bool enabled = true,
+    int? sortOrder,
+    String? connectionMode,
     String? upstreamUrl,
     String? apiKey,
     String? username,
     String? password,
     Map<String, String>? headers,
+    Map<String, dynamic>? preferences,
   }) async {
-    final data = <String, dynamic>{
+    final data = _serviceCreateData(
+      displayName: displayName,
+      enabled: enabled,
+      sortOrder: sortOrder,
+      connectionMode: connectionMode,
+      upstreamUrl: upstreamUrl,
+      apiKey: apiKey,
+      username: username,
+      password: password,
+      headers: headers,
+      preferences: preferences,
+    );
+    final response = await _dio.post(
+      _instanceCollectionPath(profile: profile, module: module),
+      data: data,
+    );
+    final service = Map<String, dynamic>.from(response.data as Map);
+    _cacheService(service);
+    return service;
+  }
+
+  static Future<Map<String, dynamic>> patchServiceInstance({
+    required LunaServiceInstance instance,
+  }) async {
+    final response = await _dio.patch(
+      _instancePath(instance.ref),
+      data: instance.toJson(),
+    );
+    final service = Map<String, dynamic>.from(response.data as Map);
+    _cacheService(service);
+    return service;
+  }
+
+  static Future<void> testServiceInstance(LunaServiceInstanceRef ref) async {
+    await _dio.post(_instanceTestPath(ref));
+  }
+
+  static Future<void> deleteServiceInstance(LunaServiceInstanceRef ref) async {
+    await _dio.delete(_instancePath(ref));
+    _removeCachedService(ref);
+  }
+
+  static Future<void> _deleteServiceRef(
+    LunaServiceInstanceRef ref, {
+    Future<void> Function(LunaServiceInstanceRef ref)? delete,
+  }) async {
+    try {
+      await (delete ?? deleteServiceInstance)(ref);
+    } on DioException catch (error) {
+      if (!_isMissingServiceInstance(error)) rethrow;
+      _removeCachedService(ref);
+    }
+  }
+
+  static bool _isMissingServiceInstance(DioException error) {
+    return error.response?.statusCode == 404 ||
+        error.response?.statusCode == 503;
+  }
+
+  static List<Map<String, dynamic>> get _serviceInstances {
+    return (_state['serviceInstances'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList();
+  }
+
+  static void _cacheServices(List<Map<String, dynamic>> services) {
+    _state = Map<String, dynamic>.from(_state)..['serviceInstances'] = services;
+  }
+
+  static void _mergeServices(List<Map<String, dynamic>> services) {
+    for (final service in services) {
+      _cacheService(service);
+    }
+  }
+
+  static void _cacheService(Map<String, dynamic> service) {
+    final services =
+        _serviceInstances
+            .where(
+              (item) =>
+                  item['service'] != service['service'] ||
+                  item['profile'] != service['profile'] ||
+                  item['id'] != service['id'],
+            )
+            .toList()
+          ..add(service);
+    _cacheServices(services);
+  }
+
+  static void _removeCachedService(LunaServiceInstanceRef ref) {
+    final services = _serviceInstances
+        .where(
+          (item) =>
+              item['service'] != ref.module.key ||
+              item['profile'] != ref.profileId ||
+              item['id'] != ref.instanceId,
+        )
+        .toList();
+    _cacheServices(services);
+  }
+
+  static String _instanceCollectionPath({
+    required String profile,
+    required LunaModule module,
+  }) {
+    return ['profiles', profile, 'services', module.key, 'instances'].join('/');
+  }
+
+  static String _instancePath(LunaServiceInstanceRef ref) {
+    return '${_instanceCollectionPath(profile: ref.profileId, module: ref.module)}/${ref.instanceId}';
+  }
+
+  static String _instanceTestPath(LunaServiceInstanceRef ref) {
+    return '${_instancePath(ref)}/test';
+  }
+
+  static Map<String, dynamic> _serviceCreateData({
+    String? displayName,
+    bool enabled = true,
+    int? sortOrder,
+    String? connectionMode,
+    String? upstreamUrl,
+    String? apiKey,
+    String? username,
+    String? password,
+    Map<String, String>? headers,
+    Map<String, dynamic>? preferences,
+  }) {
+    return <String, dynamic>{
+      if (displayName != null) 'displayName': displayName,
+      'enabled': enabled,
+      if (sortOrder != null) 'sortOrder': sortOrder,
+      if (connectionMode != null) 'connectionMode': connectionMode,
       if (upstreamUrl != null) 'upstreamUrl': upstreamUrl,
       if (apiKey != null) 'apiKey': apiKey,
       if (username != null) 'username': username,
       if (password != null) 'password': password,
       if (headers != null) 'headers': headers,
+      if (preferences != null) 'preferences': preferences,
     };
-    final response = await _dio.put(
-      'profiles/$profile/services/${module.key}',
-      data: data,
-    );
-    final service = Map<String, dynamic>.from(response.data);
-    _cacheService(service);
-    return service;
   }
 
-  static Future<void> testService({
-    required LunaModule module,
-    required String profile,
-  }) async {
-    await _dio.post('services/${module.key}/$profile/test');
+  @visibleForTesting
+  static void mergeServiceInstancesForTest(
+    List<Map<String, dynamic>> services,
+  ) {
+    _mergeServices(services);
   }
 
-  static Future<void> deleteService({
-    required LunaModule module,
-    required String profile,
-  }) async {
-    await _dio.delete('profiles/$profile/services/${module.key}');
-    _removeCachedService(module: module, profile: profile);
-  }
-
-  static void _cacheServices(List<Map<String, dynamic>> services) {
-    _state = Map<String, dynamic>.from(_state)
-      ..['serviceConnections'] = services;
-  }
-
-  static void _cacheService(Map<String, dynamic> service) {
-    final services = (_state['serviceConnections'] as List? ?? const [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .where((item) =>
-            item['service'] != service['service'] ||
-            item['profile'] != service['profile'])
-        .toList()
-      ..add(service);
-    _cacheServices(services);
-  }
-
-  static void _removeCachedService({
-    required LunaModule module,
-    required String profile,
+  @visibleForTesting
+  static Map<String, dynamic> serviceCreateDataForTest({
+    String? displayName,
+    bool enabled = true,
+    int? sortOrder,
+    String? connectionMode,
+    String? upstreamUrl,
+    String? apiKey,
+    String? username,
+    String? password,
+    Map<String, String>? headers,
+    Map<String, dynamic>? preferences,
   }) {
-    final services = (_state['serviceConnections'] as List? ?? const [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .where((item) =>
-            item['service'] != module.key || item['profile'] != profile)
+    return _serviceCreateData(
+      displayName: displayName,
+      enabled: enabled,
+      sortOrder: sortOrder,
+      connectionMode: connectionMode,
+      upstreamUrl: upstreamUrl,
+      apiKey: apiKey,
+      username: username,
+      password: password,
+      headers: headers,
+      preferences: preferences,
+    );
+  }
+
+  @visibleForTesting
+  static String instancePathForTest(LunaServiceInstanceRef ref) {
+    return _instancePath(ref);
+  }
+
+  @visibleForTesting
+  static String instanceTestPathForTest(LunaServiceInstanceRef ref) {
+    return _instanceTestPath(ref);
+  }
+
+  static void _applyServiceInstanceToProfile(
+    LunaProfile profile,
+    Map<String, dynamic> service,
+  ) {
+    final instance = _serviceInstanceFromMap(service);
+    if (instance == null) return;
+    profile.serviceInstances =
+        profile.serviceInstances
+            .where((item) => item.key != instance.key)
+            .toList()
+          ..add(instance);
+  }
+
+  static LunaServiceInstance? _serviceInstanceFromMap(
+    Map<String, dynamic> service,
+  ) {
+    try {
+      return LunaServiceInstance.fromJson(service);
+    } on Object {
+      return null;
+    }
+  }
+
+  @visibleForTesting
+  static void applyServiceInstanceToProfileForTest(
+    LunaProfile profile,
+    Map<String, dynamic> service,
+  ) {
+    _applyServiceInstanceToProfile(profile, service);
+  }
+
+  static void _removeServiceInstanceFromProfile(
+    LunaProfile profile,
+    LunaServiceInstanceRef ref,
+  ) {
+    profile.serviceInstances = profile.serviceInstances
+        .where((instance) => instance.key != ref.key)
         .toList();
-    _cacheServices(services);
+  }
+
+  @visibleForTesting
+  static void removeServiceInstanceFromProfileForTest(
+    LunaProfile profile,
+    LunaServiceInstanceRef ref,
+  ) {
+    _removeServiceInstanceFromProfile(profile, ref);
+  }
+
+  static List<LunaServiceInstanceRef> _profileServiceRefs(
+    LunaProfile profile,
+    LunaModule module,
+  ) {
+    return profile
+        .instancesFor(module)
+        .map((instance) => instance.ref)
+        .toList();
+  }
+
+  static void _removeProfileServiceRefs(
+    LunaProfile profile,
+    LunaModule module,
+  ) {
+    for (final ref in _profileServiceRefs(profile, module)) {
+      _removeServiceInstanceFromProfile(profile, ref);
+    }
+  }
+
+  @visibleForTesting
+  static List<LunaServiceInstanceRef> profileServiceRefsForTest(
+    LunaProfile profile,
+    LunaModule module,
+  ) {
+    return _profileServiceRefs(profile, module);
+  }
+
+  @visibleForTesting
+  static void removeProfileServiceRefsForTest(
+    LunaProfile profile,
+    LunaModule module,
+  ) {
+    _removeProfileServiceRefs(profile, module);
+  }
+
+  static Future<void> _deleteServiceRefFromProfile(
+    LunaProfile profile,
+    LunaServiceInstanceRef ref, {
+    Future<void> Function(LunaServiceInstanceRef ref)? delete,
+  }) async {
+    await _deleteServiceRef(ref, delete: delete);
+    _removeServiceInstanceFromProfile(profile, ref);
+  }
+
+  @visibleForTesting
+  static Future<void> deleteServiceRefFromProfileForTest(
+    LunaProfile profile,
+    LunaServiceInstanceRef ref,
+    Future<void> Function(LunaServiceInstanceRef ref) delete,
+  ) {
+    return _deleteServiceRefFromProfile(profile, ref, delete: delete);
   }
 
   static Future<void> createProfile(String id) async {
@@ -156,29 +371,6 @@ class LunaGateway {
 
   static Future<void> updateProfile(String id, LunaProfile profile) async {
     await _dio.patch('profiles/$id', data: {'displayName': id});
-    for (final module in _serviceModules) {
-      final draft = _serviceDraft(profile, module);
-      if (!draft.enabled) {
-        try {
-          await deleteService(module: module, profile: id);
-        } on DioException catch (error) {
-          if (error.response?.statusCode != 503 &&
-              error.response?.statusCode != 404) rethrow;
-        }
-        continue;
-      }
-      if (draft.host.isEmpty) continue;
-      await putService(
-        module: module,
-        profile: id,
-        upstreamUrl: draft.host,
-        apiKey: draft.apiKey.isEmpty ? null : draft.apiKey,
-        username: draft.username.isEmpty ? null : draft.username,
-        password: draft.password.isEmpty ? null : draft.password,
-        headers: draft.headers,
-      );
-      _markGateway(profile, module, id);
-    }
   }
 
   static Future<void> deleteProfile(String id) async {
@@ -253,15 +445,18 @@ class LunaGateway {
   }
 
   static Future<Tuple2<int, LunaLog>> createLog(LunaLog log) async {
-    final response = await _dio.post('logs', data: {
-      'timestamp': log.timestamp,
-      'type': (log.type as dynamic).key,
-      'className': log.className ?? '',
-      'methodName': log.methodName ?? '',
-      'message': log.message,
-      'error': log.error ?? '',
-      'stackTrace': log.stackTrace?.trim().split('\n') ?? [],
-    });
+    final response = await _dio.post(
+      'logs',
+      data: {
+        'timestamp': log.timestamp,
+        'type': (log.type as dynamic).key,
+        'className': log.className ?? '',
+        'methodName': log.methodName ?? '',
+        'message': log.message,
+        'error': log.error ?? '',
+        'stackTrace': log.stackTrace?.trim().split('\n') ?? [],
+      },
+    );
     final data = Map<String, dynamic>.from(response.data as Map);
     return Tuple2((data['id'] as num).toInt(), log);
   }
@@ -283,129 +478,4 @@ class LunaGateway {
     indexer.apiKey = '';
     indexer.headers = {};
   }
-
-  static const List<LunaModule> _serviceModules = [
-    LunaModule.LIDARR,
-    LunaModule.NZBGET,
-    LunaModule.RADARR,
-    LunaModule.SABNZBD,
-    LunaModule.SONARR,
-    LunaModule.TAUTULLI,
-  ];
-
-  static _ServiceDraft _serviceDraft(LunaProfile profile, LunaModule module) {
-    switch (module) {
-      case LunaModule.LIDARR:
-        return _ServiceDraft(
-          enabled: profile.lidarrEnabled,
-          host: profile.lidarrHost,
-          apiKey: profile.lidarrKey,
-          headers: profile.lidarrHeaders,
-        );
-      case LunaModule.NZBGET:
-        return _ServiceDraft(
-          enabled: profile.nzbgetEnabled,
-          host: profile.nzbgetHost,
-          username: profile.nzbgetUser,
-          password: profile.nzbgetPass,
-          headers: profile.nzbgetHeaders,
-        );
-      case LunaModule.RADARR:
-        return _ServiceDraft(
-          enabled: profile.radarrEnabled,
-          host: profile.radarrHost,
-          apiKey: profile.radarrKey,
-          headers: profile.radarrHeaders,
-        );
-      case LunaModule.SABNZBD:
-        return _ServiceDraft(
-          enabled: profile.sabnzbdEnabled,
-          host: profile.sabnzbdHost,
-          apiKey: profile.sabnzbdKey,
-          headers: profile.sabnzbdHeaders,
-        );
-      case LunaModule.SONARR:
-        return _ServiceDraft(
-          enabled: profile.sonarrEnabled,
-          host: profile.sonarrHost,
-          apiKey: profile.sonarrKey,
-          headers: profile.sonarrHeaders,
-        );
-      case LunaModule.TAUTULLI:
-        return _ServiceDraft(
-          enabled: profile.tautulliEnabled,
-          host: profile.tautulliHost,
-          apiKey: profile.tautulliKey,
-          headers: profile.tautulliHeaders,
-        );
-      default:
-        return const _ServiceDraft(enabled: false);
-    }
-  }
-
-  static void _markGateway(
-    LunaProfile profile,
-    LunaModule module,
-    String gatewayProfile,
-  ) {
-    switch (module) {
-      case LunaModule.LIDARR:
-        profile.lidarrConnectionMode = LunaConnectionMode.gateway.key;
-        profile.lidarrGatewayProfile = gatewayProfile;
-        profile.lidarrHost = '';
-        profile.lidarrKey = '';
-        return;
-      case LunaModule.NZBGET:
-        profile.nzbgetConnectionMode = LunaConnectionMode.gateway.key;
-        profile.nzbgetGatewayProfile = gatewayProfile;
-        profile.nzbgetHost = '';
-        profile.nzbgetUser = '';
-        profile.nzbgetPass = '';
-        return;
-      case LunaModule.RADARR:
-        profile.radarrConnectionMode = LunaConnectionMode.gateway.key;
-        profile.radarrGatewayProfile = gatewayProfile;
-        profile.radarrHost = '';
-        profile.radarrKey = '';
-        return;
-      case LunaModule.SABNZBD:
-        profile.sabnzbdConnectionMode = LunaConnectionMode.gateway.key;
-        profile.sabnzbdGatewayProfile = gatewayProfile;
-        profile.sabnzbdHost = '';
-        profile.sabnzbdKey = '';
-        return;
-      case LunaModule.SONARR:
-        profile.sonarrConnectionMode = LunaConnectionMode.gateway.key;
-        profile.sonarrGatewayProfile = gatewayProfile;
-        profile.sonarrHost = '';
-        profile.sonarrKey = '';
-        return;
-      case LunaModule.TAUTULLI:
-        profile.tautulliConnectionMode = LunaConnectionMode.gateway.key;
-        profile.tautulliGatewayProfile = gatewayProfile;
-        profile.tautulliHost = '';
-        profile.tautulliKey = '';
-        return;
-      default:
-        return;
-    }
-  }
-}
-
-class _ServiceDraft {
-  final bool enabled;
-  final String host;
-  final String apiKey;
-  final String username;
-  final String password;
-  final Map<String, String> headers;
-
-  const _ServiceDraft({
-    required this.enabled,
-    this.host = '',
-    this.apiKey = '',
-    this.username = '',
-    this.password = '',
-    this.headers = const {},
-  });
 }

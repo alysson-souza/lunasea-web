@@ -4,15 +4,13 @@ import 'package:lunasea/database/models/external_module.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/database/models/log.dart';
 import 'package:lunasea/database/models/profile.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/system/preferences/bios.dart';
 import 'package:lunasea/system/preferences/dashboard.dart';
-import 'package:lunasea/system/preferences/lidarr.dart';
 import 'package:lunasea/system/preferences/lunasea.dart';
 import 'package:lunasea/system/preferences/nzbget.dart';
-import 'package:lunasea/system/preferences/radarr.dart';
 import 'package:lunasea/system/preferences/sabnzbd.dart';
 import 'package:lunasea/system/preferences/search.dart';
-import 'package:lunasea/system/preferences/sonarr.dart';
 import 'package:lunasea/system/preferences/tautulli.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_day.dart';
@@ -46,31 +44,32 @@ class ProfilesStore extends BackendStore {
   bool contains(String profile) =>
       LunaBackendState.profiles.containsKey(profile);
 
+  List<LunaServiceInstance> instancesFor(String profile, LunaModule module) {
+    return read(profile)?.instancesFor(module) ?? const [];
+  }
+
+  List<LunaServiceInstance> enabledInstances(
+    String profile,
+    LunaModule module,
+  ) {
+    return read(profile)?.enabledInstances(module) ?? const [];
+  }
+
+  List<LunaServiceInstanceRef> enabledInstanceRefs(
+    String profile,
+    LunaModule module,
+  ) {
+    return enabledInstances(
+      profile,
+      module,
+    ).map((instance) => instance.ref).toList();
+  }
+
   List<String> enabledFor(LunaModule module) {
     return profiles.where((profile) {
       final value = read(profile);
       if (value == null) return false;
-      switch (module) {
-        case LunaModule.LIDARR:
-          return value.lidarrEnabled;
-        case LunaModule.RADARR:
-          return value.radarrEnabled;
-        case LunaModule.SONARR:
-          return value.sonarrEnabled;
-        case LunaModule.SABNZBD:
-          return value.sabnzbdEnabled;
-        case LunaModule.NZBGET:
-          return value.nzbgetEnabled;
-        case LunaModule.TAUTULLI:
-          return value.tautulliEnabled;
-        case LunaModule.DASHBOARD:
-        case LunaModule.EXTERNAL_MODULES:
-        case LunaModule.OVERSEERR:
-        case LunaModule.SEARCH:
-        case LunaModule.SETTINGS:
-        case LunaModule.WAKE_ON_LAN:
-          return false;
-      }
+      return _isModuleEnabled(value, module);
     }).toList();
   }
 
@@ -81,25 +80,39 @@ class ProfilesStore extends BackendStore {
       case LunaModule.SETTINGS:
         return true;
       case LunaModule.LIDARR:
-        return profile.lidarrEnabled;
       case LunaModule.NZBGET:
-        return profile.nzbgetEnabled;
+      case LunaModule.RADARR:
+      case LunaModule.SABNZBD:
+      case LunaModule.SONARR:
+      case LunaModule.TAUTULLI:
+        return _isModuleEnabled(profile, module);
       case LunaModule.OVERSEERR:
         return profile.overseerrEnabled;
-      case LunaModule.RADARR:
-        return profile.radarrEnabled;
-      case LunaModule.SABNZBD:
-        return profile.sabnzbdEnabled;
       case LunaModule.SEARCH:
         return LunaBackendState.indexers.isNotEmpty;
-      case LunaModule.SONARR:
-        return profile.sonarrEnabled;
-      case LunaModule.TAUTULLI:
-        return profile.tautulliEnabled;
       case LunaModule.WAKE_ON_LAN:
         return false;
       case LunaModule.EXTERNAL_MODULES:
         return LunaBackendState.externalModules.isNotEmpty;
+    }
+  }
+
+  bool _isModuleEnabled(LunaProfile profile, LunaModule module) {
+    switch (module) {
+      case LunaModule.LIDARR:
+      case LunaModule.RADARR:
+      case LunaModule.SONARR:
+      case LunaModule.SABNZBD:
+      case LunaModule.NZBGET:
+      case LunaModule.TAUTULLI:
+        return profile.isModuleAvailable(module);
+      case LunaModule.DASHBOARD:
+      case LunaModule.EXTERNAL_MODULES:
+      case LunaModule.OVERSEERR:
+      case LunaModule.SEARCH:
+      case LunaModule.SETTINGS:
+      case LunaModule.WAKE_ON_LAN:
+        return false;
     }
   }
 
@@ -168,9 +181,9 @@ class SettingsStore extends BackendStore {
   List<LunaModule> get drawerManualOrder =>
       LunaSeaPreferences.DRAWER_MANUAL_ORDER.read().cast<LunaModule>();
   int get dashboardCalendarLayoutVersion => Object.hash(
-        DashboardPreferences.CALENDAR_STARTING_DAY.read(),
-        DashboardPreferences.CALENDAR_STARTING_SIZE.read(),
-      );
+    DashboardPreferences.CALENDAR_STARTING_DAY.read(),
+    DashboardPreferences.CALENDAR_STARTING_SIZE.read(),
+  );
   int get dashboardDefaultPage => DashboardPreferences.NAVIGATION_INDEX.read();
   int get dashboardCalendarPastDays =>
       DashboardPreferences.CALENDAR_DAYS_PAST.read();

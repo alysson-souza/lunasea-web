@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
-import 'package:lunasea/modules/nzbget.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationNZBGetRoute extends StatefulWidget {
-  const ConfigurationNZBGetRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationNZBGetRoute({super.key});
 
   @override
   State<ConfigurationNZBGetRoute> createState() => _State();
@@ -37,8 +34,7 @@ class _State extends State<ConfigurationNZBGetRoute>
       controller: scrollController,
       children: [
         LunaModule.NZBGET.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _defaultPagesPage(),
         //_defaultPagesPage(),
@@ -46,34 +42,18 @@ class _State extends State<ConfigurationNZBGetRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.NZBGET.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.nzbgetEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.nzbgetEnabled = value;
-            });
-            context.read<NZBGetState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'
-              .tr(args: [LunaModule.NZBGET.title]),
+          text: 'Configure ${LunaModule.NZBGET.title} service instances.',
         ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_NZBGET_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.NZBGET.key},
+      ),
     );
   }
 

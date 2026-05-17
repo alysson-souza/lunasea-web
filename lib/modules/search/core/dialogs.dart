@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lunasea/core.dart';
-import 'package:lunasea/modules/search.dart';
+import 'package:lunasea/modules/search/core/download_target.dart';
 import 'package:lunasea/utils/profile_tools.dart';
 
 class SearchDialogs {
-  Future<Tuple2<bool, SearchDownloadType?>> downloadResult(
-      BuildContext context) async {
+  Future<Tuple2<bool, SearchDownloadTarget?>> downloadResult(
+    BuildContext context,
+  ) async {
     bool _flag = false;
-    SearchDownloadType? _type;
+    SearchDownloadTarget? _target;
 
-    void _setValues(bool flag, SearchDownloadType type) {
+    void _setValues(bool flag, SearchDownloadTarget target) {
       _flag = flag;
-      _type = type;
+      _target = target;
       Navigator.of(context).pop();
     }
 
@@ -32,9 +33,7 @@ class SearchDialogs {
                       Expanded(
                         child: Text(
                           store.activeProfile,
-                          style: const TextStyle(
-                            fontSize: LunaUI.FONT_SIZE_H3,
-                          ),
+                          style: const TextStyle(fontSize: LunaUI.FONT_SIZE_H3),
                         ),
                       ),
                       const Icon(
@@ -46,17 +45,15 @@ class SearchDialogs {
                   padding: const EdgeInsets.only(bottom: 2.0),
                   decoration: const BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(
-                        color: LunaColours.accent,
-                        width: 2.0,
-                      ),
+                      bottom: BorderSide(color: LunaColours.accent, width: 2.0),
                     ),
                   ),
                 ),
                 onSelected: (result) async {
                   HapticFeedback.selectionClick();
-                  await LunaProfileTools(context.read<ProfilesStore>())
-                      .changeTo(result);
+                  await LunaProfileTools(
+                    context.read<ProfilesStore>(),
+                  ).changeTo(result);
                 },
                 itemBuilder: (context) {
                   return <PopupMenuEntry<String>>[
@@ -72,38 +69,28 @@ class SearchDialogs {
                                 : Colors.white,
                           ),
                         ),
-                      )
+                      ),
                   ];
                 },
               ),
-              padding: LunaDialog.tileContentPadding()
-                  .add(const EdgeInsets.only(bottom: 16.0)),
-            ),
-            if (store.active.sabnzbdEnabled)
-              LunaDialog.tile(
-                icon: SearchDownloadType.SABNZBD.icon,
-                iconColor: LunaColours().byListIndex(0),
-                text: SearchDownloadType.SABNZBD.name,
-                onTap: () => _setValues(true, SearchDownloadType.SABNZBD),
+              padding: LunaDialog.tileContentPadding().add(
+                const EdgeInsets.only(bottom: 16.0),
               ),
-            if (store.active.nzbgetEnabled)
-              LunaDialog.tile(
-                icon: SearchDownloadType.NZBGET.icon,
-                iconColor: LunaColours().byListIndex(1),
-                text: SearchDownloadType.NZBGET.name,
-                onTap: () => _setValues(true, SearchDownloadType.NZBGET),
-              ),
-            LunaDialog.tile(
-              icon: SearchDownloadType.FILESYSTEM.icon,
-              iconColor: LunaColours().byListIndex(2),
-              text: SearchDownloadType.FILESYSTEM.name,
-              onTap: () => _setValues(true, SearchDownloadType.FILESYSTEM),
             ),
+            for (final entry in SearchDownloadTarget.available(
+              store.active,
+            ).asMap().entries)
+              LunaDialog.tile(
+                icon: entry.value.icon,
+                iconColor: LunaColours().byListIndex(entry.key),
+                text: entry.value.label,
+                onTap: () => _setValues(true, entry.value),
+              ),
           ],
         ),
       ),
       contentPadding: LunaDialog.listDialogContentPadding(),
     );
-    return Tuple2(_flag, _type);
+    return Tuple2(_flag, _target);
   }
 }

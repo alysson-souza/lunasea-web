@@ -8,10 +8,8 @@ import 'package:lunasea/modules/nzbget.dart';
 class NZBGetQueueFAB extends StatefulWidget {
   final ScrollController scrollController;
 
-  const NZBGetQueueFAB({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const NZBGetQueueFAB({Key? key, required this.scrollController})
+    : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -76,28 +74,29 @@ class _State extends State<NZBGetQueueFAB> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) =>
       Selector<NZBGetState, Tuple2<bool, bool>>(
-          selector: (_, model) => Tuple2(model.error, model.paused),
-          builder: (context, data, _) {
-            data.item2 ? _iconController.forward() : _iconController.reverse();
-            return data.item1
-                ? Container()
-                : ScaleTransition(
-                    scale: _hideController,
-                    child: InkWell(
-                      child: LunaFloatingActionButtonAnimated(
-                        controller: _iconController,
-                        icon: AnimatedIcons.pause_play,
-                        onPressed: () => _toggle(context, data.item2),
-                      ),
-                      onLongPress: () => _toggleFor(context),
-                      borderRadius: BorderRadius.circular(28.0),
+        selector: (_, model) => Tuple2(model.error, model.paused),
+        builder: (context, data, _) {
+          data.item2 ? _iconController.forward() : _iconController.reverse();
+          return data.item1
+              ? Container()
+              : ScaleTransition(
+                  scale: _hideController,
+                  child: InkWell(
+                    child: LunaFloatingActionButtonAnimated(
+                      controller: _iconController,
+                      icon: AnimatedIcons.pause_play,
+                      onPressed: () => _toggle(context, data.item2),
                     ),
-                  );
-          });
+                    onLongPress: () => _toggleFor(context),
+                    borderRadius: BorderRadius.circular(28.0),
+                  ),
+                );
+        },
+      );
 
   Future<void> _toggle(BuildContext context, bool paused) async {
     HapticFeedback.lightImpact();
-    NZBGetAPI _api = NZBGetAPI.from(context.read<ProfilesStore>().active);
+    NZBGetAPI _api = context.read<NZBGetState>().api(context);
     paused ? _resume(context, _api) : _pause(context, _api);
   }
 
@@ -108,56 +107,68 @@ class _State extends State<NZBGetQueueFAB> with TickerProviderStateMixin {
       if (values[1] == -1) {
         List values = await NZBGetDialogs.customPauseFor(context);
         if (values[0])
-          await NZBGetAPI.from(context.read<ProfilesStore>().active)
+          await context
+              .read<NZBGetState>()
+              .api(context)
               .pauseQueueFor(values[1])
-              .then((_) => showLunaSuccessSnackBar(
-                    title: 'Pausing Queue',
-                    message:
-                        'For ${(values[1] as int?).asWordDuration(multiplier: 60)}',
-                  ))
-              .catchError((error) => showLunaErrorSnackBar(
-                    title: 'Failed to Pause Queue',
-                    error: error,
-                  ));
-      } else {
-        await NZBGetAPI.from(context.read<ProfilesStore>().active)
-            .pauseQueueFor(values[1])
-            .then((_) => showLunaSuccessSnackBar(
+              .then(
+                (_) => showLunaSuccessSnackBar(
                   title: 'Pausing Queue',
                   message:
-                      'For ${(values[1] as int).asWordDuration(multiplier: 60)}',
-                ))
-            .catchError((error) => showLunaErrorSnackBar(
+                      'For ${(values[1] as int?).asWordDuration(multiplier: 60)}',
+                ),
+              )
+              .catchError(
+                (error) => showLunaErrorSnackBar(
                   title: 'Failed to Pause Queue',
                   error: error,
-                ));
+                ),
+              );
+      } else {
+        await context
+            .read<NZBGetState>()
+            .api(context)
+            .pauseQueueFor(values[1])
+            .then(
+              (_) => showLunaSuccessSnackBar(
+                title: 'Pausing Queue',
+                message:
+                    'For ${(values[1] as int).asWordDuration(multiplier: 60)}',
+              ),
+            )
+            .catchError(
+              (error) => showLunaErrorSnackBar(
+                title: 'Failed to Pause Queue',
+                error: error,
+              ),
+            );
       }
     }
   }
 
   Future<void> _pause(BuildContext context, NZBGetAPI api) async {
     _iconController.forward();
-    await api.pauseQueue().then((_) {
-      Provider.of<NZBGetState>(context, listen: false).paused = true;
-    }).catchError((error) {
-      _iconController.reverse();
-      showLunaErrorSnackBar(
-        title: 'Failed to Pause Queue',
-        error: error,
-      );
-    });
+    await api
+        .pauseQueue()
+        .then((_) {
+          Provider.of<NZBGetState>(context, listen: false).paused = true;
+        })
+        .catchError((error) {
+          _iconController.reverse();
+          showLunaErrorSnackBar(title: 'Failed to Pause Queue', error: error);
+        });
   }
 
   Future<void> _resume(BuildContext context, NZBGetAPI api) async {
     _iconController.reverse();
-    return await api.resumeQueue().then((_) {
-      Provider.of<NZBGetState>(context, listen: false).paused = false;
-    }).catchError((error) {
-      _iconController.forward();
-      showLunaErrorSnackBar(
-        title: 'Failed to Resume Queue',
-        error: error,
-      );
-    });
+    return await api
+        .resumeQueue()
+        .then((_) {
+          Provider.of<NZBGetState>(context, listen: false).paused = false;
+        })
+        .catchError((error) {
+          _iconController.forward();
+          showLunaErrorSnackBar(title: 'Failed to Resume Queue', error: error);
+        });
   }
 }

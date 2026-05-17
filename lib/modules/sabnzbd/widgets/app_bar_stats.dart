@@ -5,9 +5,7 @@ import 'package:lunasea/extensions/string/string.dart';
 import 'package:lunasea/modules/sabnzbd.dart';
 
 class SABnzbdAppBarStats extends StatelessWidget {
-  const SABnzbdAppBarStats({
-    Key? key,
-  }) : super(key: key);
+  const SABnzbdAppBarStats({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
@@ -40,7 +38,7 @@ class SABnzbdAppBarStats extends StatelessWidget {
                   const TextSpan(text: '\n'),
                   TextSpan(text: data.item3 == '0:00:00' ? '―' : data.item3),
                   TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-                  TextSpan(text: data.item4 == '0.0 B' ? '―' : data.item4)
+                  TextSpan(text: data.item4 == '0.0 B' ? '―' : data.item4),
                 ],
               ),
               overflow: TextOverflow.fade,
@@ -55,8 +53,8 @@ class SABnzbdAppBarStats extends StatelessWidget {
   String _status(bool paused, String speed) => paused
       ? 'Paused'
       : speed == '0.0 B/s'
-          ? 'Idle'
-          : speed;
+      ? 'Idle'
+      : speed;
 
   Future<void> _onTap(BuildContext context, int speed) async {
     HapticFeedback.lightImpact();
@@ -67,29 +65,41 @@ class SABnzbdAppBarStats extends StatelessWidget {
           {
             values = await SABnzbdDialogs.customSpeedLimit(context);
             if (values[0])
-              SABnzbdAPI.from(context.read<ProfilesStore>().active)
+              context
+                  .read<SABnzbdState>()
+                  .api(context)
                   .setSpeedLimit(values[1])
-                  .then((_) => showLunaSuccessSnackBar(
-                        title: 'Speed Limit Set',
-                        message: 'Set to ${values[1]}%',
-                      ))
-                  .catchError((error) => showLunaErrorSnackBar(
-                        title: 'Failed to Set Speed Limit',
-                        error: error,
-                      ));
+                  .then(
+                    (_) => showLunaSuccessSnackBar(
+                      title: 'Speed Limit Set',
+                      message: 'Set to ${values[1]}%',
+                    ),
+                  )
+                  .catchError(
+                    (error) => showLunaErrorSnackBar(
+                      title: 'Failed to Set Speed Limit',
+                      error: error,
+                    ),
+                  );
             break;
           }
         default:
-          SABnzbdAPI.from(context.read<ProfilesStore>().active)
+          context
+              .read<SABnzbdState>()
+              .api(context)
               .setSpeedLimit(values[1])
-              .then((_) => showLunaSuccessSnackBar(
-                    title: 'Speed Limit Set',
-                    message: 'Set to ${values[1]}%',
-                  ))
-              .catchError((error) => showLunaErrorSnackBar(
-                    title: 'Failed to Set Speed Limit',
-                    error: error,
-                  ));
+              .then(
+                (_) => showLunaSuccessSnackBar(
+                  title: 'Speed Limit Set',
+                  message: 'Set to ${values[1]}%',
+                ),
+              )
+              .catchError(
+                (error) => showLunaErrorSnackBar(
+                  title: 'Failed to Set Speed Limit',
+                  error: error,
+                ),
+              );
       }
   }
 }

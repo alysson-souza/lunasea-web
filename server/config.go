@@ -1,14 +1,19 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 )
 
 const (
+	defaultServiceInstanceID = "default"
+
 	serviceLidarr   = "lidarr"
 	serviceNZBGet   = "nzbget"
 	serviceRadarr   = "radarr"
@@ -26,46 +31,100 @@ var supportedServices = []string{
 	serviceTautulli,
 }
 
+var serviceInstanceIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
+
 type serviceConfig struct {
-	Service     string            `json:"service"`
-	Profile     string            `json:"profile"`
-	UpstreamURL string            `json:"upstreamUrl"`
-	APIKey      string            `json:"apiKey,omitempty"`
-	Username    string            `json:"username,omitempty"`
-	Password    string            `json:"password,omitempty"`
-	Headers     map[string]string `json:"headers,omitempty"`
+	Service        string            `json:"service"`
+	Profile        string            `json:"profile"`
+	InstanceID     string            `json:"id"`
+	DisplayName    string            `json:"displayName"`
+	Enabled        bool              `json:"enabled"`
+	SortOrder      int               `json:"sortOrder"`
+	ConnectionMode string            `json:"connectionMode"`
+	Preferences    map[string]any    `json:"preferences,omitempty"`
+	UpstreamURL    string            `json:"upstreamUrl"`
+	APIKey         string            `json:"apiKey,omitempty"`
+	Username       string            `json:"username,omitempty"`
+	Password       string            `json:"password,omitempty"`
+	Headers        map[string]string `json:"headers,omitempty"`
 }
 
 type serviceResponse struct {
-	Service     string `json:"service"`
-	Profile     string `json:"profile"`
-	Enabled     bool   `json:"enabled"`
-	UpstreamURL string `json:"upstreamUrl"`
-	ProxyPath   string `json:"proxyPath"`
-	HasAPIKey   bool   `json:"hasApiKey"`
-	HasUsername bool   `json:"hasUsername"`
-	HasPassword bool   `json:"hasPassword"`
+	Service        string         `json:"service"`
+	Profile        string         `json:"profile"`
+	InstanceID     string         `json:"id"`
+	DisplayName    string         `json:"displayName"`
+	Enabled        bool           `json:"enabled"`
+	SortOrder      int            `json:"sortOrder"`
+	ConnectionMode string         `json:"connectionMode"`
+	Preferences    map[string]any `json:"preferences,omitempty"`
+	UpstreamURL    string         `json:"upstreamUrl"`
+	ProxyPath      string         `json:"proxyPath"`
+	HasAPIKey      bool           `json:"hasApiKey"`
+	HasUsername    bool           `json:"hasUsername"`
+	HasPassword    bool           `json:"hasPassword"`
 }
 
 type serviceWriteRequest struct {
-	UpstreamURL *string            `json:"upstreamUrl"`
-	APIKey      *string            `json:"apiKey"`
-	Username    *string            `json:"username"`
-	Password    *string            `json:"password"`
-	Headers     *map[string]string `json:"headers"`
+	DisplayName    *string            `json:"displayName"`
+	Enabled        *bool              `json:"enabled"`
+	SortOrder      *int               `json:"sortOrder"`
+	ConnectionMode *string            `json:"connectionMode"`
+	Preferences    *map[string]any    `json:"preferences"`
+	UpstreamURL    *string            `json:"upstreamUrl"`
+	APIKey         *string            `json:"apiKey"`
+	Username       *string            `json:"username"`
+	Password       *string            `json:"password"`
+	Headers        *map[string]string `json:"headers"`
 }
 
 func (cfg serviceConfig) redacted() serviceResponse {
-	return serviceResponse{
-		Service:     cfg.Service,
-		Profile:     cfg.Profile,
-		Enabled:     true,
-		UpstreamURL: cfg.UpstreamURL,
-		ProxyPath:   proxyPrefix(cfg.Service, cfg.Profile),
-		HasAPIKey:   cfg.APIKey != "",
-		HasUsername: cfg.Username != "",
-		HasPassword: cfg.Password != "",
+	instanceID := cfg.InstanceID
+	if instanceID == "" {
+		instanceID = defaultServiceInstanceID
 	}
+	displayName := cfg.DisplayName
+	if displayName == "" {
+		displayName = cfg.Service
+	}
+	connectionMode := cfg.ConnectionMode
+	if connectionMode == "" {
+		connectionMode = "gateway"
+	}
+
+	return serviceResponse{
+		Service:        cfg.Service,
+		Profile:        cfg.Profile,
+		InstanceID:     instanceID,
+		DisplayName:    displayName,
+		Enabled:        cfg.Enabled,
+		SortOrder:      cfg.SortOrder,
+		ConnectionMode: connectionMode,
+		Preferences:    cfg.Preferences,
+		UpstreamURL:    cfg.UpstreamURL,
+		ProxyPath:      proxyPrefix(cfg.Service, cfg.Profile, instanceID),
+		HasAPIKey:      cfg.APIKey != "",
+		HasUsername:    cfg.Username != "",
+		HasPassword:    cfg.Password != "",
+	}
+}
+
+func newServiceInstanceID() string {
+	var data [16]byte
+	if _, err := rand.Read(data[:]); err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(data[:])
+}
+
+func validateInstanceID(instanceID string) error {
+	if instanceID == "" {
+		return errors.New("instance id is required")
+	}
+	if !serviceInstanceIDPattern.MatchString(instanceID) {
+		return errors.New("instance id may only contain letters, numbers, dashes, and underscores")
+	}
+	return nil
 }
 
 func validateService(service string) error {

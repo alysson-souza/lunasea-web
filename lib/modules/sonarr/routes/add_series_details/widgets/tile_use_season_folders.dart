@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesAddDetailsUseSeasonFoldersTile extends StatelessWidget {
-  const SonarrSeriesAddDetailsUseSeasonFoldersTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesAddDetailsUseSeasonFoldersTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +13,6 @@ class SonarrSeriesAddDetailsUseSeasonFoldersTile extends StatelessWidget {
         value: context.watch<SonarrSeriesAddDetailsState>().useSeasonFolders,
         onChanged: (value) {
           context.read<SonarrSeriesAddDetailsState>().useSeasonFolders = value;
-          SonarrPreferences.ADD_SERIES_DEFAULT_USE_SEASON_FOLDERS.update(value);
         },
       ),
     );

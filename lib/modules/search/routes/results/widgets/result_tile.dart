@@ -2,24 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/extensions/int/bytes.dart';
 import 'package:lunasea/extensions/string/string.dart';
+import 'package:lunasea/modules/search/core/download_target.dart';
 import 'package:lunasea/modules/search.dart';
 
 class SearchResultTile extends StatelessWidget {
   final NewznabResultData data;
 
-  const SearchResultTile({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
+  const SearchResultTile({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: data.title,
-      collapsedSubtitles: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      collapsedSubtitles: [_subtitle1(), _subtitle2()],
       expandedTableContent: _tableContent(),
       collapsedTrailing: _trailing(context),
       expandedTableButtons: _tableButtons(context),
@@ -27,11 +22,13 @@ class SearchResultTile extends StatelessWidget {
   }
 
   TextSpan _subtitle1() {
-    return TextSpan(children: [
-      TextSpan(text: data.size.asBytes()),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: data.category),
-    ]);
+    return TextSpan(
+      children: [
+        TextSpan(text: data.size.asBytes()),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: data.category),
+      ],
+    );
   }
 
   TextSpan _subtitle2() {
@@ -42,21 +39,27 @@ class SearchResultTile extends StatelessWidget {
     return [
       BackendPreferenceGroupContent(title: 'search.Age'.tr(), body: data.age),
       BackendPreferenceGroupContent(
-          title: 'search.Size'.tr(), body: data.size.asBytes()),
+        title: 'search.Size'.tr(),
+        body: data.size.asBytes(),
+      ),
       BackendPreferenceGroupContent(
-          title: 'search.Category'.tr(), body: data.category),
+        title: 'search.Category'.tr(),
+        body: data.category,
+      ),
       if (SearchPreferences.SHOW_LINKS.read())
         BackendPreferenceGroupContent(title: '', body: ''),
       if (SearchPreferences.SHOW_LINKS.read())
         BackendPreferenceGroupContent(
-            title: 'search.Comments'.tr(),
-            body: data.linkComments,
-            bodyIsUrl: true),
+          title: 'search.Comments'.tr(),
+          body: data.linkComments,
+          bodyIsUrl: true,
+        ),
       if (SearchPreferences.SHOW_LINKS.read())
         BackendPreferenceGroupContent(
-            title: 'search.Download'.tr(),
-            body: data.linkDownload,
-            bodyIsUrl: true),
+          title: 'search.Download'.tr(),
+          body: data.linkDownload,
+          bodyIsUrl: true,
+        ),
     ];
   }
 
@@ -78,8 +81,8 @@ class SearchResultTile extends StatelessWidget {
   }
 
   Future<void> _sendToClient(BuildContext context) async {
-    Tuple2<bool, SearchDownloadType?> result =
-        await SearchDialogs().downloadResult(context);
+    Tuple2<bool, SearchDownloadTarget?> result = await SearchDialogs()
+        .downloadResult(context);
     if (result.item1) result.item2!.execute(context, data);
   }
 }

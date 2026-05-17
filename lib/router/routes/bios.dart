@@ -24,12 +24,15 @@ enum BIOSRoutes with LunaRoutesMixin {
   GoRoute get routes {
     switch (this) {
       case BIOSRoutes.HOME:
-        return redirect(redirect: (context, _) {
-          LunaOS().boot(context);
+        return redirect(
+          redirect: (context, _) {
+            LunaOS().boot(context);
 
-          final fallback = DashboardRoutes.HOME.path;
-          return BIOSPreferences.BOOT_MODULE.read().homeRoute ?? fallback;
-        });
+            final fallback = DashboardRoutes.HOME.path;
+            return BIOSPreferences.BOOT_MODULE.read().homeRouteFor(context) ??
+                fallback;
+          },
+        );
     }
   }
 }

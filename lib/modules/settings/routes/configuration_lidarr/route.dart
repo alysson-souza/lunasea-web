@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
-import 'package:lunasea/modules/lidarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationLidarrRoute extends StatefulWidget {
-  const ConfigurationLidarrRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationLidarrRoute({super.key});
 
   @override
   State<ConfigurationLidarrRoute> createState() => _State();
@@ -37,8 +34,7 @@ class _State extends State<ConfigurationLidarrRoute>
       controller: scrollController,
       children: [
         LunaModule.LIDARR.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _defaultPagesPage(),
         //_defaultPagesPage(),
@@ -46,35 +42,18 @@ class _State extends State<ConfigurationLidarrRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.LIDARR.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.lidarrEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.lidarrEnabled = value;
-            });
-            context.read<LidarrState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'.tr(
-            args: [LunaModule.LIDARR.title],
-          ),
+          text: 'Configure ${LunaModule.LIDARR.title} service instances.',
         ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_LIDARR_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.LIDARR.key},
+      ),
     );
   }
 

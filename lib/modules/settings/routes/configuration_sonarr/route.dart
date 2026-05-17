@@ -4,9 +4,7 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSonarrRoute extends StatefulWidget {
-  const ConfigurationSonarrRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSonarrRoute({super.key});
 
   @override
   State<ConfigurationSonarrRoute> createState() => _State();
@@ -37,8 +35,7 @@ class _State extends State<ConfigurationSonarrRoute>
       controller: scrollController,
       children: [
         LunaModule.SONARR.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _defaultOptionsPage(),
         _defaultPagesPage(),
@@ -47,35 +44,18 @@ class _State extends State<ConfigurationSonarrRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.SONARR.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.sonarrEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.sonarrEnabled = value;
-            });
-            context.read<SonarrState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'.tr(
-            args: [LunaModule.SONARR.title],
-          ),
-        )
+          text: 'Configure ${LunaModule.SONARR.title} service instances.',
+        ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.SONARR.key},
+      ),
     );
   }
 
@@ -91,9 +71,7 @@ class _State extends State<ConfigurationSonarrRoute>
   Widget _defaultOptionsPage() {
     return LunaBlock(
       title: 'settings.DefaultOptions'.tr(),
-      body: [
-        TextSpan(text: 'settings.DefaultOptionsDescription'.tr()),
-      ],
+      body: [TextSpan(text: 'settings.DefaultOptionsDescription'.tr())],
       trailing: const LunaIconButton.arrow(),
       onTap: SettingsRoutes.CONFIGURATION_SONARR_DEFAULT_OPTIONS.go,
     );
@@ -114,12 +92,13 @@ class _State extends State<ConfigurationSonarrRoute>
         ],
         trailing: const LunaIconButton(icon: Icons.queue_play_next_rounded),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await SonarrDialogs().setQueuePageSize(context);
+          Tuple2<bool, int> result = await SonarrDialogs().setQueuePageSize(
+            context,
+          );
           if (result.item1) {
             await context.read<SettingsStore>().setSonarrQueuePageSize(
-                  result.item2,
-                );
+              result.item2,
+            );
           }
         },
       ),

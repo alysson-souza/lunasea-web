@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
-import 'package:lunasea/modules/sabnzbd.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSABnzbdRoute extends StatefulWidget {
-  const ConfigurationSABnzbdRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSABnzbdRoute({super.key});
 
   @override
   State<ConfigurationSABnzbdRoute> createState() => _State();
@@ -37,8 +34,7 @@ class _State extends State<ConfigurationSABnzbdRoute>
       controller: scrollController,
       children: [
         LunaModule.SABNZBD.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _defaultPagesPage(),
         //_defaultPagesPage(),
@@ -46,35 +42,18 @@ class _State extends State<ConfigurationSABnzbdRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.SABNZBD.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.sabnzbdEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.sabnzbdEnabled = value;
-            });
-            context.read<SABnzbdState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'.tr(
-            args: [LunaModule.SABNZBD.title],
-          ),
-        )
+          text: 'Configure ${LunaModule.SABNZBD.title} service instances.',
+        ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_SABNZBD_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.SABNZBD.key},
+      ),
     );
   }
 

@@ -35,7 +35,7 @@ class _State extends State<ArtistAlbumDetailsRoute>
   }
 
   Future<void> _refresh() async {
-    final api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final api = context.read<LidarrState>().api(context);
     setState(() {
       _future = api.getAlbumTracks(widget.albumId);
     });
@@ -113,25 +113,24 @@ class _State extends State<ArtistAlbumDetailsRoute>
   }
 
   Future<void> _automaticSearch() async {
-    LidarrAPI _api = LidarrAPI.from(context.read<ProfilesStore>().active);
-    _api.searchAlbums([widget.albumId]).then((_) {
-      showLunaSuccessSnackBar(
-        title: 'Searching...',
-        message: '',
-      );
-    }).catchError((error, stack) {
-      LunaLogger().error('Failed to search for album', error, stack);
-      showLunaErrorSnackBar(
-        title: 'Failed to Search',
-        error: error,
-      );
-    });
+    LidarrAPI _api = context.read<LidarrState>().api(context);
+    _api
+        .searchAlbums([widget.albumId])
+        .then((_) {
+          showLunaSuccessSnackBar(title: 'Searching...', message: '');
+        })
+        .catchError((error, stack) {
+          LunaLogger().error('Failed to search for album', error, stack);
+          showLunaErrorSnackBar(title: 'Failed to Search', error: error);
+        });
   }
 
   Future<void> _manualSearch() async {
-    LidarrRoutes.ARTIST_ALBUM_RELEASES.go(params: {
-      'artist': widget.artistId.toString(),
-      'album': widget.albumId.toString(),
-    });
+    LidarrRoutes.ARTIST_ALBUM_RELEASES.go(
+      params: {
+        'artist': widget.artistId.toString(),
+        'album': widget.albumId.toString(),
+      },
+    );
   }
 }

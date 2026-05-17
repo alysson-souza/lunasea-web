@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/lidarr.dart';
 
 class AddArtistRoute extends StatefulWidget {
-  const AddArtistRoute({
-    Key? key,
-  }) : super(key: key);
+  const AddArtistRoute({Key? key}) : super(key: key);
 
   @override
   State<AddArtistRoute> createState() => _State();
@@ -26,21 +24,23 @@ class _State extends State<AddArtistRoute> with LunaScrollControllerMixin {
 
   @override
   Widget build(BuildContext context) => LunaScaffold(
-        scaffoldKey: _scaffoldKey,
-        body: _body(),
-        appBar: _appBar() as PreferredSizeWidget?,
-      );
+    scaffoldKey: _scaffoldKey,
+    body: _body(),
+    appBar: _appBar() as PreferredSizeWidget?,
+  );
 
   Future<void> _refresh() async {
     final _model = Provider.of<LidarrState>(context, listen: false);
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     setState(() {
       _future = _api.searchArtists(_model.addSearchQuery);
     });
   }
 
   Future<void> _fetchAvailableArtists() async {
-    await LidarrAPI.from(context.read<ProfilesStore>().active)
+    await context
+        .read<LidarrState>()
+        .api(context)
         .getAllArtistIDs()
         .then((data) => _availableIDs = data)
         .catchError((error) => _availableIDs = []);
@@ -77,7 +77,8 @@ class _State extends State<AddArtistRoute> with LunaScrollControllerMixin {
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) return _list(snapshot.data);
+              snapshot.hasData)
+            return _list(snapshot.data);
           return const LunaLoader();
         },
       ),

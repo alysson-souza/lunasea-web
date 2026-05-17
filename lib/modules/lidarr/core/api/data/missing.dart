@@ -1,4 +1,5 @@
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/system/gateway/service_endpoint.dart';
 
 class LidarrMissingData {
@@ -42,35 +43,32 @@ class LidarrMissingData {
     return 'Unknown Date/Time';
   }
 
-  String albumCoverURI(LunaProfile profile) {
-    final endpoint =
-        LunaServiceEndpoint.fromProfile(profile, LunaModule.LIDARR);
-    if (profile.lidarrEnabled) {
+  String albumCoverURI(LunaServiceInstance? instance) {
+    if (instance != null && instance.enabled) {
+      final endpoint = LunaServiceEndpoint.fromInstance(instance);
       final url =
           '${endpoint.mediaCoverBase('api/v1', 'MediaCover/Album')}/$albumID/cover-250.jpg';
-      return endpoint.authenticatedUrl(url, profile.lidarrKey);
+      return endpoint.authenticatedUrl(url, instance.apiKey);
     }
     return '';
   }
 
-  String posterURI(LunaProfile profile) {
-    final endpoint =
-        LunaServiceEndpoint.fromProfile(profile, LunaModule.LIDARR);
-    if (profile.lidarrEnabled) {
+  String posterURI(LunaServiceInstance? instance) {
+    if (instance != null && instance.enabled) {
+      final endpoint = LunaServiceEndpoint.fromInstance(instance);
       final url =
           '${endpoint.mediaCoverBase('api/v1', 'MediaCover/Artist')}/$artistID/poster-500.jpg';
-      return endpoint.authenticatedUrl(url, profile.lidarrKey);
+      return endpoint.authenticatedUrl(url, instance.apiKey);
     }
     return '';
   }
 
-  String fanartURI(LunaProfile profile, {bool highRes = false}) {
-    final endpoint =
-        LunaServiceEndpoint.fromProfile(profile, LunaModule.LIDARR);
-    if (profile.lidarrEnabled) {
+  String fanartURI(LunaServiceInstance? instance, {bool highRes = false}) {
+    if (instance != null && instance.enabled) {
+      final endpoint = LunaServiceEndpoint.fromInstance(instance);
       final url =
           '${endpoint.mediaCoverBase('api/v1', 'MediaCover/Artist')}/$artistID/fanart-360.jpg';
-      return endpoint.authenticatedUrl(url, profile.lidarrKey);
+      return endpoint.authenticatedUrl(url, instance.apiKey);
     }
     return '';
   }

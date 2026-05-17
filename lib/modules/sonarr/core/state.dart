@@ -1,3 +1,4 @@
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/system/gateway/connection_mode.dart';
@@ -5,7 +6,9 @@ import 'package:lunasea/system/gateway/service_endpoint.dart';
 import 'package:lunasea/types/list_view_option.dart';
 
 class SonarrState extends LunaModuleState {
-  SonarrState() {
+  final LunaServiceInstance? instance;
+
+  SonarrState({this.instance}) {
     reset();
   }
 
@@ -58,17 +61,39 @@ class SonarrState extends LunaModuleState {
 
   /// Reset the profile data, reinitializes API instance
   void resetProfile() {
-    LunaProfile _profile = LunaState.context.read<ProfilesStore>().active;
-    // Copy profile into state
+    final instance = this.instance;
+    if (instance != null) {
+      _api = null;
+      _enabled = instance.enabled;
+      final endpoint = LunaServiceEndpoint.fromInstance(instance);
+      _host = endpoint.base;
+      _apiKey = endpoint.isGateway ? '' : instance.apiKey;
+      _headers = instance.headers;
+      if (_enabled) {
+        _api = SonarrAPI(
+          host: _host,
+          apiKey: _apiKey,
+          headers: Map<String, dynamic>.from(_headers),
+        );
+      }
+      return;
+    }
+
     _api = null;
-    _enabled = _profile.sonarrEnabled;
-    final endpoint = LunaServiceEndpoint.fromProfile(
-      _profile,
-      LunaModule.SONARR,
-    );
+    final profile = LunaState.context.read<ProfilesStore>().active;
+    final instances = profile.enabledInstances(LunaModule.SONARR);
+    final selected = instances.isEmpty ? null : instances.first;
+    _enabled = selected != null;
+    if (selected == null) {
+      _host = '';
+      _apiKey = '';
+      _headers = {};
+      return;
+    }
+    final endpoint = LunaServiceEndpoint.fromInstance(selected);
     _host = endpoint.base;
-    _apiKey = endpoint.isGateway ? '' : _profile.sonarrKey;
-    _headers = _profile.sonarrHeaders;
+    _apiKey = endpoint.isGateway ? '' : selected.apiKey;
+    _headers = selected.headers;
     // Create the API instance if Sonarr is enabled
     if (_enabled) {
       _api = SonarrAPI(
@@ -83,8 +108,8 @@ class SonarrState extends LunaModuleState {
   /// CATALOGUE ///
   /////////////////
 
-  LunaListViewOption _seriesViewType =
-      SonarrPreferences.DEFAULT_VIEW_SERIES.read();
+  LunaListViewOption _seriesViewType = SonarrPreferences.DEFAULT_VIEW_SERIES
+      .read();
   LunaListViewOption get seriesViewType => _seriesViewType;
   set seriesViewType(LunaListViewOption seriesViewType) {
     _seriesViewType = seriesViewType;
@@ -98,24 +123,25 @@ class SonarrState extends LunaModuleState {
     notifyListeners();
   }
 
-  SonarrSeriesSorting _seriesSortType =
-      SonarrPreferences.DEFAULT_SORTING_SERIES.read();
+  SonarrSeriesSorting _seriesSortType = SonarrPreferences.DEFAULT_SORTING_SERIES
+      .read();
   SonarrSeriesSorting get seriesSortType => _seriesSortType;
   set seriesSortType(SonarrSeriesSorting seriesSortType) {
     _seriesSortType = seriesSortType;
     notifyListeners();
   }
 
-  SonarrSeriesFilter _seriesFilterType =
-      SonarrPreferences.DEFAULT_FILTERING_SERIES.read();
+  SonarrSeriesFilter _seriesFilterType = SonarrPreferences
+      .DEFAULT_FILTERING_SERIES
+      .read();
   SonarrSeriesFilter get seriesFilterType => _seriesFilterType;
   set seriesFilterType(SonarrSeriesFilter seriesFilterType) {
     _seriesFilterType = seriesFilterType;
     notifyListeners();
   }
 
-  bool _seriesSortAscending =
-      SonarrPreferences.DEFAULT_SORTING_SERIES_ASCENDING.read();
+  bool _seriesSortAscending = SonarrPreferences.DEFAULT_SORTING_SERIES_ASCENDING
+      .read();
   bool get seriesSortAscending => _seriesSortAscending;
   set seriesSortAscending(bool seriesSortAscending) {
     _seriesSortAscending = seriesSortAscending;
@@ -131,9 +157,7 @@ class SonarrState extends LunaModuleState {
   void fetchAllSeries() {
     if (_api != null) {
       _series = _api!.series.getAll(includeSeasonImages: true).then((series) {
-        return {
-          for (SonarrSeries s in series) s.id!: s,
-        };
+        return {for (SonarrSeries s in series) s.id!: s};
       });
     }
     notifyListeners();
@@ -141,8 +165,10 @@ class SonarrState extends LunaModuleState {
 
   Future<void> fetchSeries(int seriesId) async {
     if (_api != null) {
-      SonarrSeries series =
-          await _api!.series.get(seriesId: seriesId, includeSeasonImages: true);
+      SonarrSeries series = await _api!.series.get(
+        seriesId: seriesId,
+        includeSeasonImages: true,
+      );
       (await _series)![seriesId] = series;
     }
     notifyListeners();
@@ -192,8 +218,9 @@ class SonarrState extends LunaModuleState {
 
   void fetchUpcoming() {
     DateTime start = DateTime.now();
-    DateTime end = start
-        .add(Duration(days: SonarrPreferences.UPCOMING_FUTURE_DAYS.read()));
+    DateTime end = start.add(
+      Duration(days: SonarrPreferences.UPCOMING_FUTURE_DAYS.read()),
+    );
     if (_api != null)
       _upcoming = _api!.calendar.get(
         start: start,

@@ -6,10 +6,8 @@ import 'package:lunasea/widgets/sheets/download_client/button.dart';
 class ArtistAlbumReleasesRoute extends StatefulWidget {
   final int albumId;
 
-  const ArtistAlbumReleasesRoute({
-    Key? key,
-    required this.albumId,
-  }) : super(key: key);
+  const ArtistAlbumReleasesRoute({Key? key, required this.albumId})
+    : super(key: key);
 
   @override
   State<ArtistAlbumReleasesRoute> createState() => _State();
@@ -26,13 +24,14 @@ class _State extends State<ArtistAlbumReleasesRoute>
   @override
   Future<void> loadCallback() async {
     if (mounted) setState(() => _results = []);
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     setState(() {
       _future = _api.getReleases(widget.albumId);
     });
     //Clear the search filter using a microtask
     Future.microtask(
-        () => context.read<LidarrState>().searchReleasesFilter = '');
+      () => context.read<LidarrState>().searchReleasesFilter = '',
+    );
   }
 
   @override
@@ -49,9 +48,7 @@ class _State extends State<ArtistAlbumReleasesRoute>
       title: 'Releases',
       scrollControllers: [scrollController],
       bottom: LidarrReleasesSearchBar(scrollController: scrollController),
-      actions: const [
-        DownloadClientButton(),
-      ],
+      actions: const [DownloadClientButton()],
     );
   }
 
@@ -68,7 +65,8 @@ class _State extends State<ArtistAlbumReleasesRoute>
               {
                 if (snapshot.hasError || snapshot.data == null) {
                   return LunaMessage.error(
-                      onTap: _refreshKey.currentState!.show);
+                    onTap: _refreshKey.currentState!.show,
+                  );
                 }
                 _results = snapshot.data;
                 return _list();
@@ -93,14 +91,14 @@ class _State extends State<ArtistAlbumReleasesRoute>
       );
     return Consumer<LidarrState>(
       builder: (context, state, _) {
-        List<LidarrReleaseData>? filtered =
-            _filterAndSort(_results, state.searchReleasesFilter);
+        List<LidarrReleaseData>? filtered = _filterAndSort(
+          _results,
+          state.searchReleasesFilter,
+        );
         if ((filtered?.length ?? 0) == 0)
           return LunaListView(
             controller: scrollController,
-            children: [
-              LunaMessage.inList(text: 'No Releases Found'),
-            ],
+            children: [LunaMessage.inList(text: 'No Releases Found')],
           );
         return LunaListViewBuilder(
           controller: scrollController,
@@ -113,10 +111,13 @@ class _State extends State<ArtistAlbumReleasesRoute>
   }
 
   List<LidarrReleaseData>? _filterAndSort(
-      List<LidarrReleaseData>? releases, String query) {
+    List<LidarrReleaseData>? releases,
+    String query,
+  ) {
     if ((releases?.length ?? 0) == 0) return releases;
-    LidarrReleasesSorting sorting =
-        context.read<LidarrState>().sortReleasesType;
+    LidarrReleasesSorting sorting = context
+        .read<LidarrState>()
+        .sortReleasesType;
     bool shouldHide = context.read<LidarrState>().hideRejectedReleases;
     bool ascending = context.read<LidarrState>().sortReleasesAscending;
     // Filter

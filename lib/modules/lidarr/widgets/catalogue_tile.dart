@@ -25,7 +25,7 @@ class LidarrCatalogueTile extends StatefulWidget {
 class _State extends State<LidarrCatalogueTile> {
   @override
   Widget build(BuildContext context) {
-    final profile = context.watch<ProfilesStore>().active;
+    final instance = context.watch<LidarrState>().selectedInstance(context);
     return Selector<LidarrState, LidarrCatalogueSorting>(
       selector: (_, state) => state.sortCatalogueType,
       builder: (context, sortingType, _) => LunaBlock(
@@ -48,10 +48,10 @@ class _State extends State<LidarrCatalogueTile> {
           onPressed: _toggleMonitoredStatus,
         ),
         posterPlaceholderIcon: LunaIcons.USER,
-        posterUrl: widget.data.posterURI(profile),
-        posterHeaders: profile.lidarrHeaders,
-        backgroundUrl: widget.data.fanartURI(profile),
-        backgroundHeaders: profile.lidarrHeaders,
+        posterUrl: widget.data.posterURI(instance),
+        posterHeaders: instance?.headers ?? const {},
+        backgroundUrl: widget.data.fanartURI(instance),
+        backgroundHeaders: instance?.headers ?? const {},
         posterIsSquare: true,
         onTap: () async => _enterArtist(),
         onLongPress: () async => _handlePopup(),
@@ -60,33 +60,34 @@ class _State extends State<LidarrCatalogueTile> {
   }
 
   Future<void> _toggleMonitoredStatus() async {
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     await _api
         .toggleArtistMonitored(widget.data.artistID, !widget.data.monitored!)
         .then((_) {
-      if (mounted)
-        setState(() => widget.data.monitored = !widget.data.monitored!);
-      widget.refreshState();
-      showLunaSuccessSnackBar(
-        title: widget.data.monitored! ? 'Monitoring' : 'No Longer Monitoring',
-        message: widget.data.title,
-      );
-    }).catchError((error) {
-      showLunaErrorSnackBar(
-        title: widget.data.monitored!
-            ? 'Failed to Stop Monitoring'
-            : 'Failed to Monitor',
-        error: error,
-      );
-    });
+          if (mounted)
+            setState(() => widget.data.monitored = !widget.data.monitored!);
+          widget.refreshState();
+          showLunaSuccessSnackBar(
+            title: widget.data.monitored!
+                ? 'Monitoring'
+                : 'No Longer Monitoring',
+            message: widget.data.title,
+          );
+        })
+        .catchError((error) {
+          showLunaErrorSnackBar(
+            title: widget.data.monitored!
+                ? 'Failed to Stop Monitoring'
+                : 'Failed to Monitor',
+            error: error,
+          );
+        });
   }
 
   Future<void> _enterArtist() async {
     LidarrRoutes.ARTIST.go(
       extra: widget.data,
-      params: {
-        'artist': widget.data.artistID.toString(),
-      },
+      params: {'artist': widget.data.artistID.toString()},
     );
   }
 
@@ -104,63 +105,74 @@ class _State extends State<LidarrCatalogueTile> {
           _removeArtist();
           break;
         default:
-          LunaLogger()
-              .warning('Invalid method passed through popup. (${values[1]})');
+          LunaLogger().warning(
+            'Invalid method passed through popup. (${values[1]})',
+          );
       }
   }
 
   Future<void> _enterEditArtist() async {
     LidarrRoutes.ARTIST_EDIT.go(
       extra: widget.data,
-      params: {
-        'artist': widget.data.artistID.toString(),
-      },
+      params: {'artist': widget.data.artistID.toString()},
     );
   }
 
   Future<void> _refreshArtist() async {
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     await _api
         .refreshArtist(widget.data.artistID)
-        .then((_) => showLunaSuccessSnackBar(
-            title: 'Refreshing...', message: widget.data.title))
-        .catchError((error) =>
-            showLunaErrorSnackBar(title: 'Failed to Refresh', error: error));
+        .then(
+          (_) => showLunaSuccessSnackBar(
+            title: 'Refreshing...',
+            message: widget.data.title,
+          ),
+        )
+        .catchError(
+          (error) =>
+              showLunaErrorSnackBar(title: 'Failed to Refresh', error: error),
+        );
   }
 
   Future<void> _removeArtist() async {
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     List values = await LidarrDialogs.deleteArtist(context);
     if (values[0]) {
       if (values[1]) {
-        values = await LunaDialogs()
-            .deleteCatalogueWithFiles(context, widget.data.title);
+        values = await LunaDialogs().deleteCatalogueWithFiles(
+          context,
+          widget.data.title,
+        );
         if (values[0]) {
           await _api
               .removeArtist(widget.data.artistID, deleteFiles: true)
               .then((_) {
-            showLunaSuccessSnackBar(
-                title: 'Removed (With Data)', message: widget.data.title);
-            widget.refresh();
-          }).catchError((error) {
-            showLunaErrorSnackBar(
-              title: 'Failed to Remove (With Data)',
-              error: error,
-            );
-          });
+                showLunaSuccessSnackBar(
+                  title: 'Removed (With Data)',
+                  message: widget.data.title,
+                );
+                widget.refresh();
+              })
+              .catchError((error) {
+                showLunaErrorSnackBar(
+                  title: 'Failed to Remove (With Data)',
+                  error: error,
+                );
+              });
         }
       } else {
         await _api
             .removeArtist(widget.data.artistID, deleteFiles: false)
             .then((_) {
-          showLunaSuccessSnackBar(title: 'Removed', message: widget.data.title);
-          widget.refresh();
-        }).catchError((error) {
-          showLunaErrorSnackBar(
-            title: 'Failed to Remove',
-            error: error,
-          );
-        });
+              showLunaSuccessSnackBar(
+                title: 'Removed',
+                message: widget.data.title,
+              );
+              widget.refresh();
+            })
+            .catchError((error) {
+              showLunaErrorSnackBar(title: 'Failed to Remove', error: error);
+            });
       }
     }
   }

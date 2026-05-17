@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class RadarrRoute extends StatefulWidget {
-  const RadarrRoute({
-    Key? key,
-  }) : super(key: key);
+  final LunaServiceInstance instance;
+
+  const RadarrRoute({super.key, required this.instance});
 
   @override
   State<RadarrRoute> createState() => _State();
@@ -47,8 +48,9 @@ class _State extends State<RadarrRoute> {
   }
 
   Widget _appBar() {
-    final profiles =
-        context.watch<ProfilesStore>().enabledFor(LunaModule.RADARR);
+    final profiles = context.watch<ProfilesStore>().enabledFor(
+      LunaModule.RADARR,
+    );
     List<Widget>? actions;
     if (context.watch<RadarrState>().enabled) {
       actions = [

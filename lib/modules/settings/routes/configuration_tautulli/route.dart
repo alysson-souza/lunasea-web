@@ -4,9 +4,7 @@ import 'package:lunasea/modules/tautulli.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationTautulliRoute extends StatefulWidget {
-  const ConfigurationTautulliRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationTautulliRoute({super.key});
 
   @override
   State<ConfigurationTautulliRoute> createState() => _State();
@@ -37,8 +35,7 @@ class _State extends State<ConfigurationTautulliRoute>
       controller: scrollController,
       children: [
         LunaModule.TAUTULLI.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _activityRefreshRate(),
         _defaultPagesPage(),
@@ -48,35 +45,18 @@ class _State extends State<ConfigurationTautulliRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.TAUTULLI.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.tautulliEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.tautulliEnabled = value;
-            });
-            context.read<TautulliState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'.tr(
-            args: [LunaModule.TAUTULLI.title],
-          ),
+          text: 'Configure ${LunaModule.TAUTULLI.title} service instances.',
         ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_TAUTULLI_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.TAUTULLI.key},
+      ),
     );
   }
 
@@ -103,9 +83,9 @@ class _State extends State<ConfigurationTautulliRoute>
             Tuple2<bool, String> result =
                 await TautulliDialogs.setTerminationMessage(context);
             if (result.item1) {
-              await context
-                  .read<SettingsStore>()
-                  .setTautulliTerminationMessage(result.item2);
+              await context.read<SettingsStore>().setTautulliTerminationMessage(
+                result.item2,
+              );
             }
           },
         );
@@ -114,26 +94,30 @@ class _State extends State<ConfigurationTautulliRoute>
   }
 
   Widget _activityRefreshRate() {
-    return Consumer<SettingsStore>(builder: (context, settings, _) {
-      String refreshRate = settings.tautulliRefreshRate == 1
-          ? 'lunasea.EverySecond'.tr()
-          : 'lunasea.EverySeconds'.tr(
-              args: [settings.tautulliRefreshRate.toString()],
+    return Consumer<SettingsStore>(
+      builder: (context, settings, _) {
+        String refreshRate = settings.tautulliRefreshRate == 1
+            ? 'lunasea.EverySecond'.tr()
+            : 'lunasea.EverySeconds'.tr(
+                args: [settings.tautulliRefreshRate.toString()],
+              );
+        return LunaBlock(
+          title: 'tautulli.ActivityRefreshRate'.tr(),
+          body: [TextSpan(text: refreshRate)],
+          trailing: const LunaIconButton(icon: LunaIcons.REFRESH),
+          onTap: () async {
+            List<dynamic> _values = await TautulliDialogs.setRefreshRate(
+              context,
             );
-      return LunaBlock(
-        title: 'tautulli.ActivityRefreshRate'.tr(),
-        body: [TextSpan(text: refreshRate)],
-        trailing: const LunaIconButton(icon: LunaIcons.REFRESH),
-        onTap: () async {
-          List<dynamic> _values = await TautulliDialogs.setRefreshRate(context);
-          if (_values[0]) {
-            await context
-                .read<SettingsStore>()
-                .setTautulliRefreshRate(_values[1] as int);
-          }
-        },
-      );
-    });
+            if (_values[0]) {
+              await context.read<SettingsStore>().setTautulliRefreshRate(
+                _values[1] as int,
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   Widget _statisticsItemCount() {

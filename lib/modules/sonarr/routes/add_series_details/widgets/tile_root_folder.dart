@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesAddDetailsRootFolderTile extends StatelessWidget {
-  const SonarrSeriesAddDetailsRootFolderTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesAddDetailsRootFolderTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +11,8 @@ class SonarrSeriesAddDetailsRootFolderTile extends StatelessWidget {
       title: 'sonarr.RootFolder'.tr(),
       body: [
         TextSpan(
-          text: context.watch<SonarrSeriesAddDetailsState>().rootFolder.path ??
+          text:
+              context.watch<SonarrSeriesAddDetailsState>().rootFolder.path ??
               LunaUI.TEXT_EMDASH,
         ),
       ],
@@ -23,13 +22,13 @@ class SonarrSeriesAddDetailsRootFolderTile extends StatelessWidget {
   }
 
   Future<void> _onTap(BuildContext context) async {
-    List<SonarrRootFolder> _folders =
-        await context.read<SonarrState>().rootFolders!;
-    Tuple2<bool, SonarrRootFolder?> result =
-        await SonarrDialogs().editRootFolder(context, _folders);
+    List<SonarrRootFolder> _folders = await context
+        .read<SonarrState>()
+        .rootFolders!;
+    Tuple2<bool, SonarrRootFolder?> result = await SonarrDialogs()
+        .editRootFolder(context, _folders);
     if (result.item1) {
       context.read<SonarrSeriesAddDetailsState>().rootFolder = result.item2!;
-      SonarrPreferences.ADD_SERIES_DEFAULT_ROOT_FOLDER.update(result.item2!.id);
     }
   }
 }

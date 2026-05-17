@@ -1,4 +1,5 @@
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/system/gateway/service_endpoint.dart';
 
 class LidarrAlbumData {
@@ -31,13 +32,12 @@ class LidarrAlbumData {
     return trackCount != 1 ? '$trackCount Tracks' : '$trackCount Track';
   }
 
-  String albumCoverURI(LunaProfile profile) {
-    final endpoint =
-        LunaServiceEndpoint.fromProfile(profile, LunaModule.LIDARR);
-    if (profile.lidarrEnabled) {
+  String albumCoverURI(LunaServiceInstance? instance) {
+    if (instance != null && instance.enabled) {
+      final endpoint = LunaServiceEndpoint.fromInstance(instance);
       final url =
           '${endpoint.mediaCoverBase('api/v1', 'MediaCover/Album')}/$albumID/cover-250.jpg';
-      return endpoint.authenticatedUrl(url, profile.lidarrKey);
+      return endpoint.authenticatedUrl(url, instance.apiKey);
     }
     return '';
   }

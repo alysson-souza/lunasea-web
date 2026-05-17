@@ -4,9 +4,7 @@ import 'package:lunasea/extensions/string/string.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesAddDetailsSeriesTypeTile extends StatelessWidget {
-  const SonarrSeriesAddDetailsSeriesTypeTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesAddDetailsSeriesTypeTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +12,8 @@ class SonarrSeriesAddDetailsSeriesTypeTile extends StatelessWidget {
       title: 'sonarr.SeriesType'.tr(),
       body: [
         TextSpan(
-          text: context
+          text:
+              context
                   .watch<SonarrSeriesAddDetailsState>()
                   .seriesType
                   .value
@@ -28,12 +27,10 @@ class SonarrSeriesAddDetailsSeriesTypeTile extends StatelessWidget {
   }
 
   Future<void> _onTap(BuildContext context) async {
-    Tuple2<bool, SonarrSeriesType?> result =
-        await SonarrDialogs().editSeriesType(context);
+    Tuple2<bool, SonarrSeriesType?> result = await SonarrDialogs()
+        .editSeriesType(context);
     if (result.item1) {
       context.read<SonarrSeriesAddDetailsState>().seriesType = result.item2!;
-      SonarrPreferences.ADD_SERIES_DEFAULT_SERIES_TYPE
-          .update(result.item2!.value!);
     }
   }
 }

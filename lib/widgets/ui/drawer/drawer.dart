@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
+import 'package:lunasea/router/routes.dart';
 
 class LunaDrawer extends StatelessWidget {
   final String page;
 
-  const LunaDrawer({
-    Key? key,
-    required this.page,
-  }) : super(key: key);
+  const LunaDrawer({super.key, required this.page});
 
   static List<LunaModule> moduleAlphabeticalList() {
     return LunaModule.active
@@ -33,8 +32,12 @@ class LunaDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer4<ProfilesStore, IndexersStore, ExternalModulesStore,
-        SettingsStore>(
+    return Consumer4<
+      ProfilesStore,
+      IndexersStore,
+      ExternalModulesStore,
+      SettingsStore
+    >(
       builder: (context, profiles, _, __, settings, ___) {
         return Drawer(
           elevation: LunaUI.ELEVATION,
@@ -64,12 +67,7 @@ class LunaDrawer extends StatelessWidget {
   }
 
   List<Widget> _sharedHeader(BuildContext context) {
-    return [
-      _buildEntry(
-        context: context,
-        module: LunaModule.DASHBOARD,
-      ),
-    ];
+    return [_buildEntry(context: context, module: LunaModule.DASHBOARD)];
   }
 
   List<Widget> _moduleList(
@@ -79,24 +77,54 @@ class LunaDrawer extends StatelessWidget {
   ) {
     return <Widget>[
       ..._sharedHeader(context),
-      ...modules.map((module) {
-        if (profiles.isEnabled(module)) {
-          return _buildEntry(
+      ...modules.expand((module) {
+        if (!profiles.isEnabled(module)) return [const SizedBox(height: 0.0)];
+        if (!module.supportsServiceInstances) {
+          return [_buildEntry(context: context, module: module)];
+        }
+
+        final instances = profiles.enabledInstances(
+          profiles.activeProfile,
+          module,
+        );
+        return instances.map(
+          (instance) => _buildInstanceEntry(
             context: context,
             module: module,
-          );
-        }
-        return const SizedBox(height: 0.0);
+            instance: instance,
+          ),
+        );
       }),
     ];
+  }
+
+  Widget _buildInstanceEntry({
+    required BuildContext context,
+    required LunaModule module,
+    required LunaServiceInstance instance,
+  }) {
+    return _buildEntry(
+      context: context,
+      module: module,
+      label: '${module.title} - ${instance.displayName}',
+      current:
+          page == module.key.toLowerCase() &&
+          currentInstanceId(module) == instance.id,
+      onTap: () async {
+        Navigator.of(context).pop();
+        module.launchInstance(instance);
+      },
+    );
   }
 
   Widget _buildEntry({
     required BuildContext context,
     required LunaModule module,
+    String? label,
+    bool? current,
     void Function()? onTap,
   }) {
-    bool currentPage = page == module.key.toLowerCase();
+    bool currentPage = current ?? page == module.key.toLowerCase();
     return SizedBox(
       height: LunaTextInputBar.defaultAppBarHeight,
       child: InkWell(
@@ -110,16 +138,20 @@ class LunaDrawer extends StatelessWidget {
               ),
               padding: LunaUI.MARGIN_DEFAULT_HORIZONTAL * 1.5,
             ),
-            Text(
-              module.title,
-              style: TextStyle(
-                color: currentPage ? module.color : LunaColours.white,
-                fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+            Expanded(
+              child: Text(
+                label ?? module.title,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: currentPage ? module.color : LunaColours.white,
+                  fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+                ),
               ),
             ),
           ],
         ),
-        onTap: onTap ??
+        onTap:
+            onTap ??
             () async {
               Navigator.of(context).pop();
               if (!currentPage) module.launch();

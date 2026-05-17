@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/nzbget.dart';
 
 class StatisticsRoute extends StatefulWidget {
-  const StatisticsRoute({
-    Key? key,
-  }) : super(key: key);
+  final LunaServiceInstance? instance;
+
+  const StatisticsRoute({super.key, this.instance});
 
   @override
   State<StatisticsRoute> createState() => _State();
@@ -33,10 +34,13 @@ class _State extends State<StatisticsRoute> with LunaScrollControllerMixin {
   }
 
   Future<bool> _fetch() async {
-    final _api = NZBGetAPI.from(context.read<ProfilesStore>().active);
-    return _fetchStatistics(_api)
-        .then((_) => _fetchLogs(_api))
-        .then((_) => true);
+    final instance = widget.instance;
+    final _api = instance != null
+        ? NZBGetAPI.fromInstance(instance)
+        : context.read<NZBGetState>().api(context);
+    return _fetchStatistics(
+      _api,
+    ).then((_) => _fetchLogs(_api)).then((_) => true);
   }
 
   Future<void> _fetchStatistics(NZBGetAPI api) async {
@@ -53,72 +57,81 @@ class _State extends State<StatisticsRoute> with LunaScrollControllerMixin {
 
   @override
   Widget build(BuildContext context) => LunaScaffold(
-        scaffoldKey: _scaffoldKey,
-        appBar: _appBar as PreferredSizeWidget?,
-        body: _body,
-      );
+    scaffoldKey: _scaffoldKey,
+    appBar: _appBar as PreferredSizeWidget?,
+    body: _body,
+  );
 
   Widget get _appBar => LunaAppBar(
-        title: 'Server Statistics',
-        scrollControllers: [scrollController],
-      );
+    title: 'Server Statistics',
+    scrollControllers: [scrollController],
+  );
 
   Widget get _body => LunaRefreshIndicator(
-        context: context,
-        key: _refreshKey,
-        onRefresh: _refresh,
-        child: FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                {
-                  if (snapshot.hasError || snapshot.data == null)
-                    return LunaMessage.error(onTap: _refresh);
-                  return _list;
-                }
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-              case ConnectionState.active:
-              default:
-                return const LunaLoader();
+    context: context,
+    key: _refreshKey,
+    onRefresh: _refresh,
+    child: FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            {
+              if (snapshot.hasError || snapshot.data == null)
+                return LunaMessage.error(onTap: _refresh);
+              return _list;
             }
-          },
-        ),
-      );
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            return const LunaLoader();
+        }
+      },
+    ),
+  );
 
   Widget get _list => LunaListView(
-        controller: scrollController,
-        children: <Widget>[
-          const LunaHeader(text: 'Status'),
-          _statusBlock(),
-          const LunaHeader(text: 'Logs'),
-          for (var entry in _logs)
-            NZBGetLogTile(
-              data: entry,
-            ),
-        ],
-      );
+    controller: scrollController,
+    children: <Widget>[
+      const LunaHeader(text: 'Status'),
+      _statusBlock(),
+      const LunaHeader(text: 'Logs'),
+      for (var entry in _logs) NZBGetLogTile(data: entry),
+    ],
+  );
 
   Widget _statusBlock() {
     return BackendPreferenceGroupCard(
       content: [
         BackendPreferenceGroupContent(
-            title: 'Server',
-            body: _statistics.serverPaused ? 'Paused' : 'Active'),
+          title: 'Server',
+          body: _statistics.serverPaused ? 'Paused' : 'Active',
+        ),
         BackendPreferenceGroupContent(
-            title: 'Post', body: _statistics.postPaused ? 'Paused' : 'Active'),
+          title: 'Post',
+          body: _statistics.postPaused ? 'Paused' : 'Active',
+        ),
         BackendPreferenceGroupContent(
-            title: 'Scan', body: _statistics.scanPaused ? 'Paused' : 'Active'),
+          title: 'Scan',
+          body: _statistics.scanPaused ? 'Paused' : 'Active',
+        ),
         BackendPreferenceGroupContent(title: '', body: ''),
         BackendPreferenceGroupContent(
-            title: 'Uptime', body: _statistics.uptimeString),
+          title: 'Uptime',
+          body: _statistics.uptimeString,
+        ),
         BackendPreferenceGroupContent(
-            title: 'Speed Limit', body: _statistics.speedLimitString),
+          title: 'Speed Limit',
+          body: _statistics.speedLimitString,
+        ),
         BackendPreferenceGroupContent(
-            title: 'Free Space', body: _statistics.freeSpaceString),
+          title: 'Free Space',
+          body: _statistics.freeSpaceString,
+        ),
         BackendPreferenceGroupContent(
-            title: 'Download', body: _statistics.downloadedString),
+          title: 'Download',
+          body: _statistics.downloadedString,
+        ),
       ],
     );
   }

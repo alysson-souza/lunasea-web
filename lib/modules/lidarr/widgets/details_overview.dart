@@ -5,10 +5,7 @@ import 'package:lunasea/modules/lidarr.dart';
 class LidarrDetailsOverview extends StatefulWidget {
   final LidarrCatalogueData data;
 
-  const LidarrDetailsOverview({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
+  const LidarrDetailsOverview({Key? key, required this.data}) : super(key: key);
 
   @override
   State<LidarrDetailsOverview> createState() => _State();
@@ -22,7 +19,7 @@ class _State extends State<LidarrDetailsOverview>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final profile = context.watch<ProfilesStore>().active;
+    final instance = context.watch<LidarrState>().selectedInstance(context);
     return LunaListView(
       controller: LidarrArtistNavigationBar.scrollControllers[0],
       children: <Widget>[
@@ -31,9 +28,9 @@ class _State extends State<LidarrDetailsOverview>
           description: widget.data.overview == ''
               ? 'No Summary Available'
               : widget.data.overview,
-          uri: widget.data.posterURI(profile),
+          uri: widget.data.posterURI(instance),
           squareImage: true,
-          headers: profile.lidarrHeaders,
+          headers: instance?.headers ?? const {},
         ),
         BackendPreferenceGroupCard(
           content: [

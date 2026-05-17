@@ -22,14 +22,14 @@ class LidarrDetailsAlbumTile extends StatefulWidget {
 class _State extends State<LidarrDetailsAlbumTile> {
   @override
   Widget build(BuildContext context) {
-    final profile = context.watch<ProfilesStore>().active;
+    final instance = context.watch<LidarrState>().selectedInstance(context);
     return LunaBlock(
       title: widget.data.title,
       disabled: !widget.data.monitored,
-      posterHeaders: profile.lidarrHeaders,
+      posterHeaders: instance?.headers ?? const {},
       posterPlaceholderIcon: LunaIcons.MUSIC,
       posterIsSquare: true,
-      posterUrl: widget.data.albumCoverURI(profile),
+      posterUrl: widget.data.albumCoverURI(instance),
       body: [
         TextSpan(text: widget.data.tracks),
         TextSpan(
@@ -51,32 +51,37 @@ class _State extends State<LidarrDetailsAlbumTile> {
   }
 
   Future<void> _toggleMonitoredStatus() async {
-    LidarrAPI _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    LidarrAPI _api = context.read<LidarrState>().api(context);
     await _api
         .toggleAlbumMonitored(widget.data.albumID, !widget.data.monitored)
         .then((_) {
-      if (mounted)
-        setState(() => widget.data.monitored = !widget.data.monitored);
-      widget.refreshState();
-      showLunaSuccessSnackBar(
-          title: widget.data.monitored ? 'Monitoring' : 'No Longer Monitoring',
-          message: widget.data.title);
-    }).catchError((error) {
-      showLunaErrorSnackBar(
-        title: widget.data.monitored
-            ? 'Failed to Stop Monitoring'
-            : 'Failed to Monitor',
-        error: error,
-      );
-    });
+          if (mounted)
+            setState(() => widget.data.monitored = !widget.data.monitored);
+          widget.refreshState();
+          showLunaSuccessSnackBar(
+            title: widget.data.monitored
+                ? 'Monitoring'
+                : 'No Longer Monitoring',
+            message: widget.data.title,
+          );
+        })
+        .catchError((error) {
+          showLunaErrorSnackBar(
+            title: widget.data.monitored
+                ? 'Failed to Stop Monitoring'
+                : 'Failed to Monitor',
+            error: error,
+          );
+        });
   }
 
   Future<void> _enterAlbum() async {
-    LidarrRoutes.ARTIST_ALBUM.go(params: {
-      'album': widget.data.albumID.toString(),
-      'artist': widget.artistId.toString(),
-    }, queryParams: {
-      'monitored': widget.data.monitored.toString(),
-    });
+    LidarrRoutes.ARTIST_ALBUM.go(
+      params: {
+        'album': widget.data.albumID.toString(),
+        'artist': widget.artistId.toString(),
+      },
+      queryParams: {'monitored': widget.data.monitored.toString()},
+    );
   }
 }

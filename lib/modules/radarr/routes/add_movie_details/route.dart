@@ -8,10 +8,10 @@ class AddMovieDetailsRoute extends StatefulWidget {
   final bool isDiscovery;
 
   const AddMovieDetailsRoute({
-    Key? key,
+    super.key,
     required this.movie,
     required this.isDiscovery,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -42,6 +42,7 @@ class _State extends State<AddMovieDetailsRoute>
       create: (_) => RadarrAddMovieDetailsState(
         movie: widget.movie!,
         isDiscovery: widget.isDiscovery,
+        instance: context.read<RadarrState>().instance,
       ),
       builder: (context, _) => LunaScaffold(
         scaffoldKey: _scaffoldKey,
@@ -61,13 +62,11 @@ class _State extends State<AddMovieDetailsRoute>
 
   Widget _body() {
     return FutureBuilder(
-      future: Future.wait(
-        [
-          context.watch<RadarrState>().rootFolders!,
-          context.watch<RadarrState>().qualityProfiles!,
-          context.watch<RadarrState>().tags!,
-        ],
-      ),
+      future: Future.wait([
+        context.watch<RadarrState>().rootFolders!,
+        context.watch<RadarrState>().qualityProfiles!,
+        context.watch<RadarrState>().tags!,
+      ]),
       builder: (context, AsyncSnapshot<List<Object>> snapshot) {
         if (snapshot.hasError) {
           if (snapshot.connectionState != ConnectionState.waiting) {
@@ -99,12 +98,12 @@ class _State extends State<AddMovieDetailsRoute>
     List<RadarrTag>? tags,
   }) {
     context.read<RadarrAddMovieDetailsState>().initializeAvailability();
-    context
-        .read<RadarrAddMovieDetailsState>()
-        .initializeQualityProfile(qualityProfiles);
-    context
-        .read<RadarrAddMovieDetailsState>()
-        .initializeRootFolder(rootFolders);
+    context.read<RadarrAddMovieDetailsState>().initializeQualityProfile(
+      qualityProfiles,
+    );
+    context.read<RadarrAddMovieDetailsState>().initializeRootFolder(
+      rootFolders,
+    );
     context.read<RadarrAddMovieDetailsState>().initializeTags(tags);
     context.read<RadarrAddMovieDetailsState>().canExecuteAction = true;
     return LunaRefreshIndicator(

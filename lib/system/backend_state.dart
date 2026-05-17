@@ -2,6 +2,7 @@ import 'package:lunasea/database/models/external_module.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/database/models/log.dart';
 import 'package:lunasea/database/models/profile.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/system/preferences/preference.dart';
 import 'package:lunasea/system/preferences/bios.dart';
 import 'package:lunasea/system/preferences/dashboard.dart';
@@ -53,27 +54,106 @@ class LunaBackendState {
   }
 
   static void _hydrateProfiles(Map<String, dynamic> state) {
-    final records = (state['profiles'] as List? ?? const [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .toList();
-    final connections = (state['serviceConnections'] as List? ?? const [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .toList();
+    final hasServiceInstances = state.containsKey('serviceInstances');
+    final records = _recordList(state['profiles']);
+    final instances = _recordList(state['serviceInstances']);
+    final connections = _recordList(state['serviceConnections']);
 
-    for (final record in records) {
-      final id = record['id']?.toString() ?? LunaProfile.DEFAULT_PROFILE;
+    final profileIds = records
+        .map(
+          (record) => record['id']?.toString() ?? LunaProfile.DEFAULT_PROFILE,
+        )
+        .toList();
+    if (profileIds.isEmpty) {
+      profileIds.addAll(
+        instances.map(
+          (record) =>
+              record['profile']?.toString() ?? LunaProfile.DEFAULT_PROFILE,
+        ),
+      );
+    }
+    if (profileIds.isEmpty) {
+      profileIds.addAll(
+        connections.map(
+          (record) =>
+              record['profile']?.toString() ?? LunaProfile.DEFAULT_PROFILE,
+        ),
+      );
+    }
+    if (profileIds.isEmpty) {
+      profileIds.add(LunaProfile.DEFAULT_PROFILE);
+    }
+
+    for (final id in profileIds.toSet()) {
       final profile = LunaProfile(key: id);
-      for (final connection in connections) {
-        if (connection['profile']?.toString() != id) continue;
-        final module = LunaModule.fromKey(connection['service']?.toString());
-        if (module == null) continue;
-        _markGatewayConnection(profile, module, id);
+      _attachServiceInstances(profile, instances);
+      if (!hasServiceInstances) {
+        _attachLegacyServiceConnections(profile, connections);
       }
       profiles[id] = profile;
     }
-    if (profiles.isEmpty) {
-      profiles[LunaProfile.DEFAULT_PROFILE] = LunaProfile();
+  }
+
+  static void _attachServiceInstances(
+    LunaProfile profile,
+    List<Map<String, dynamic>> records,
+  ) {
+    for (final record in records) {
+      try {
+        final instance = LunaServiceInstance.fromJson(record);
+        if (instance.profileId != profile.key) continue;
+        profile.serviceInstances.add(instance);
+        if (instance.enabled) {
+          _markGatewayConnection(profile, instance.module, profile.key);
+        }
+      } on Object {
+        continue;
+      }
     }
+  }
+
+  static void _attachLegacyServiceConnections(
+    LunaProfile profile,
+    List<Map<String, dynamic>> records,
+  ) {
+    for (final connection in records) {
+      if (connection['profile']?.toString() != profile.key) continue;
+      final module = LunaModule.fromKey(connection['service']?.toString());
+      if (module == null) continue;
+      final instance = LunaServiceInstance(
+        id: connection['id']?.toString() ?? LunaProfile.DEFAULT_PROFILE,
+        profileId: profile.key,
+        module: module,
+        displayName: connection['displayName']?.toString() ?? module.title,
+        enabled: connection['enabled'] != false,
+        connectionMode: LunaConnectionMode.gateway.key,
+        host: connection['upstreamUrl']?.toString() ?? '',
+        apiKey: connection['apiKey']?.toString() ?? '',
+        username: connection['username']?.toString() ?? '',
+        password: connection['password']?.toString() ?? '',
+        headers: _stringMap(connection['headers']),
+      );
+      profile.serviceInstances.add(instance);
+      if (instance.enabled)
+        _markGatewayConnection(profile, module, profile.key);
+    }
+  }
+
+  static List<Map<String, dynamic>> _recordList(dynamic value) {
+    if (value is! List) return [];
+    final records = <Map<String, dynamic>>[];
+    for (final item in value) {
+      if (item is! Map) continue;
+      records.add(item.map((key, value) => MapEntry(key.toString(), value)));
+    }
+    return records;
+  }
+
+  static Map<String, String> _stringMap(dynamic value) {
+    if (value is! Map) return {};
+    return value.map(
+      (key, value) => MapEntry(key.toString(), value.toString()),
+    );
   }
 
   static void _markGatewayConnection(
@@ -253,15 +333,18 @@ class LunaBackendState {
     });
     _hydrateRadarr(
       Map<String, dynamic>.from(
-          modules[LunaModule.RADARR.key] as Map? ?? const {}),
+        modules[LunaModule.RADARR.key] as Map? ?? const {},
+      ),
     );
     _hydrateSonarr(
       Map<String, dynamic>.from(
-          modules[LunaModule.SONARR.key] as Map? ?? const {}),
+        modules[LunaModule.SONARR.key] as Map? ?? const {},
+      ),
     );
     _hydrateLidarr(
       Map<String, dynamic>.from(
-          modules[LunaModule.LIDARR.key] as Map? ?? const {}),
+        modules[LunaModule.LIDARR.key] as Map? ?? const {},
+      ),
     );
     BackendPreferenceGroup.nzbget.import({
       NZBGetPreferences.NAVIGATION_INDEX.key:
@@ -273,7 +356,8 @@ class LunaBackendState {
     });
     _hydrateTautulli(
       Map<String, dynamic>.from(
-          modules[LunaModule.TAUTULLI.key] as Map? ?? const {}),
+        modules[LunaModule.TAUTULLI.key] as Map? ?? const {},
+      ),
     );
   }
 

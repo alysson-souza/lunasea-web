@@ -5,9 +5,7 @@ import 'package:lunasea/router/router.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
 
 class SonarrAddSeriesDetailsActionBar extends StatelessWidget {
-  const SonarrAddSeriesDetailsActionBar({
-    Key? key,
-  }) : super(key: key);
+  const SonarrAddSeriesDetailsActionBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,32 +31,33 @@ class SonarrAddSeriesDetailsActionBar extends StatelessWidget {
     if (context.read<SonarrSeriesAddDetailsState>().canExecuteAction) {
       context.read<SonarrSeriesAddDetailsState>().state =
           LunaLoadingState.ACTIVE;
-      SonarrSeriesAddDetailsState _state =
-          context.read<SonarrSeriesAddDetailsState>();
+      SonarrSeriesAddDetailsState _state = context
+          .read<SonarrSeriesAddDetailsState>();
       await SonarrAPIController()
           .addSeries(
-        context: context,
-        series: _state.series,
-        qualityProfile: _state.qualityProfile,
-        languageProfile: _state.languageProfile,
-        rootFolder: _state.rootFolder,
-        seasonFolder: _state.useSeasonFolders,
-        tags: _state.tags,
-        seriesType: _state.seriesType,
-        monitorType: _state.monitorType,
-      )
+            context: context,
+            series: _state.series,
+            qualityProfile: _state.qualityProfile,
+            languageProfile: _state.languageProfile,
+            rootFolder: _state.rootFolder,
+            seasonFolder: _state.useSeasonFolders,
+            tags: _state.tags,
+            seriesType: _state.seriesType,
+            monitorType: _state.monitorType,
+            searchForMissingEpisodes: _state.searchForMissingEpisodes,
+            searchForCutoffUnmetEpisodes: _state.searchForCutoffUnmetEpisodes,
+          )
           .then((series) async {
-        context.read<SonarrState>().fetchAllSeries();
-        context.read<SonarrSeriesAddDetailsState>().series.id = series!.id;
+            context.read<SonarrState>().fetchAllSeries();
+            context.read<SonarrSeriesAddDetailsState>().series.id = series!.id;
 
-        LunaRouter.router.pop();
-        SonarrRoutes.SERIES.go(params: {
-          'series': series.id!.toString(),
-        });
-      }).catchError((error, stack) {
-        context.read<SonarrSeriesAddDetailsState>().state =
-            LunaLoadingState.ERROR;
-      });
+            LunaRouter.router.pop();
+            SonarrRoutes.SERIES.go(params: {'series': series.id!.toString()});
+          })
+          .catchError((error, stack) {
+            context.read<SonarrSeriesAddDetailsState>().state =
+                LunaLoadingState.ERROR;
+          });
       context.read<SonarrSeriesAddDetailsState>().state =
           LunaLoadingState.INACTIVE;
     }

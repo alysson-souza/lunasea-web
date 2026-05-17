@@ -37,21 +37,24 @@ class _State extends State<ArtistDetailsRoute> {
 
   Future<void> _fetch() async {
     if (mounted) setState(() => _error = false);
-    final api = LidarrAPI.from(context.read<ProfilesStore>().active);
-    await api.getArtist(widget.artistId).then((newData) {
-      if (mounted) {
-        setState(() {
-          data = newData;
-          _error = false;
+    final api = context.read<LidarrState>().api(context);
+    await api
+        .getArtist(widget.artistId)
+        .then((newData) {
+          if (mounted) {
+            setState(() {
+              data = newData;
+              _error = false;
+            });
+          }
+        })
+        .catchError((error) {
+          if (mounted) {
+            setState(() {
+              _error = true;
+            });
+          }
         });
-      }
-    }).catchError((error) {
-      if (mounted) {
-        setState(() {
-          _error = true;
-        });
-      }
-    });
   }
 
   @override
@@ -84,10 +87,7 @@ class _State extends State<ArtistDetailsRoute> {
           },
         ),
         LidarrDetailsEditButton(data: data),
-        LidarrDetailsSettingsButton(
-          data: data,
-          remove: _removeCallback,
-        ),
+        LidarrDetailsSettingsButton(data: data, remove: _removeCallback),
       ];
     }
 
@@ -103,20 +103,15 @@ class _State extends State<ArtistDetailsRoute> {
       LidarrArtistNavigationBar(pageController: _pageController);
 
   List<Widget> get _tabs => [
-        LidarrDetailsOverview(data: data!),
-        LidarrDetailsAlbumList(artistID: data!.artistID),
-      ];
+    LidarrDetailsOverview(data: data!),
+    LidarrDetailsAlbumList(artistID: data!.artistID),
+  ];
 
-  Widget get _body => LunaPageView(
-        controller: _pageController,
-        children: _tabs,
-      );
+  Widget get _body =>
+      LunaPageView(controller: _pageController, children: _tabs);
 
   Future<void> _removeCallback(bool withData) async {
-    showLunaSuccessSnackBar(
-      title: 'Artist Removed',
-      message: data!.title,
-    );
+    showLunaSuccessSnackBar(title: 'Artist Removed', message: data!.title);
     LunaRouter.router.pop();
   }
 }

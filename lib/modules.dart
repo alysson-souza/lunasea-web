@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:quick_actions/quick_actions.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/extensions/string/links.dart';
 import 'package:lunasea/router/router.dart';
 import 'package:lunasea/router/routes.dart';
+import 'package:lunasea/router/routes/lidarr.dart';
+import 'package:lunasea/router/routes/nzbget.dart';
+import 'package:lunasea/router/routes/radarr.dart';
+import 'package:lunasea/router/routes/sabnzbd.dart';
 import 'package:lunasea/router/routes/settings.dart';
+import 'package:lunasea/router/routes/sonarr.dart';
+import 'package:lunasea/router/routes/tautulli.dart';
 import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/modules/settings.dart';
 import 'package:lunasea/modules/lidarr.dart';
@@ -86,6 +93,25 @@ enum LunaModule {
 }
 
 extension LunaModuleEnablementExtension on LunaModule {
+  bool get supportsServiceInstances {
+    switch (this) {
+      case LunaModule.LIDARR:
+      case LunaModule.NZBGET:
+      case LunaModule.RADARR:
+      case LunaModule.SABNZBD:
+      case LunaModule.SONARR:
+      case LunaModule.TAUTULLI:
+        return true;
+      case LunaModule.DASHBOARD:
+      case LunaModule.EXTERNAL_MODULES:
+      case LunaModule.OVERSEERR:
+      case LunaModule.SEARCH:
+      case LunaModule.SETTINGS:
+      case LunaModule.WAKE_ON_LAN:
+        return false;
+    }
+  }
+
   bool get featureFlag {
     switch (this) {
       case LunaModule.OVERSEERR:
@@ -363,8 +389,67 @@ extension LunaModuleRoutingExtension on LunaModule {
   }
 
   Future<void> launch() async {
+    if (supportsServiceInstances) {
+      final profiles = LunaState.context.read<ProfilesStore>();
+      final instances = profiles.enabledInstances(profiles.activeProfile, this);
+      if (instances.isNotEmpty) return launchInstance(instances.first);
+      return;
+    }
     if (homeRoute != null) {
       LunaRouter.router.pushReplacement(homeRoute!);
+    }
+  }
+
+  String? homeRouteFor(BuildContext context) {
+    final route = homeRoute;
+    if (route == null) return null;
+    if (!supportsServiceInstances) return route;
+
+    final profiles = context.read<ProfilesStore>();
+    final instances = profiles.enabledInstances(profiles.activeProfile, this);
+    if (instances.isEmpty) return null;
+    return route.replaceFirst(':instanceId', instances.first.id);
+  }
+
+  Future<void> launchInstance(LunaServiceInstance instance) async {
+    switch (this) {
+      case LunaModule.LIDARR:
+        return LidarrRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.NZBGET:
+        return NZBGetRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.RADARR:
+        return RadarrRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.SABNZBD:
+        return SABnzbdRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.SONARR:
+        return SonarrRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.TAUTULLI:
+        return TautulliRoutes.HOME.goInstance(
+          instanceId: instance.id,
+          buildTree: true,
+        );
+      case LunaModule.DASHBOARD:
+      case LunaModule.EXTERNAL_MODULES:
+      case LunaModule.OVERSEERR:
+      case LunaModule.SEARCH:
+      case LunaModule.SETTINGS:
+      case LunaModule.WAKE_ON_LAN:
+        return launch();
     }
   }
 }

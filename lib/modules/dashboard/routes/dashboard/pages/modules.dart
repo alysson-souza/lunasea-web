@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/system/preferences/lunasea.dart';
 import 'package:lunasea/system/stores/backend_stores.dart';
@@ -8,9 +9,7 @@ import 'package:lunasea/widgets/ui.dart';
 import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/navigation_bar.dart';
 
 class ModulesPage extends StatefulWidget {
-  const ModulesPage({
-    Key? key,
-  }) : super(key: key);
+  const ModulesPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -48,13 +47,12 @@ class _State extends State<ModulesPage> with AutomaticKeepAliveClientMixin {
     List<Widget> modules = [];
     int index = 0;
     LunaModule.active
-      ..sort((a, b) => a.title.toLowerCase().compareTo(
-            b.title.toLowerCase(),
-          ))
+      ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()))
       ..forEach((module) {
         if (profiles.isEnabled(module)) {
-          modules.add(_buildFromLunaModule(module, index));
-          index++;
+          final entries = _buildModuleEntries(profiles, module, index);
+          modules.addAll(entries);
+          index += entries.length;
         }
       });
     modules.add(_buildFromLunaModule(LunaModule.SETTINGS, index));
@@ -66,12 +64,28 @@ class _State extends State<ModulesPage> with AutomaticKeepAliveClientMixin {
     int index = 0;
     LunaDrawer.moduleOrderedList().forEach((module) {
       if (profiles.isEnabled(module)) {
-        modules.add(_buildFromLunaModule(module, index));
-        index++;
+        final entries = _buildModuleEntries(profiles, module, index);
+        modules.addAll(entries);
+        index += entries.length;
       }
     });
     modules.add(_buildFromLunaModule(LunaModule.SETTINGS, index));
     return modules;
+  }
+
+  List<Widget> _buildModuleEntries(
+    ProfilesStore profiles,
+    LunaModule module,
+    int listIndex,
+  ) {
+    if (!module.supportsServiceInstances) {
+      return [_buildFromLunaModule(module, listIndex)];
+    }
+
+    final instances = profiles.enabledInstances(profiles.activeProfile, module);
+    return instances
+        .map((instance) => _buildFromServiceInstance(module, instance))
+        .toList();
   }
 
   Widget _buildFromLunaModule(LunaModule module, int listIndex) {
@@ -80,6 +94,18 @@ class _State extends State<ModulesPage> with AutomaticKeepAliveClientMixin {
       body: [TextSpan(text: module.description)],
       trailing: LunaIconButton(icon: module.icon, color: module.color),
       onTap: module.launch,
+    );
+  }
+
+  Widget _buildFromServiceInstance(
+    LunaModule module,
+    LunaServiceInstance instance,
+  ) {
+    return LunaBlock(
+      title: '${module.title} - ${instance.displayName}',
+      body: [TextSpan(text: module.description)],
+      trailing: LunaIconButton(icon: module.icon, color: module.color),
+      onTap: () => module.launchInstance(instance),
     );
   }
 }

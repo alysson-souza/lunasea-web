@@ -33,7 +33,7 @@ class _State extends State<LidarrHistory> with AutomaticKeepAliveClientMixin {
 
   Future<void> _refresh() async {
     _results = [];
-    final _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<LidarrState>().api(context);
     if (mounted)
       setState(() {
         _future = _api.getHistory();
@@ -45,10 +45,7 @@ class _State extends State<LidarrHistory> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {

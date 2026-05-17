@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -59,6 +60,7 @@ func (s *store) migrate(ctx context.Context) error {
 	migrations := []migration{
 		{version: 1, name: "schemaful app state", run: migrateSchemafulAppState},
 		{version: 2, name: "legacy gateway service configs", run: migrateLegacyServiceConfigs},
+		{version: 3, name: "service instances", run: migrateServiceInstances},
 	}
 
 	if _, err := s.db.ExecContext(ctx, `
@@ -157,20 +159,26 @@ CREATE TABLE IF NOT EXISTS app_preferences (
   updated_at TEXT NOT NULL
 ) STRICT;
 
-CREATE TABLE IF NOT EXISTS service_connections (
+CREATE TABLE IF NOT EXISTS service_instances (
   profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE ON UPDATE CASCADE,
   service TEXT NOT NULL,
+  instance_id TEXT NOT NULL,
+  display_name TEXT NOT NULL DEFAULT '',
   enabled INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  connection_mode TEXT NOT NULL DEFAULT 'gateway',
   upstream_url TEXT NOT NULL DEFAULT '',
   api_key TEXT NOT NULL DEFAULT '',
   username TEXT NOT NULL DEFAULT '',
   password TEXT NOT NULL DEFAULT '',
   headers_json TEXT NOT NULL DEFAULT '{}',
+  preferences_json TEXT NOT NULL DEFAULT '{}',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
-  PRIMARY KEY (profile_id, service)
+  PRIMARY KEY (profile_id, service, instance_id)
 ) STRICT;
-CREATE INDEX IF NOT EXISTS service_connections_service_idx ON service_connections(service);
+CREATE INDEX IF NOT EXISTS service_instances_profile_service_sort_idx ON service_instances(profile_id, service, sort_order);
+CREATE INDEX IF NOT EXISTS service_instances_service_idx ON service_instances(service);
 
 CREATE TABLE IF NOT EXISTS radarr_preferences (
   id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -327,6 +335,9 @@ func migrateLegacyServiceConfigs(ctx context.Context, tx *sql.Tx) error {
 	if err != nil || !exists {
 		return err
 	}
+	if err := createServiceInstancesTable(ctx, tx); err != nil {
+		return err
+	}
 	rows, err := tx.QueryContext(ctx, `
 SELECT service, profile, upstream_url, api_key, username, password, headers_json
 FROM service_configs;`)
@@ -352,22 +363,85 @@ ON CONFLICT(id) DO NOTHING;`, cfg.Profile, cfg.Profile, now, now); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `
-INSERT INTO service_connections (
-  profile_id, service, enabled, upstream_url, api_key, username, password, headers_json, created_at, updated_at
-) VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?, ?)
-ON CONFLICT(profile_id, service) DO UPDATE SET
+INSERT INTO service_instances (
+  profile_id, service, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json, created_at, updated_at
+) VALUES (?, ?, ?, ?, 1, 0, 'gateway', ?, ?, ?, ?, ?, '{}', ?, ?)
+ON CONFLICT(profile_id, service, instance_id) DO UPDATE SET
+  display_name = excluded.display_name,
   enabled = excluded.enabled,
+  sort_order = excluded.sort_order,
+  connection_mode = excluded.connection_mode,
   upstream_url = excluded.upstream_url,
   api_key = excluded.api_key,
   username = excluded.username,
   password = excluded.password,
   headers_json = excluded.headers_json,
+  preferences_json = excluded.preferences_json,
   updated_at = excluded.updated_at;`,
-			cfg.Profile, cfg.Service, cfg.UpstreamURL, cfg.APIKey, cfg.Username, cfg.Password, headersJSON, now, now); err != nil {
+			cfg.Profile, cfg.Service, defaultServiceInstanceID, cfg.Service, cfg.UpstreamURL, cfg.APIKey, cfg.Username, cfg.Password, headersJSON, now, now); err != nil {
 			return err
 		}
 	}
 	return rows.Err()
+}
+
+func migrateServiceInstances(ctx context.Context, tx *sql.Tx) error {
+	if err := createServiceInstancesTable(ctx, tx); err != nil {
+		return err
+	}
+	exists, err := tableExists(ctx, tx, "service_connections")
+	if err != nil || !exists {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `
+INSERT INTO service_instances (
+  profile_id, service, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json, created_at, updated_at
+)
+SELECT profile_id, service, ?, service, enabled, 0, 'gateway', upstream_url, api_key, username, password, headers_json, '{}', created_at, updated_at
+FROM service_connections
+WHERE true
+ON CONFLICT(profile_id, service, instance_id) DO UPDATE SET
+  display_name = excluded.display_name,
+  enabled = excluded.enabled,
+  sort_order = excluded.sort_order,
+  connection_mode = excluded.connection_mode,
+  upstream_url = excluded.upstream_url,
+  api_key = excluded.api_key,
+  username = excluded.username,
+  password = excluded.password,
+  headers_json = excluded.headers_json,
+  preferences_json = excluded.preferences_json,
+  updated_at = excluded.updated_at;`, defaultServiceInstanceID); err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(ctx, `DROP TABLE service_connections;`)
+	return err
+}
+
+func createServiceInstancesTable(ctx context.Context, tx *sql.Tx) error {
+	_, err := tx.ExecContext(ctx, `
+CREATE TABLE IF NOT EXISTS service_instances (
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  service TEXT NOT NULL,
+  instance_id TEXT NOT NULL,
+  display_name TEXT NOT NULL DEFAULT '',
+  enabled INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  connection_mode TEXT NOT NULL DEFAULT 'gateway',
+  upstream_url TEXT NOT NULL DEFAULT '',
+  api_key TEXT NOT NULL DEFAULT '',
+  username TEXT NOT NULL DEFAULT '',
+  password TEXT NOT NULL DEFAULT '',
+  headers_json TEXT NOT NULL DEFAULT '{}',
+  preferences_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (profile_id, service, instance_id)
+) STRICT;
+CREATE INDEX IF NOT EXISTS service_instances_profile_service_sort_idx ON service_instances(profile_id, service, sort_order);
+CREATE INDEX IF NOT EXISTS service_instances_service_idx ON service_instances(service);
+`)
+	return err
 }
 
 func tableExists(ctx context.Context, tx *sql.Tx, name string) (bool, error) {
@@ -417,10 +491,22 @@ ON CONFLICT(id) DO NOTHING;`, table), now, now); err != nil {
 
 func (s *store) listServices(ctx context.Context) ([]serviceConfig, error) {
 	rows, err := s.db.QueryContext(ctx, `
-SELECT service, profile_id, upstream_url, api_key, username, password, headers_json
-FROM service_connections
+SELECT service, profile_id, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json
+FROM service_instances
 WHERE enabled = 1 AND upstream_url != ''
-ORDER BY service, profile_id;`)
+ORDER BY service, profile_id, sort_order, instance_id;`)
+	return scanServiceConfigs(rows, err)
+}
+
+func (s *store) listServiceInstances(ctx context.Context) ([]serviceConfig, error) {
+	rows, err := s.db.QueryContext(ctx, `
+SELECT service, profile_id, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json
+FROM service_instances
+ORDER BY service, profile_id, sort_order, instance_id;`)
+	return scanServiceConfigs(rows, err)
+}
+
+func scanServiceConfigs(rows *sql.Rows, err error) ([]serviceConfig, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -430,37 +516,52 @@ ORDER BY service, profile_id;`)
 	for rows.Next() {
 		var cfg serviceConfig
 		var headersJSON string
+		var preferencesJSON string
 		if err := rows.Scan(
 			&cfg.Service,
 			&cfg.Profile,
+			&cfg.InstanceID,
+			&cfg.DisplayName,
+			&cfg.Enabled,
+			&cfg.SortOrder,
+			&cfg.ConnectionMode,
 			&cfg.UpstreamURL,
 			&cfg.APIKey,
 			&cfg.Username,
 			&cfg.Password,
 			&headersJSON,
+			&preferencesJSON,
 		); err != nil {
 			return nil, err
 		}
 		cfg.Headers = unmarshalHeaders(headersJSON)
+		cfg.Preferences = unmarshalPreferences(preferencesJSON)
 		configs = append(configs, cfg)
 	}
 	return configs, rows.Err()
 }
 
-func (s *store) getService(ctx context.Context, service, profile string) (serviceConfig, error) {
+func (s *store) getService(ctx context.Context, service, profile, instanceID string) (serviceConfig, error) {
 	var cfg serviceConfig
 	var headersJSON string
+	var preferencesJSON string
 	err := s.db.QueryRowContext(ctx, `
-SELECT service, profile_id, upstream_url, api_key, username, password, headers_json
-FROM service_connections
-WHERE service = ? AND profile_id = ? AND enabled = 1 AND upstream_url != '';`, service, profile).Scan(
+SELECT service, profile_id, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json
+FROM service_instances
+WHERE service = ? AND profile_id = ? AND instance_id = ?;`, service, profile, instanceID).Scan(
 		&cfg.Service,
 		&cfg.Profile,
+		&cfg.InstanceID,
+		&cfg.DisplayName,
+		&cfg.Enabled,
+		&cfg.SortOrder,
+		&cfg.ConnectionMode,
 		&cfg.UpstreamURL,
 		&cfg.APIKey,
 		&cfg.Username,
 		&cfg.Password,
 		&headersJSON,
+		&preferencesJSON,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return serviceConfig{}, errNotFound
@@ -469,11 +570,25 @@ WHERE service = ? AND profile_id = ? AND enabled = 1 AND upstream_url != '';`, s
 		return serviceConfig{}, err
 	}
 	cfg.Headers = unmarshalHeaders(headersJSON)
+	cfg.Preferences = unmarshalPreferences(preferencesJSON)
 	return cfg, nil
 }
 
 func (s *store) putService(ctx context.Context, cfg serviceConfig) error {
+	if cfg.InstanceID == "" {
+		cfg.InstanceID = defaultServiceInstanceID
+	}
+	if cfg.DisplayName == "" {
+		cfg.DisplayName = cfg.Service
+	}
+	if cfg.ConnectionMode == "" {
+		cfg.ConnectionMode = "gateway"
+	}
 	headersJSON, err := marshalHeaders(cfg.Headers)
+	if err != nil {
+		return err
+	}
+	preferencesJSON, err := marshalPreferences(cfg.Preferences)
 	if err != nil {
 		return err
 	}
@@ -491,24 +606,34 @@ ON CONFLICT(id) DO NOTHING;`, cfg.Profile, cfg.Profile, now, now); err != nil {
 		return err
 	}
 	if _, err := tx.ExecContext(ctx, `
-INSERT INTO service_connections (
-  profile_id, service, enabled, upstream_url, api_key, username, password, headers_json, created_at, updated_at
-) VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?, ?)
-ON CONFLICT(profile_id, service) DO UPDATE SET
-  enabled = 1,
+INSERT INTO service_instances (
+  profile_id, service, instance_id, display_name, enabled, sort_order, connection_mode, upstream_url, api_key, username, password, headers_json, preferences_json, created_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(profile_id, service, instance_id) DO UPDATE SET
+  display_name = excluded.display_name,
+  enabled = excluded.enabled,
+  sort_order = excluded.sort_order,
+  connection_mode = excluded.connection_mode,
   upstream_url = excluded.upstream_url,
   api_key = excluded.api_key,
   username = excluded.username,
   password = excluded.password,
   headers_json = excluded.headers_json,
+  preferences_json = excluded.preferences_json,
   updated_at = excluded.updated_at;`,
 		cfg.Profile,
 		cfg.Service,
+		cfg.InstanceID,
+		cfg.DisplayName,
+		cfg.Enabled,
+		cfg.SortOrder,
+		cfg.ConnectionMode,
 		cfg.UpstreamURL,
 		cfg.APIKey,
 		cfg.Username,
 		cfg.Password,
 		headersJSON,
+		preferencesJSON,
 		now,
 		now,
 	); err != nil {
@@ -517,10 +642,10 @@ ON CONFLICT(profile_id, service) DO UPDATE SET
 	return tx.Commit()
 }
 
-func (s *store) deleteService(ctx context.Context, service, profile string) error {
+func (s *store) deleteService(ctx context.Context, service, profile, instanceID string) error {
 	result, err := s.db.ExecContext(ctx, `
-DELETE FROM service_connections
-WHERE service = ? AND profile_id = ?;`, service, profile)
+DELETE FROM service_instances
+WHERE service = ? AND profile_id = ? AND instance_id = ?;`, service, profile, instanceID)
 	if err != nil {
 		return err
 	}
@@ -532,6 +657,25 @@ WHERE service = ? AND profile_id = ?;`, service, profile)
 		return errNotFound
 	}
 	return nil
+}
+
+func marshalPreferences(preferences map[string]any) (string, error) {
+	if preferences == nil {
+		preferences = map[string]any{}
+	}
+	data, err := json.Marshal(preferences)
+	return string(data), err
+}
+
+func unmarshalPreferences(data string) map[string]any {
+	if data == "" {
+		return map[string]any{}
+	}
+	preferences := map[string]any{}
+	if err := json.Unmarshal([]byte(data), &preferences); err != nil {
+		return map[string]any{}
+	}
+	return preferences
 }
 
 func nowText() string {

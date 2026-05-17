@@ -61,8 +61,10 @@ func (a *app) routes() http.Handler {
 	mux.HandleFunc("POST /_lunasea/api/profiles", a.createProfile)
 	mux.HandleFunc("PATCH /_lunasea/api/profiles/{profile}", a.patchProfile)
 	mux.HandleFunc("DELETE /_lunasea/api/profiles/{profile}", a.deleteProfile)
-	mux.HandleFunc("PUT /_lunasea/api/profiles/{profile}/services/{service}", a.putProfileService)
-	mux.HandleFunc("DELETE /_lunasea/api/profiles/{profile}/services/{service}", a.deleteProfileService)
+	mux.HandleFunc("POST /_lunasea/api/profiles/{profile}/services/{service}/instances", a.createServiceInstance)
+	mux.HandleFunc("PATCH /_lunasea/api/profiles/{profile}/services/{service}/instances/{instance}", a.patchServiceInstance)
+	mux.HandleFunc("DELETE /_lunasea/api/profiles/{profile}/services/{service}/instances/{instance}", a.deleteServiceInstance)
+	mux.HandleFunc("POST /_lunasea/api/profiles/{profile}/services/{service}/instances/{instance}/test", a.testServiceInstance)
 	mux.HandleFunc("PATCH /_lunasea/api/preferences/app", a.patchAppPreferences)
 	mux.HandleFunc("PATCH /_lunasea/api/preferences/modules/{module}", a.patchModulePreferences)
 	mux.HandleFunc("POST /_lunasea/api/indexers", a.createIndexer)
@@ -78,9 +80,6 @@ func (a *app) routes() http.Handler {
 	mux.HandleFunc("POST /_lunasea/api/logs", a.createLog)
 	mux.HandleFunc("DELETE /_lunasea/api/logs", a.clearLogs)
 	mux.HandleFunc("GET /_lunasea/api/services", a.listServices)
-	mux.HandleFunc("PUT /_lunasea/api/services/{service}/{profile}", a.putService)
-	mux.HandleFunc("POST /_lunasea/api/services/{service}/{profile}/test", a.testService)
-	mux.HandleFunc("DELETE /_lunasea/api/services/{service}/{profile}", a.deleteService)
 	mux.HandleFunc("/_lunasea/proxy/", a.proxy.serve)
 	mux.HandleFunc("/", a.serveStatic)
 	return mux
@@ -102,104 +101,78 @@ func (a *app) listServices(w http.ResponseWriter, r *http.Request) {
 	}
 	services := make([]serviceResponse, 0, len(configs))
 	for _, cfg := range configs {
+		if !cfg.Enabled || cfg.UpstreamURL == "" {
+			continue
+		}
 		services = append(services, cfg.redacted())
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"services": services})
 }
 
-func (a *app) putService(w http.ResponseWriter, r *http.Request) {
+func (a *app) createServiceInstance(w http.ResponseWriter, r *http.Request) {
 	service, profile, ok := serviceRouteValues(w, r)
 	if !ok {
 		return
 	}
-	a.putServiceFor(w, r, service, profile)
-}
-
-func (a *app) putServiceFor(w http.ResponseWriter, r *http.Request, service, profile string) {
 	var request serviceWriteRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_json", err.Error())
 		return
 	}
-
-	existing, err := a.store.getService(r.Context(), service, profile)
-	if errors.Is(err, errNotFound) {
-		existing = serviceConfig{
-			Service: service,
-			Profile: profile,
-			Headers: map[string]string{},
-		}
-	} else if err != nil {
+	cfg := serviceConfig{
+		Service:        service,
+		Profile:        profile,
+		InstanceID:     newServiceInstanceID(),
+		DisplayName:    service,
+		Enabled:        true,
+		ConnectionMode: "gateway",
+		Headers:        map[string]string{},
+	}
+	if !applyServiceWriteRequest(w, &cfg, request) {
+		return
+	}
+	if err := a.store.putService(r.Context(), cfg); err != nil {
 		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
 		return
 	}
-
-	if request.UpstreamURL != nil {
-		upstream, err := validateUpstream(*request.UpstreamURL)
-		if err != nil {
-			writeError(w, http.StatusBadRequest, "bad_upstream", err.Error())
-			return
-		}
-		existing.UpstreamURL = upstream
-	}
-	if existing.UpstreamURL == "" {
-		writeError(w, http.StatusBadRequest, "bad_upstream", "upstreamUrl is required")
-		return
-	}
-	if request.APIKey != nil {
-		existing.APIKey = *request.APIKey
-	}
-	if request.Username != nil {
-		existing.Username = *request.Username
-	}
-	if request.Password != nil {
-		existing.Password = *request.Password
-	}
-	if request.Headers != nil {
-		existing.Headers = *request.Headers
-	}
-	if existing.Headers == nil {
-		existing.Headers = map[string]string{}
-	}
-
-	if err := a.store.putService(r.Context(), existing); err != nil {
-		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, existing.redacted())
+	writeJSON(w, http.StatusCreated, cfg.redacted())
 }
 
-func (a *app) testService(w http.ResponseWriter, r *http.Request) {
-	service, profile, ok := serviceRouteValues(w, r)
+func (a *app) patchServiceInstance(w http.ResponseWriter, r *http.Request) {
+	service, profile, instanceID, ok := serviceInstanceRouteValues(w, r)
 	if !ok {
 		return
 	}
-
-	cfg, err := a.store.getService(r.Context(), service, profile)
+	var request serviceWriteRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_json", err.Error())
+		return
+	}
+	cfg, err := a.store.getService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		writeError(w, http.StatusNotFound, "service_not_found", "Service instance was not found")
 		return
 	}
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
 		return
 	}
-
-	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
-	defer cancel()
-	if err := testService(ctx, a.proxy.client, cfg); err != nil {
-		writeError(w, http.StatusBadGateway, "upstream_error", err.Error())
+	if !applyServiceWriteRequest(w, &cfg, request) {
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+	if err := a.store.putService(r.Context(), cfg); err != nil {
+		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, cfg.redacted())
 }
 
-func (a *app) deleteService(w http.ResponseWriter, r *http.Request) {
-	service, profile, ok := serviceRouteValues(w, r)
+func (a *app) deleteServiceInstance(w http.ResponseWriter, r *http.Request) {
+	service, profile, instanceID, ok := serviceInstanceRouteValues(w, r)
 	if !ok {
 		return
 	}
-	err := a.store.deleteService(r.Context(), service, profile)
+	err := a.store.deleteService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
 		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
 		return
@@ -209,6 +182,79 @@ func (a *app) deleteService(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (a *app) testServiceInstance(w http.ResponseWriter, r *http.Request) {
+	service, profile, instanceID, ok := serviceInstanceRouteValues(w, r)
+	if !ok {
+		return
+	}
+	cfg, err := a.store.getService(r.Context(), service, profile, instanceID)
+	if errors.Is(err, errNotFound) {
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		return
+	}
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
+		return
+	}
+	if !cfg.Enabled || cfg.UpstreamURL == "" {
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+	if err := testService(ctx, a.proxy.client, cfg); err != nil {
+		writeError(w, http.StatusBadGateway, "upstream_error", err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+}
+
+func applyServiceWriteRequest(w http.ResponseWriter, cfg *serviceConfig, request serviceWriteRequest) bool {
+	if request.DisplayName != nil {
+		cfg.DisplayName = *request.DisplayName
+	}
+	if request.Enabled != nil {
+		cfg.Enabled = *request.Enabled
+	}
+	if request.SortOrder != nil {
+		cfg.SortOrder = *request.SortOrder
+	}
+	if request.ConnectionMode != nil {
+		cfg.ConnectionMode = *request.ConnectionMode
+	}
+	if request.Preferences != nil {
+		cfg.Preferences = *request.Preferences
+	}
+	if request.UpstreamURL != nil {
+		upstream := strings.TrimSpace(*request.UpstreamURL)
+		if upstream != "" {
+			var err error
+			upstream, err = validateUpstream(upstream)
+			if err != nil {
+				writeError(w, http.StatusBadRequest, "bad_upstream", err.Error())
+				return false
+			}
+		}
+		cfg.UpstreamURL = upstream
+	}
+	if request.APIKey != nil && *request.APIKey != "" {
+		cfg.APIKey = *request.APIKey
+	}
+	if request.Username != nil && *request.Username != "" {
+		cfg.Username = *request.Username
+	}
+	if request.Password != nil && *request.Password != "" {
+		cfg.Password = *request.Password
+	}
+	if request.Headers != nil && len(*request.Headers) > 0 {
+		cfg.Headers = *request.Headers
+	}
+	if cfg.Headers == nil {
+		cfg.Headers = map[string]string{}
+	}
+	return true
 }
 
 func serviceRouteValues(w http.ResponseWriter, r *http.Request) (string, string, bool) {
@@ -223,6 +269,19 @@ func serviceRouteValues(w http.ResponseWriter, r *http.Request) (string, string,
 		return "", "", false
 	}
 	return service, profile, true
+}
+
+func serviceInstanceRouteValues(w http.ResponseWriter, r *http.Request) (string, string, string, bool) {
+	service, profile, ok := serviceRouteValues(w, r)
+	if !ok {
+		return "", "", "", false
+	}
+	instanceID := r.PathValue("instance")
+	if err := validateInstanceID(instanceID); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_instance", err.Error())
+		return "", "", "", false
+	}
+	return service, profile, instanceID, true
 }
 
 func (a *app) serveStatic(w http.ResponseWriter, r *http.Request) {

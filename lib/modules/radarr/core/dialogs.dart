@@ -96,7 +96,8 @@ class RadarrDialogs {
   }
 
   Future<Tuple2<bool, RadarrImportMode?>> setManualImportMode(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     bool _flag = false;
     RadarrImportMode? _mode;
 
@@ -140,10 +141,7 @@ class RadarrDialogs {
       context: context,
       title: 'Add Tag',
       buttons: [
-        LunaDialog.button(
-          text: 'Add',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Add', onPressed: () => _setValues(true)),
       ],
       content: [
         Form(
@@ -185,7 +183,8 @@ class RadarrDialogs {
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to delete this tag?'),
+          text: 'Are you sure you want to delete this tag?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -204,14 +203,12 @@ class RadarrDialogs {
       context: context,
       title: 'Missing Movies',
       buttons: [
-        LunaDialog.button(
-          text: 'Search',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Search', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to search for all missing movies?'),
+          text: 'Are you sure you want to search for all missing movies?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -238,7 +235,8 @@ class RadarrDialogs {
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to delete this movie file?'),
+          text: 'Are you sure you want to delete this movie file?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -246,7 +244,8 @@ class RadarrDialogs {
   }
 
   Future<Tuple2<bool, RadarrAvailability?>> editMinimumAvailability(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     bool _flag = false;
     RadarrAvailability? availability;
 
@@ -280,7 +279,9 @@ class RadarrDialogs {
   }
 
   Future<Tuple2<bool, RadarrQualityProfile?>> editQualityProfile(
-      BuildContext context, List<RadarrQualityProfile?> profiles) async {
+    BuildContext context,
+    List<RadarrQualityProfile?> profiles,
+  ) async {
     bool _flag = false;
     RadarrQualityProfile? profile;
 
@@ -308,7 +309,9 @@ class RadarrDialogs {
   }
 
   Future<Tuple2<bool, RadarrQualityDefinition?>> selectQualityDefinition(
-      BuildContext context, List<RadarrQualityDefinition> definitions) async {
+    BuildContext context,
+    List<RadarrQualityDefinition> definitions,
+  ) async {
     bool _flag = false;
     RadarrQualityDefinition? profile;
 
@@ -336,9 +339,12 @@ class RadarrDialogs {
   }
 
   Future<void> setManualImportLanguages(
-      BuildContext context, List<RadarrLanguage> languages) async {
-    List<RadarrLanguage> filteredLanguages =
-        languages.where((lang) => lang.id! >= 0).toList();
+    BuildContext context,
+    List<RadarrLanguage> languages,
+  ) async {
+    List<RadarrLanguage> filteredLanguages = languages
+        .where((lang) => lang.id! >= 0)
+        .toList();
     await showDialog(
       context: context,
       builder: (_) => ChangeNotifierProvider.value(
@@ -356,21 +362,24 @@ class RadarrDialogs {
               children: List.generate(
                 filteredLanguages.length,
                 (index) => LunaDialog.checkbox(
-                    title: filteredLanguages[index].name!,
-                    value: context
-                            .read<RadarrManualImportDetailsTileState>()
-                            .manualImport
-                            .languages
-                            ?.indexWhere((lang) =>
-                                lang.id == filteredLanguages[index].id) !=
-                        -1,
-                    onChanged: (value) => value!
-                        ? context
+                  title: filteredLanguages[index].name!,
+                  value:
+                      context
+                          .read<RadarrManualImportDetailsTileState>()
+                          .manualImport
+                          .languages
+                          ?.indexWhere(
+                            (lang) => lang.id == filteredLanguages[index].id,
+                          ) !=
+                      -1,
+                  onChanged: (value) => value!
+                      ? context
                             .read<RadarrManualImportDetailsTileState>()
                             .addLanguage(filteredLanguages[index])
-                        : context
+                      : context
                             .read<RadarrManualImportDetailsTileState>()
-                            .removeLanguage(filteredLanguages[index])),
+                            .removeLanguage(filteredLanguages[index]),
+                ),
               ),
             ),
           ),
@@ -420,15 +429,18 @@ class RadarrDialogs {
                               .watch<RadarrMoviesEditState>()
                               .tags
                               .where(
-                                  (tag) => tag.id == snapshot.data![index].id)
+                                (tag) => tag.id == snapshot.data![index].id,
+                              )
                               .isNotEmpty,
                           onChanged: (selected) {
-                            List<RadarrTag> _tags =
-                                context.read<RadarrMoviesEditState>().tags;
+                            List<RadarrTag> _tags = context
+                                .read<RadarrMoviesEditState>()
+                                .tags;
                             selected!
                                 ? _tags.add(snapshot.data![index])
-                                : _tags.removeWhere((tag) =>
-                                    tag.id == snapshot.data![index].id);
+                                : _tags.removeWhere(
+                                    (tag) => tag.id == snapshot.data![index].id,
+                                  );
                             context.read<RadarrMoviesEditState>().tags = _tags;
                           },
                         ),
@@ -528,15 +540,18 @@ class RadarrDialogs {
                               .watch<RadarrAddMovieDetailsState>()
                               .tags
                               .where(
-                                  (tag) => tag.id == snapshot.data![index].id)
+                                (tag) => tag.id == snapshot.data![index].id,
+                              )
                               .isNotEmpty,
                           onChanged: (selected) {
-                            List<RadarrTag> _tags =
-                                context.read<RadarrAddMovieDetailsState>().tags;
+                            List<RadarrTag> _tags = context
+                                .read<RadarrAddMovieDetailsState>()
+                                .tags;
                             selected!
                                 ? _tags.add(snapshot.data![index])
-                                : _tags.removeWhere((tag) =>
-                                    tag.id == snapshot.data![index].id);
+                                : _tags.removeWhere(
+                                    (tag) => tag.id == snapshot.data![index].id,
+                                  );
                             context.read<RadarrAddMovieDetailsState>().tags =
                                 _tags;
                           },
@@ -558,7 +573,9 @@ class RadarrDialogs {
   }
 
   Future<Tuple2<bool, RadarrRootFolder?>> editRootFolder(
-      BuildContext context, List<RadarrRootFolder> folders) async {
+    BuildContext context,
+    List<RadarrRootFolder> folders,
+  ) async {
     bool _flag = false;
     RadarrRootFolder? _folder;
 
@@ -575,14 +592,16 @@ class RadarrDialogs {
         folders.length,
         (index) => LunaDialog.tile(
           text: folders[index].path!,
-          subtitle: LunaDialog.richText(
-            children: [
-              LunaDialog.bolded(
-                text: folders[index].freeSpace.asBytes(),
-                fontSize: LunaDialog.BUTTON_SIZE,
-              ),
-            ],
-          ) as RichText?,
+          subtitle:
+              LunaDialog.richText(
+                    children: [
+                      LunaDialog.bolded(
+                        text: folders[index].freeSpace.asBytes(),
+                        fontSize: LunaDialog.BUTTON_SIZE,
+                      ),
+                    ],
+                  )
+                  as RichText?,
           icon: Icons.folder_rounded,
           iconColor: LunaColours().byListIndex(index),
           onTap: () => _setValues(true, folders[index]),
@@ -640,7 +659,8 @@ class RadarrDialogs {
     bool _flag = false;
     GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     TextEditingController _textController = TextEditingController(
-        text: RadarrPreferences.QUEUE_PAGE_SIZE.read().toString());
+      text: RadarrPreferences.QUEUE_PAGE_SIZE.read().toString(),
+    );
 
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
@@ -653,14 +673,12 @@ class RadarrDialogs {
       context: context,
       title: 'Queue Size',
       buttons: [
-        LunaDialog.button(
-          text: 'Set',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Set', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Set the amount of items fetched for the queue.'),
+          text: 'Set the amount of items fetched for the queue.',
+        ),
         Form(
           key: _formKey,
           child: LunaDialog.textFormInput(
@@ -694,13 +712,13 @@ class RadarrDialogs {
       ],
       showCancelButton: false,
       content: [
-        Consumer<SettingsStore>(
-          builder: (context, settings, _) => LunaDialog.checkbox(
+        Consumer<RadarrAddMovieDetailsState>(
+          builder: (context, state, _) => LunaDialog.checkbox(
             title: 'radarr.StartSearchForMissingMovie'.tr(),
-            value: settings.radarrAddMovieSearchForMissing,
-            onChanged: (value) => context
-                .read<SettingsStore>()
-                .setRadarrAddMovieSearchForMissing(value!),
+            value: state.searchForMovie,
+            onChanged: (value) =>
+                context.read<RadarrAddMovieDetailsState>().searchForMovie =
+                    value!,
           ),
         ),
       ],

@@ -10,10 +10,7 @@ import 'package:lunasea/router/router.dart';
 class LidarrReleasesTile extends StatefulWidget {
   final LidarrReleaseData release;
 
-  const LidarrReleasesTile({
-    Key? key,
-    required this.release,
-  }) : super(key: key);
+  const LidarrReleasesTile({Key? key, required this.release}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -26,10 +23,7 @@ class _State extends State<LidarrReleasesTile> {
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: widget.release.title,
-      collapsedSubtitles: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      collapsedSubtitles: [_subtitle1(), _subtitle2()],
       collapsedTrailing: _trailing(),
       expandedHighlightedNodes: _highlightedNodes(),
       expandedTableContent: _tableContent(),
@@ -38,27 +32,29 @@ class _State extends State<LidarrReleasesTile> {
   }
 
   TextSpan _subtitle1() {
-    return TextSpan(children: [
-      TextSpan(
-        style: TextStyle(
-          color: lunaProtocolColor,
-          fontWeight: LunaUI.FONT_WEIGHT_BOLD,
-        ),
-        text: widget.release.protocol.toTitleCase(),
-      ),
-      if (widget.release.isTorrent)
+    return TextSpan(
+      children: [
         TextSpan(
-          text: ' (${widget.release.seeders}/${widget.release.leechers})',
           style: TextStyle(
             color: lunaProtocolColor,
             fontWeight: LunaUI.FONT_WEIGHT_BOLD,
           ),
+          text: widget.release.protocol.toTitleCase(),
         ),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.release.indexer),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.release.ageHours.asTimeAgo()),
-    ]);
+        if (widget.release.isTorrent)
+          TextSpan(
+            text: ' (${widget.release.seeders}/${widget.release.leechers})',
+            style: TextStyle(
+              color: lunaProtocolColor,
+              fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+            ),
+          ),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.release.indexer),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.release.ageHours.asTimeAgo()),
+      ],
+    );
   }
 
   TextSpan _subtitle2() {
@@ -96,23 +92,37 @@ class _State extends State<LidarrReleasesTile> {
   List<BackendPreferenceGroupContent> _tableContent() {
     return [
       BackendPreferenceGroupContent(
-          title: 'source', body: widget.release.protocol.toTitleCase()),
+        title: 'source',
+        body: widget.release.protocol.toTitleCase(),
+      ),
       BackendPreferenceGroupContent(
-          title: 'age', body: widget.release.ageHours.asTimeAgo()),
+        title: 'age',
+        body: widget.release.ageHours.asTimeAgo(),
+      ),
       BackendPreferenceGroupContent(
-          title: 'indexer', body: widget.release.indexer),
+        title: 'indexer',
+        body: widget.release.indexer,
+      ),
       BackendPreferenceGroupContent(
-          title: 'size', body: widget.release.size.asBytes()),
+        title: 'size',
+        body: widget.release.size.asBytes(),
+      ),
       BackendPreferenceGroupContent(
-          title: 'quality', body: widget.release.quality),
+        title: 'quality',
+        body: widget.release.quality,
+      ),
       if (widget.release.protocol == 'torrent' &&
           widget.release.seeders != null)
         BackendPreferenceGroupContent(
-            title: 'seeders', body: '${widget.release.seeders}'),
+          title: 'seeders',
+          body: '${widget.release.seeders}',
+        ),
       if (widget.release.protocol == 'torrent' &&
           widget.release.leechers != null)
         BackendPreferenceGroupContent(
-            title: 'leechers', body: '${widget.release.leechers}'),
+          title: 'leechers',
+          body: '${widget.release.leechers}',
+        ),
     ];
   }
 
@@ -152,28 +162,29 @@ class _State extends State<LidarrReleasesTile> {
 
   Future<void> _startDownload() async {
     setState(() => _downloadState = LunaLoadingState.ACTIVE);
-    LidarrAPI _api = LidarrAPI.from(context.read<ProfilesStore>().active);
+    LidarrAPI _api = context.read<LidarrState>().api(context);
     await _api
         .downloadRelease(widget.release.guid, widget.release.indexerId)
         .then((_) {
-      showLunaSuccessSnackBar(
-        title: 'Downloading...',
-        message: widget.release.title,
-        showButton: true,
-        buttonText: 'Back',
-        buttonOnPressed: LunaRouter().popToRootRoute,
-      );
-    }).catchError((error, stack) {
-      showLunaErrorSnackBar(
-        title: 'Failed to Start Downloading',
-        error: error,
-      );
-    });
+          showLunaSuccessSnackBar(
+            title: 'Downloading...',
+            message: widget.release.title,
+            showButton: true,
+            buttonText: 'Back',
+            buttonOnPressed: LunaRouter().popToRootRoute,
+          );
+        })
+        .catchError((error, stack) {
+          showLunaErrorSnackBar(
+            title: 'Failed to Start Downloading',
+            error: error,
+          );
+        });
     setState(() => _downloadState = LunaLoadingState.INACTIVE);
   }
 
   Future<void> _showWarnings() async => await LunaDialogs().showRejections(
-        context,
-        widget.release.rejections.cast<String>(),
-      );
+    context,
+    widget.release.rejections.cast<String>(),
+  );
 }

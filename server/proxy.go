@@ -31,23 +31,27 @@ func newProxyHandler(store *store) *proxyHandler {
 	}
 }
 
-func proxyPrefix(service, profile string) string {
-	return "/_lunasea/proxy/" + service + "/" + profile + "/"
+func proxyPrefix(service, profile, instanceID string) string {
+	return "/_lunasea/proxy/" + service + "/" + profile + "/" + instanceID + "/"
 }
 
 func (h *proxyHandler) serve(w http.ResponseWriter, r *http.Request) {
-	service, profile, suffix, ok := parseProxyPath(r.URL.Path)
+	service, profile, instanceID, suffix, ok := parseProxyPath(r.URL.Path)
 	if !ok {
 		writeError(w, http.StatusNotFound, "not_found", "Proxy route not found")
 		return
 	}
-	cfg, err := h.store.getService(r.Context(), service, profile)
+	cfg, err := h.store.getService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
 		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
 		return
 	}
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
+		return
+	}
+	if !cfg.Enabled || cfg.UpstreamURL == "" {
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
 		return
 	}
 	upstream, err := buildUpstreamURL(cfg.UpstreamURL, suffix, r.URL.RawQuery)
@@ -176,28 +180,29 @@ func (h *proxyHandler) serveIndexerDownload(w http.ResponseWriter, r *http.Reque
 	_, _ = io.Copy(w, resp.Body)
 }
 
-func parseProxyPath(rawPath string) (service, profile, suffix string, ok bool) {
+func parseProxyPath(rawPath string) (service, profile, instanceID, suffix string, ok bool) {
 	const prefix = "/_lunasea/proxy/"
 	if !strings.HasPrefix(rawPath, prefix) {
-		return "", "", "", false
+		return "", "", "", "", false
 	}
 	rest := strings.TrimPrefix(rawPath, prefix)
-	parts := strings.SplitN(rest, "/", 3)
-	if len(parts) < 2 {
-		return "", "", "", false
+	parts := strings.SplitN(rest, "/", 4)
+	if len(parts) < 3 {
+		return "", "", "", "", false
 	}
 	service = parts[0]
 	profile = parts[1]
-	if validateService(service) != nil || validateProfile(profile) != nil {
-		return "", "", "", false
+	instanceID = parts[2]
+	if validateService(service) != nil || validateProfile(profile) != nil || validateInstanceID(instanceID) != nil {
+		return "", "", "", "", false
 	}
-	if len(parts) == 3 {
-		suffix = parts[2]
+	if len(parts) == 4 {
+		suffix = parts[3]
 	}
 	if hasUnsafePathSegment(suffix) {
-		return "", "", "", false
+		return "", "", "", "", false
 	}
-	return service, profile, suffix, true
+	return service, profile, instanceID, suffix, true
 }
 
 func hasUnsafePathSegment(value string) bool {

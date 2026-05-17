@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/api/radarr/models/movie/movie.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/modules/radarr/core/state.dart';
 import 'package:lunasea/modules/radarr/routes/add_movie/route.dart';
@@ -15,10 +16,11 @@ import 'package:lunasea/modules/radarr/routes/releases/route.dart';
 import 'package:lunasea/modules/radarr/routes/system_status/route.dart';
 import 'package:lunasea/modules/radarr/routes/tags/route.dart';
 import 'package:lunasea/router/routes.dart';
+import 'package:lunasea/system/state.dart';
 import 'package:lunasea/vendor.dart';
 
 enum RadarrRoutes with LunaRoutesMixin {
-  HOME('/radarr'),
+  HOME('/radarr/:instanceId'),
   ADD_MOVIE('add_movie'),
   ADD_MOVIE_DETAILS('details'),
   HISTORY('history'),
@@ -45,52 +47,87 @@ enum RadarrRoutes with LunaRoutesMixin {
   }
 
   @override
+  Widget wrapServiceInstanceRoute(
+    BuildContext context,
+    GoRouterState state,
+    LunaServiceInstance instance,
+    Widget child,
+  ) {
+    final registry = context.read<LunaModuleStateRegistry<RadarrState>>();
+    return ChangeNotifierProvider<RadarrState>.value(
+      value: registry.get(instance),
+      child: child,
+    );
+  }
+
+  @override
   GoRoute get routes {
     switch (this) {
       case RadarrRoutes.HOME:
-        return route(widget: const RadarrRoute());
+        return route(
+          builder: (context, state) {
+            final instance = serviceInstanceFromRoute(
+              context,
+              state,
+              LunaModule.RADARR,
+            );
+            return RadarrRoute(instance: instance!);
+          },
+        );
       case RadarrRoutes.ADD_MOVIE:
-        return route(builder: (_, state) {
-          final query = state.uri.queryParameters['query'] ?? '';
-          return AddMovieRoute(query: query);
-        });
+        return route(
+          builder: (_, state) {
+            final query = state.uri.queryParameters['query'] ?? '';
+            return AddMovieRoute(query: query);
+          },
+        );
       case RadarrRoutes.ADD_MOVIE_DETAILS:
-        return route(builder: (_, state) {
-          final movie = state.extra as RadarrMovie?;
-          final isDiscovery =
-              state.uri.queryParameters['isDiscovery'] ?? 'false';
-          return AddMovieDetailsRoute(
-            movie: movie,
-            isDiscovery: isDiscovery.toLowerCase() == 'true',
-          );
-        });
+        return route(
+          builder: (_, state) {
+            final movie = state.extra as RadarrMovie?;
+            final isDiscovery =
+                state.uri.queryParameters['isDiscovery'] ?? 'false';
+            return AddMovieDetailsRoute(
+              movie: movie,
+              isDiscovery: isDiscovery.toLowerCase() == 'true',
+            );
+          },
+        );
       case RadarrRoutes.HISTORY:
         return route(widget: const HistoryRoute());
       case RadarrRoutes.MANUAL_IMPORT:
         return route(widget: const ManualImportRoute());
       case RadarrRoutes.MANUAL_IMPORT_DETAILS:
-        return route(builder: (_, state) {
-          final path = state.uri.queryParameters['path'];
-          return ManualImportDetailsRoute(path: path);
-        });
+        return route(
+          builder: (_, state) {
+            final path = state.uri.queryParameters['path'];
+            return ManualImportDetailsRoute(path: path);
+          },
+        );
       case RadarrRoutes.MOVIE:
-        return route(builder: (_, state) {
-          final movieId =
-              int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
-          return MovieDetailsRoute(movieId: movieId);
-        });
+        return route(
+          builder: (_, state) {
+            final movieId =
+                int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
+            return MovieDetailsRoute(movieId: movieId);
+          },
+        );
       case RadarrRoutes.MOVIE_EDIT:
-        return route(builder: (_, state) {
-          final movieId =
-              int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
-          return MovieEditRoute(movieId: movieId);
-        });
+        return route(
+          builder: (_, state) {
+            final movieId =
+                int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
+            return MovieEditRoute(movieId: movieId);
+          },
+        );
       case RadarrRoutes.MOVIE_RELEASES:
-        return route(builder: (_, state) {
-          final movieId =
-              int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
-          return MovieReleasesRoute(movieId: movieId);
-        });
+        return route(
+          builder: (_, state) {
+            final movieId =
+                int.tryParse(state.pathParameters['movie'] ?? '-1') ?? -1;
+            return MovieReleasesRoute(movieId: movieId);
+          },
+        );
       case RadarrRoutes.QUEUE:
         return route(widget: const QueueRoute());
       case RadarrRoutes.SYSTEM_STATUS:
@@ -114,13 +151,9 @@ enum RadarrRoutes with LunaRoutesMixin {
           RadarrRoutes.TAGS.routes,
         ];
       case RadarrRoutes.ADD_MOVIE:
-        return [
-          RadarrRoutes.ADD_MOVIE_DETAILS.routes,
-        ];
+        return [RadarrRoutes.ADD_MOVIE_DETAILS.routes];
       case RadarrRoutes.MANUAL_IMPORT:
-        return [
-          RadarrRoutes.MANUAL_IMPORT_DETAILS.routes,
-        ];
+        return [RadarrRoutes.MANUAL_IMPORT_DETAILS.routes];
       case RadarrRoutes.MOVIE:
         return [
           RadarrRoutes.MOVIE_EDIT.routes,

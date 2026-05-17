@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:lunasea/api/sonarr/sonarr.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/system/preferences/lunasea.dart';
 import 'package:lunasea/extensions/string/string.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
 
+import 'package:lunasea/system/gateway/service_endpoint.dart';
 import 'package:lunasea/system/logger.dart';
 import 'package:lunasea/widgets/ui.dart';
 import 'package:lunasea/vendor.dart';
-import 'package:lunasea/modules/sonarr/core/state.dart';
 import 'package:lunasea/modules/dashboard/core/api/data/abstract.dart';
 
 class CalendarSonarrData extends CalendarData {
@@ -21,6 +23,8 @@ class CalendarSonarrData extends CalendarData {
   CalendarSonarrData({
     required int id,
     required String title,
+    required String sourceInstance,
+    required LunaServiceInstanceRef sourceRef,
     required this.episodeTitle,
     required this.seasonNumber,
     required this.episodeNumber,
@@ -28,7 +32,7 @@ class CalendarSonarrData extends CalendarData {
     required this.airTime,
     required this.hasFile,
     required this.fileQualityProfile,
-  }) : super(id, title);
+  }) : super(id, title, sourceInstance, sourceRef);
 
   @override
   List<TextSpan> get body {
@@ -37,15 +41,14 @@ class CalendarSonarrData extends CalendarData {
       TextSpan(
         children: [
           TextSpan(
-              text: seasonNumber == 0 ? 'Specials' : 'Season $seasonNumber'),
+            text: seasonNumber == 0 ? 'Specials' : 'Season $seasonNumber',
+          ),
           TextSpan(text: LunaUI.TEXT_BULLET.pad()),
           TextSpan(text: 'Episode $episodeNumber'),
         ],
       ),
       TextSpan(
-        style: const TextStyle(
-          fontStyle: FontStyle.italic,
-        ),
+        style: const TextStyle(fontStyle: FontStyle.italic),
         text: episodeTitle,
       ),
       if (!hasFile)
@@ -74,15 +77,18 @@ class CalendarSonarrData extends CalendarData {
 
   @override
   Future<void> enterContent(BuildContext context) async {
-    SonarrRoutes.SERIES.go(params: {'series': seriesID.toString()});
+    SonarrRoutes.SERIES.goInstance(
+      instanceId: sourceRef.instanceId,
+      params: {'series': seriesID.toString()},
+    );
   }
 
   @override
   Widget trailing(BuildContext context) => LunaIconButton(
-        text: airTimeString,
-        onPressed: () async => trailingOnPress(context),
-        onLongPress: () => trailingOnLongPress(context),
-      );
+    text: airTimeString,
+    onPressed: () async => trailingOnPress(context),
+    onLongPress: () => trailingOnLongPress(context),
+  );
 
   DateTime? get airTimeObject {
     return DateTime.tryParse(airTime)?.toLocal();
@@ -99,43 +105,65 @@ class CalendarSonarrData extends CalendarData {
 
   @override
   Future<void> trailingOnPress(BuildContext context) async {
-    if (context.read<SonarrState>().api != null)
-      context
-          .read<SonarrState>()
-          .api!
-          .command
-          .episodeSearch(episodeIds: [id])
-          .then((_) => showLunaSuccessSnackBar(
-                title: 'Searching for Episode...',
-                message: episodeTitle,
-              ))
-          .catchError((error, stack) {
-            LunaLogger().error(
-              'Failed to search for episode: $id',
-              error,
-              stack,
-            );
-            showLunaErrorSnackBar(
-              title: 'Failed to Search',
-              error: error,
-            );
-          });
+    final api = _api(context);
+    if (api == null) {
+      showLunaErrorSnackBar(
+        title: 'Failed to Search',
+        error: 'Source instance unavailable',
+      );
+      return;
+    }
+
+    await api.command
+        .episodeSearch(episodeIds: [id])
+        .then(
+          (_) => showLunaSuccessSnackBar(
+            title: 'Searching for Episode...',
+            message: episodeTitle,
+          ),
+        )
+        .catchError((error, stack) {
+          LunaLogger().error('Failed to search for episode: $id', error, stack);
+          showLunaErrorSnackBar(title: 'Failed to Search', error: error);
+        });
   }
 
   @override
   Future<void> trailingOnLongPress(BuildContext context) async {
-    SonarrRoutes.RELEASES.go(queryParams: {
-      'episode': id.toString(),
-    });
+    SonarrRoutes.RELEASES.goInstance(
+      instanceId: sourceRef.instanceId,
+      queryParams: {'episode': id.toString()},
+    );
   }
 
   @override
   String? backgroundUrl(BuildContext context) {
-    return context.read<SonarrState>().getFanartURL(this.seriesID);
+    final instance = sourceServiceInstance(context);
+    if (instance == null) return null;
+    final endpoint = LunaServiceEndpoint.fromInstance(instance);
+    final url =
+        '${endpoint.mediaCoverBase('api/v3', 'MediaCover')}/$seriesID/fanart-360.jpg';
+    return endpoint.authenticatedUrl(url, instance.apiKey);
   }
 
   @override
   String? posterUrl(BuildContext context) {
-    return context.read<SonarrState>().getPosterURL(this.seriesID);
+    final instance = sourceServiceInstance(context);
+    if (instance == null) return null;
+    final endpoint = LunaServiceEndpoint.fromInstance(instance);
+    final url =
+        '${endpoint.mediaCoverBase('api/v3', 'MediaCover')}/$seriesID/poster-500.jpg';
+    return endpoint.authenticatedUrl(url, instance.apiKey);
+  }
+
+  SonarrAPI? _api(BuildContext context) {
+    final instance = sourceServiceInstance(context);
+    if (instance == null) return null;
+    final endpoint = LunaServiceEndpoint.fromInstance(instance);
+    return SonarrAPI(
+      host: endpoint.base,
+      apiKey: endpoint.isGateway ? '' : instance.apiKey,
+      headers: Map<String, dynamic>.from(instance.headers),
+    );
   }
 }

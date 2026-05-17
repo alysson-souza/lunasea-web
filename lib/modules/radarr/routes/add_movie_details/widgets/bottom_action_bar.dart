@@ -5,9 +5,7 @@ import 'package:lunasea/router/router.dart';
 import 'package:lunasea/router/routes/radarr.dart';
 
 class RadarrAddMovieDetailsActionBar extends StatelessWidget {
-  const RadarrAddMovieDetailsActionBar({
-    Key? key,
-  }) : super(key: key);
+  const RadarrAddMovieDetailsActionBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,27 +33,31 @@ class RadarrAddMovieDetailsActionBar extends StatelessWidget {
           LunaLoadingState.ACTIVE;
       await RadarrAPIHelper()
           .addMovie(
-        context: context,
-        movie: context.read<RadarrAddMovieDetailsState>().movie,
-        rootFolder: context.read<RadarrAddMovieDetailsState>().rootFolder,
-        monitored: context.read<RadarrAddMovieDetailsState>().monitored,
-        qualityProfile:
-            context.read<RadarrAddMovieDetailsState>().qualityProfile,
-        availability: context.read<RadarrAddMovieDetailsState>().availability,
-        tags: context.read<RadarrAddMovieDetailsState>().tags,
-        searchForMovie: RadarrPreferences.ADD_MOVIE_SEARCH_FOR_MISSING.read(),
-      )
+            context: context,
+            movie: context.read<RadarrAddMovieDetailsState>().movie,
+            rootFolder: context.read<RadarrAddMovieDetailsState>().rootFolder,
+            monitored: context.read<RadarrAddMovieDetailsState>().monitored,
+            qualityProfile: context
+                .read<RadarrAddMovieDetailsState>()
+                .qualityProfile,
+            availability: context
+                .read<RadarrAddMovieDetailsState>()
+                .availability,
+            tags: context.read<RadarrAddMovieDetailsState>().tags,
+            searchForMovie: context
+                .read<RadarrAddMovieDetailsState>()
+                .searchForMovie,
+          )
           .then((movie) async {
-        context.read<RadarrState>().fetchMovies();
-        context.read<RadarrAddMovieDetailsState>().movie.id = movie!.id;
-        LunaRouter.router.pop();
-        RadarrRoutes.MOVIE.go(params: {
-          'movie': movie.id!.toString(),
-        });
-      }).catchError((error, stack) {
-        context.read<RadarrAddMovieDetailsState>().state =
-            LunaLoadingState.ERROR;
-      });
+            context.read<RadarrState>().fetchMovies();
+            context.read<RadarrAddMovieDetailsState>().movie.id = movie!.id;
+            LunaRouter.router.pop();
+            RadarrRoutes.MOVIE.go(params: {'movie': movie.id!.toString()});
+          })
+          .catchError((error, stack) {
+            context.read<RadarrAddMovieDetailsState>().state =
+                LunaLoadingState.ERROR;
+          });
       context.read<RadarrAddMovieDetailsState>().state =
           LunaLoadingState.INACTIVE;
     }

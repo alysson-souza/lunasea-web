@@ -202,63 +202,68 @@ class SonarrDialogs {
         value: context.read<SonarrSeriesAddDetailsState>(),
         builder: (context, _) =>
             Selector<SonarrState, Future<List<SonarrTag>>?>(
-          selector: (_, state) => state.tags,
-          builder: (context, future, _) => FutureBuilder(
-            future: future,
-            builder: (context, AsyncSnapshot<List<SonarrTag>> snapshot) {
-              return AlertDialog(
-                actions: <Widget>[
-                  const SonarrTagsAppBarActionAddTag(asDialogButton: true),
-                  LunaDialog.button(
-                    text: 'Close',
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                  ),
-                ],
-                title: LunaDialog.title(text: 'Tags'),
-                content: Builder(
-                  builder: (context) {
-                    if ((snapshot.data?.length ?? 0) == 0)
-                      return LunaDialog.content(
-                        children: [
-                          LunaDialog.textContent(text: 'No Tags Found'),
-                        ],
-                      );
-                    return LunaDialog.content(
-                      children: List.generate(
-                        snapshot.data!.length,
-                        (index) => LunaDialog.checkbox(
-                          title: snapshot.data![index].label!,
-                          value: context
-                              .watch<SonarrSeriesAddDetailsState>()
-                              .tags
-                              .where(
-                                  (tag) => tag.id == snapshot.data![index].id)
-                              .isNotEmpty,
-                          onChanged: (selected) {
-                            List<SonarrTag> _tags = context
-                                .read<SonarrSeriesAddDetailsState>()
-                                .tags;
-                            selected!
-                                ? _tags.add(snapshot.data![index])
-                                : _tags.removeWhere((tag) =>
-                                    tag.id == snapshot.data![index].id);
-                            context.read<SonarrSeriesAddDetailsState>().tags =
-                                _tags;
-                          },
-                        ),
+              selector: (_, state) => state.tags,
+              builder: (context, future, _) => FutureBuilder(
+                future: future,
+                builder: (context, AsyncSnapshot<List<SonarrTag>> snapshot) {
+                  return AlertDialog(
+                    actions: <Widget>[
+                      const SonarrTagsAppBarActionAddTag(asDialogButton: true),
+                      LunaDialog.button(
+                        text: 'Close',
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
                       ),
-                    );
-                  },
-                ),
-                contentPadding: (snapshot.data?.length ?? 0) == 0
-                    ? LunaDialog.textDialogContentPadding()
-                    : LunaDialog.listDialogContentPadding(),
-                shape: LunaUI.shapeBorder,
-              );
-            },
-          ),
-        ),
+                    ],
+                    title: LunaDialog.title(text: 'Tags'),
+                    content: Builder(
+                      builder: (context) {
+                        if ((snapshot.data?.length ?? 0) == 0)
+                          return LunaDialog.content(
+                            children: [
+                              LunaDialog.textContent(text: 'No Tags Found'),
+                            ],
+                          );
+                        return LunaDialog.content(
+                          children: List.generate(
+                            snapshot.data!.length,
+                            (index) => LunaDialog.checkbox(
+                              title: snapshot.data![index].label!,
+                              value: context
+                                  .watch<SonarrSeriesAddDetailsState>()
+                                  .tags
+                                  .where(
+                                    (tag) => tag.id == snapshot.data![index].id,
+                                  )
+                                  .isNotEmpty,
+                              onChanged: (selected) {
+                                List<SonarrTag> _tags = context
+                                    .read<SonarrSeriesAddDetailsState>()
+                                    .tags;
+                                selected!
+                                    ? _tags.add(snapshot.data![index])
+                                    : _tags.removeWhere(
+                                        (tag) =>
+                                            tag.id == snapshot.data![index].id,
+                                      );
+                                context
+                                        .read<SonarrSeriesAddDetailsState>()
+                                        .tags =
+                                    _tags;
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    contentPadding: (snapshot.data?.length ?? 0) == 0
+                        ? LunaDialog.textDialogContentPadding()
+                        : LunaDialog.listDialogContentPadding(),
+                    shape: LunaUI.shapeBorder,
+                  );
+                },
+              ),
+            ),
       ),
     );
   }
@@ -270,60 +275,66 @@ class SonarrDialogs {
         value: context.read<SonarrSeriesEditState>(),
         builder: (context, _) =>
             Selector<SonarrState, Future<List<SonarrTag>>?>(
-          selector: (_, state) => state.tags,
-          builder: (context, future, _) => FutureBuilder(
-            future: future,
-            builder: (context, AsyncSnapshot<List<SonarrTag>> snapshot) {
-              return AlertDialog(
-                actions: <Widget>[
-                  const SonarrTagsAppBarActionAddTag(asDialogButton: true),
-                  LunaDialog.button(
-                    text: 'Close',
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                  ),
-                ],
-                title: LunaDialog.title(text: 'Tags'),
-                content: Builder(
-                  builder: (context) {
-                    if ((snapshot.data?.length ?? 0) == 0)
-                      return LunaDialog.content(
-                        children: [
-                          LunaDialog.textContent(text: 'No Tags Found'),
-                        ],
-                      );
-                    return LunaDialog.content(
-                      children: List.generate(
-                        snapshot.data!.length,
-                        (index) => LunaDialog.checkbox(
-                          title: snapshot.data![index].label!,
-                          value: context
-                              .watch<SonarrSeriesEditState>()
-                              .tags
-                              ?.where((t) => t.id == snapshot.data![index].id)
-                              .isNotEmpty,
-                          onChanged: (selected) {
-                            List<SonarrTag> _tags =
-                                context.read<SonarrSeriesEditState>().tags!;
-                            selected!
-                                ? _tags.add(snapshot.data![index])
-                                : _tags.removeWhere((tag) =>
-                                    tag.id == snapshot.data![index].id);
-                            context.read<SonarrSeriesEditState>().tags = _tags;
-                          },
-                        ),
+              selector: (_, state) => state.tags,
+              builder: (context, future, _) => FutureBuilder(
+                future: future,
+                builder: (context, AsyncSnapshot<List<SonarrTag>> snapshot) {
+                  return AlertDialog(
+                    actions: <Widget>[
+                      const SonarrTagsAppBarActionAddTag(asDialogButton: true),
+                      LunaDialog.button(
+                        text: 'Close',
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
                       ),
-                    );
-                  },
-                ),
-                contentPadding: (snapshot.data?.length ?? 0) == 0
-                    ? LunaDialog.textDialogContentPadding()
-                    : LunaDialog.listDialogContentPadding(),
-                shape: LunaUI.shapeBorder,
-              );
-            },
-          ),
-        ),
+                    ],
+                    title: LunaDialog.title(text: 'Tags'),
+                    content: Builder(
+                      builder: (context) {
+                        if ((snapshot.data?.length ?? 0) == 0)
+                          return LunaDialog.content(
+                            children: [
+                              LunaDialog.textContent(text: 'No Tags Found'),
+                            ],
+                          );
+                        return LunaDialog.content(
+                          children: List.generate(
+                            snapshot.data!.length,
+                            (index) => LunaDialog.checkbox(
+                              title: snapshot.data![index].label!,
+                              value: context
+                                  .watch<SonarrSeriesEditState>()
+                                  .tags
+                                  ?.where(
+                                    (t) => t.id == snapshot.data![index].id,
+                                  )
+                                  .isNotEmpty,
+                              onChanged: (selected) {
+                                List<SonarrTag> _tags = context
+                                    .read<SonarrSeriesEditState>()
+                                    .tags!;
+                                selected!
+                                    ? _tags.add(snapshot.data![index])
+                                    : _tags.removeWhere(
+                                        (tag) =>
+                                            tag.id == snapshot.data![index].id,
+                                      );
+                                context.read<SonarrSeriesEditState>().tags =
+                                    _tags;
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    contentPadding: (snapshot.data?.length ?? 0) == 0
+                        ? LunaDialog.textDialogContentPadding()
+                        : LunaDialog.listDialogContentPadding(),
+                    shape: LunaUI.shapeBorder,
+                  );
+                },
+              ),
+            ),
       ),
     );
   }
@@ -344,10 +355,7 @@ class SonarrDialogs {
       context: context,
       title: 'Add Tag',
       buttons: [
-        LunaDialog.button(
-          text: 'Add',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Add', onPressed: () => _setValues(true)),
       ],
       content: [
         Form(
@@ -368,9 +376,7 @@ class SonarrDialogs {
     return Tuple2(_flag, _textController.text);
   }
 
-  Future<bool> searchAllMissingEpisodes(
-    BuildContext context,
-  ) async {
+  Future<bool> searchAllMissingEpisodes(BuildContext context) async {
     bool _flag = false;
 
     void _setValues(bool flag) {
@@ -388,9 +394,7 @@ class SonarrDialogs {
         ),
       ],
       content: [
-        LunaDialog.textContent(
-          text: 'sonarr.MissingEpisodesHint1'.tr(),
-        ),
+        LunaDialog.textContent(text: 'sonarr.MissingEpisodesHint1'.tr()),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -417,7 +421,8 @@ class SonarrDialogs {
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to delete this tag?'),
+          text: 'Are you sure you want to delete this tag?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -425,7 +430,9 @@ class SonarrDialogs {
   }
 
   Future<Tuple2<bool, SonarrLanguageProfile?>> editLanguageProfiles(
-      BuildContext context, List<SonarrLanguageProfile?> profiles) async {
+    BuildContext context,
+    List<SonarrLanguageProfile?> profiles,
+  ) async {
     bool _flag = false;
     SonarrLanguageProfile? profile;
 
@@ -453,7 +460,9 @@ class SonarrDialogs {
   }
 
   Future<Tuple2<bool, SonarrQualityProfile?>> editQualityProfile(
-      BuildContext context, List<SonarrQualityProfile?> profiles) async {
+    BuildContext context,
+    List<SonarrQualityProfile?> profiles,
+  ) async {
     bool _flag = false;
     SonarrQualityProfile? profile;
 
@@ -481,7 +490,9 @@ class SonarrDialogs {
   }
 
   Future<Tuple2<bool, SonarrRootFolder?>> editRootFolder(
-      BuildContext context, List<SonarrRootFolder> folders) async {
+    BuildContext context,
+    List<SonarrRootFolder> folders,
+  ) async {
     bool _flag = false;
     SonarrRootFolder? _folder;
 
@@ -498,14 +509,16 @@ class SonarrDialogs {
         folders.length,
         (index) => LunaDialog.tile(
           text: folders[index].path!,
-          subtitle: LunaDialog.richText(
-            children: [
-              LunaDialog.bolded(
-                text: folders[index].freeSpace.asBytes(),
-                fontSize: LunaDialog.BUTTON_SIZE,
-              ),
-            ],
-          ) as RichText?,
+          subtitle:
+              LunaDialog.richText(
+                    children: [
+                      LunaDialog.bolded(
+                        text: folders[index].freeSpace.asBytes(),
+                        fontSize: LunaDialog.BUTTON_SIZE,
+                      ),
+                    ],
+                  )
+                  as RichText?,
           icon: Icons.folder_rounded,
           iconColor: LunaColours().byListIndex(index),
           onTap: () => _setValues(true, folders[index]),
@@ -517,7 +530,8 @@ class SonarrDialogs {
   }
 
   Future<Tuple2<bool, SonarrSeriesMonitorType?>> editMonitorType(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     bool _flag = false;
     SonarrSeriesMonitorType? _type;
 
@@ -545,7 +559,8 @@ class SonarrDialogs {
   }
 
   Future<Tuple2<bool, SonarrSeriesType?>> editSeriesType(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     bool _flag = false;
     SonarrSeriesType? _type;
 
@@ -627,23 +642,59 @@ class SonarrDialogs {
       ],
       showCancelButton: false,
       content: [
-        Consumer<SettingsStore>(
-          builder: (context, settings, _) => LunaDialog.checkbox(
-            title: 'sonarr.StartSearchForMissingEpisodes'.tr(),
-            value: settings.sonarrAddSeriesSearchForMissing,
-            onChanged: (value) => context
-                .read<SettingsStore>()
-                .setSonarrAddSeriesSearchForMissing(value!),
-          ),
+        Builder(
+          builder: (context) {
+            final state = context.read<SonarrSeriesAddDetailsState?>();
+            if (state != null) {
+              return Consumer<SonarrSeriesAddDetailsState>(
+                builder: (context, state, _) => LunaDialog.checkbox(
+                  title: 'sonarr.StartSearchForMissingEpisodes'.tr(),
+                  value: state.searchForMissingEpisodes,
+                  onChanged: (value) =>
+                      context
+                              .read<SonarrSeriesAddDetailsState>()
+                              .searchForMissingEpisodes =
+                          value!,
+                ),
+              );
+            }
+            return Consumer<SettingsStore>(
+              builder: (context, settings, _) => LunaDialog.checkbox(
+                title: 'sonarr.StartSearchForMissingEpisodes'.tr(),
+                value: settings.sonarrAddSeriesSearchForMissing,
+                onChanged: (value) => context
+                    .read<SettingsStore>()
+                    .setSonarrAddSeriesSearchForMissing(value!),
+              ),
+            );
+          },
         ),
-        Consumer<SettingsStore>(
-          builder: (context, settings, _) => LunaDialog.checkbox(
-            title: 'sonarr.StartSearchForCutoffUnmetEpisodes'.tr(),
-            value: settings.sonarrAddSeriesSearchForCutoffUnmet,
-            onChanged: (value) => context
-                .read<SettingsStore>()
-                .setSonarrAddSeriesSearchForCutoffUnmet(value!),
-          ),
+        Builder(
+          builder: (context) {
+            final state = context.read<SonarrSeriesAddDetailsState?>();
+            if (state != null) {
+              return Consumer<SonarrSeriesAddDetailsState>(
+                builder: (context, state, _) => LunaDialog.checkbox(
+                  title: 'sonarr.StartSearchForCutoffUnmetEpisodes'.tr(),
+                  value: state.searchForCutoffUnmetEpisodes,
+                  onChanged: (value) =>
+                      context
+                              .read<SonarrSeriesAddDetailsState>()
+                              .searchForCutoffUnmetEpisodes =
+                          value!,
+                ),
+              );
+            }
+            return Consumer<SettingsStore>(
+              builder: (context, settings, _) => LunaDialog.checkbox(
+                title: 'sonarr.StartSearchForCutoffUnmetEpisodes'.tr(),
+                value: settings.sonarrAddSeriesSearchForCutoffUnmet,
+                onChanged: (value) => context
+                    .read<SettingsStore>()
+                    .setSonarrAddSeriesSearchForCutoffUnmet(value!),
+              ),
+            );
+          },
         ),
       ],
       contentPadding: LunaDialog.listDialogContentPadding(),
@@ -691,10 +742,7 @@ class SonarrDialogs {
       context: context,
       title: 'Season Search',
       buttons: [
-        LunaDialog.button(
-          text: 'Search',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Search', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.textContent(
@@ -814,8 +862,7 @@ class SonarrDialogs {
                               child: LunaDialog.richText(
                                 children: [
                                   TextSpan(
-                                    text: messages[index]
-                                        .messages!
+                                    text: messages[index].messages!
                                         .map((s) => '${LunaUI.TEXT_BULLET} $s')
                                         .join('\n'),
                                   ),
@@ -853,14 +900,12 @@ class SonarrDialogs {
       context: context,
       title: 'Queue Size',
       buttons: [
-        LunaDialog.button(
-          text: 'Set',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Set', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Set the amount of items fetched for the queue.'),
+          text: 'Set the amount of items fetched for the queue.',
+        ),
         Form(
           key: _formKey,
           child: LunaDialog.textFormInput(

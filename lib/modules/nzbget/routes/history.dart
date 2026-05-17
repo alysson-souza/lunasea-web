@@ -6,10 +6,8 @@ class NZBGetHistory extends StatefulWidget {
   static const ROUTE_NAME = '/nzbget/history';
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const NZBGetHistory({
-    Key? key,
-    required this.refreshIndicatorKey,
-  }) : super(key: key);
+  const NZBGetHistory({Key? key, required this.refreshIndicatorKey})
+    : super(key: key);
 
   @override
   State<NZBGetHistory> createState() => _State();
@@ -27,7 +25,7 @@ class _State extends State<NZBGetHistory>
   @override
   Future<void> loadCallback() async {
     if (mounted) setState(() => _results = []);
-    final _api = NZBGetAPI.from(context.read<ProfilesStore>().active);
+    final _api = context.read<NZBGetState>().api(context);
     if (mounted)
       setState(() {
         _future = _api.getHistory();
@@ -47,7 +45,8 @@ class _State extends State<NZBGetHistory>
   Widget _appBar() {
     return LunaAppBar.empty(
       child: NZBGetHistorySearchBar(
-          scrollController: NZBGetNavigationBar.scrollControllers[1]),
+        scrollController: NZBGetNavigationBar.scrollControllers[1],
+      ),
       height: LunaTextInputBar.defaultAppBarHeight,
     );
   }
@@ -65,7 +64,8 @@ class _State extends State<NZBGetHistory>
               {
                 if (snapshot.hasError || snapshot.data == null) {
                   return LunaMessage.error(
-                      onTap: widget.refreshIndicatorKey.currentState!.show);
+                    onTap: widget.refreshIndicatorKey.currentState!.show,
+                  );
                 }
                 _results = snapshot.data;
                 return _list;
@@ -90,10 +90,8 @@ class _State extends State<NZBGetHistory>
       );
     }
     return Selector<NZBGetState, Tuple2<String, bool>>(
-      selector: (_, model) => Tuple2(
-        model.historySearchFilter,
-        model.historyHideFailed,
-      ),
+      selector: (_, model) =>
+          Tuple2(model.historySearchFilter, model.historyHideFailed),
       builder: (context, data, _) {
         List<NZBGetHistoryData> _filtered = _filter(data.item1);
         _filtered = data.item2 ? _hide(_filtered) : _filtered;
@@ -113,18 +111,18 @@ class _State extends State<NZBGetHistory>
       controller: NZBGetNavigationBar.scrollControllers[1],
       children: List.generate(
         filtered.length,
-        (index) => NZBGetHistoryTile(
-          data: filtered[index],
-          refresh: loadCallback,
-        ),
+        (index) =>
+            NZBGetHistoryTile(data: filtered[index], refresh: loadCallback),
       ),
     );
   }
 
   List<NZBGetHistoryData> _filter(String filter) => _results!
-      .where((entry) => filter.isEmpty
-          ? true
-          : entry.name.toLowerCase().contains(filter.toLowerCase()))
+      .where(
+        (entry) => filter.isEmpty
+            ? true
+            : entry.name.toLowerCase().contains(filter.toLowerCase()),
+      )
       .toList();
 
   List<NZBGetHistoryData> _hide(List<NZBGetHistoryData> data) {

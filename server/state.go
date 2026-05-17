@@ -43,18 +43,18 @@ type logRecord struct {
 }
 
 type stateResponse struct {
-	Gateway            bool                      `json:"gateway"`
-	Version            string                    `json:"version"`
-	Services           []string                  `json:"services"`
-	ActiveProfile      string                    `json:"activeProfile"`
-	Profiles           []profileRecord           `json:"profiles"`
-	ServiceConnections []serviceResponse         `json:"serviceConnections"`
-	Preferences        map[string]any            `json:"preferences"`
-	ModulePreferences  map[string]map[string]any `json:"modulePreferences"`
-	Indexers           []indexerRecord           `json:"indexers"`
-	ExternalModules    []externalModuleRecord    `json:"externalModules"`
-	DismissedBanners   []string                  `json:"dismissedBanners"`
-	Logs               []logRecord               `json:"logs"`
+	Gateway           bool                      `json:"gateway"`
+	Version           string                    `json:"version"`
+	Services          []string                  `json:"services"`
+	ActiveProfile     string                    `json:"activeProfile"`
+	Profiles          []profileRecord           `json:"profiles"`
+	ServiceInstances  []serviceResponse         `json:"serviceInstances"`
+	Preferences       map[string]any            `json:"preferences"`
+	ModulePreferences map[string]map[string]any `json:"modulePreferences"`
+	Indexers          []indexerRecord           `json:"indexers"`
+	ExternalModules   []externalModuleRecord    `json:"externalModules"`
+	DismissedBanners  []string                  `json:"dismissedBanners"`
+	Logs              []logRecord               `json:"logs"`
 }
 
 type preferenceField struct {
@@ -218,7 +218,7 @@ func (s *store) stateSnapshot(ctx context.Context) (stateResponse, error) {
 	if err != nil {
 		return stateResponse{}, err
 	}
-	services, err := s.listServices(ctx)
+	services, err := s.listServiceInstances(ctx)
 	if err != nil {
 		return stateResponse{}, err
 	}
@@ -256,18 +256,18 @@ func (s *store) stateSnapshot(ctx context.Context) (stateResponse, error) {
 	}
 	active, _ := appPrefs["activeProfile"].(string)
 	return stateResponse{
-		Gateway:            true,
-		Version:            "2",
-		Services:           supportedServices,
-		ActiveProfile:      active,
-		Profiles:           profiles,
-		ServiceConnections: redacted,
-		Preferences:        appPrefs,
-		ModulePreferences:  modulePrefs,
-		Indexers:           indexers,
-		ExternalModules:    externalModules,
-		DismissedBanners:   banners,
-		Logs:               logs,
+		Gateway:           true,
+		Version:           "2",
+		Services:          supportedServices,
+		ActiveProfile:     active,
+		Profiles:          profiles,
+		ServiceInstances:  redacted,
+		Preferences:       appPrefs,
+		ModulePreferences: modulePrefs,
+		Indexers:          indexers,
+		ExternalModules:   externalModules,
+		DismissedBanners:  banners,
+		Logs:              logs,
 	}, nil
 }
 
@@ -433,31 +433,6 @@ func (s *store) deleteProfile(ctx context.Context, id string) error {
 		return errNotFound
 	}
 	return tx.Commit()
-}
-
-func (a *app) putProfileService(w http.ResponseWriter, r *http.Request) {
-	service, profile, ok := serviceRouteValues(w, r)
-	if !ok {
-		return
-	}
-	a.putServiceFor(w, r, service, profile)
-}
-
-func (a *app) deleteProfileService(w http.ResponseWriter, r *http.Request) {
-	service, profile, ok := serviceRouteValues(w, r)
-	if !ok {
-		return
-	}
-	err := a.store.deleteService(r.Context(), service, profile)
-	if errors.Is(err, errNotFound) {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
-		return
-	}
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
-		return
-	}
-	w.WriteHeader(http.StatusNoContent)
 }
 
 func (a *app) patchAppPreferences(w http.ResponseWriter, r *http.Request) {

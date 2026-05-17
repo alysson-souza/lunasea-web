@@ -6,10 +6,8 @@ class NZBGetQueue extends StatefulWidget {
   static const ROUTE_NAME = '/nzbget/queue';
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const NZBGetQueue({
-    Key? key,
-    required this.refreshIndicatorKey,
-  }) : super(key: key);
+  const NZBGetQueue({Key? key, required this.refreshIndicatorKey})
+    : super(key: key);
 
   @override
   State<NZBGetQueue> createState() => _State();
@@ -40,7 +38,8 @@ class _State extends State<NZBGetQueue>
       floatingActionButton: context.watch<NZBGetState>().error
           ? null
           : NZBGetQueueFAB(
-              scrollController: NZBGetNavigationBar.scrollControllers[0]),
+              scrollController: NZBGetNavigationBar.scrollControllers[0],
+            ),
     );
   }
 
@@ -54,32 +53,37 @@ class _State extends State<NZBGetQueue>
       _timer = Timer(const Duration(seconds: 2), _fetchWithoutMessage);
 
   Future<void> _refresh() async => setState(() {
-        _future = _fetch();
-      });
+    _future = _fetch();
+  });
 
   Future<void> _fetchWithoutMessage() async {
-    _fetch().then((_) {
-      if (mounted) setState(() {});
-    }).catchError((error) {
-      _queue = null;
-    });
+    _fetch()
+        .then((_) {
+          if (mounted) setState(() {});
+        })
+        .catchError((error) {
+          _queue = null;
+        });
   }
 
   Future _fetch() async {
-    NZBGetAPI _api = NZBGetAPI.from(context.read<ProfilesStore>().active);
-    return _fetchStatus(_api).then((_) => _fetchQueue(_api)).then((_) {
-      try {
-        if (_timer == null || !_timer!.isActive) _createTimer();
-        _setError(false);
-        return true;
-      } catch (error) {
-        return Future.error(error);
-      }
-    }).catchError((error) {
-      _queue = null;
-      _setError(true);
-      throw error;
-    });
+    NZBGetAPI _api = context.read<NZBGetState>().api(context);
+    return _fetchStatus(_api)
+        .then((_) => _fetchQueue(_api))
+        .then((_) {
+          try {
+            if (_timer == null || !_timer!.isActive) _createTimer();
+            _setError(false);
+            return true;
+          } catch (error) {
+            return Future.error(error);
+          }
+        })
+        .catchError((error) {
+          _queue = null;
+          _setError(true);
+          throw error;
+        });
   }
 
   Future<void> _fetchQueue(NZBGetAPI api) async {
@@ -107,20 +111,20 @@ class _State extends State<NZBGetQueue>
   }
 
   Widget get _body => LunaRefreshIndicator(
-        context: context,
-        key: widget.refreshIndicatorKey,
-        onRefresh: _fetchWithoutMessage,
-        child: FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                context.read<NZBGetState>().error)
-              return LunaMessage.error(onTap: _refresh);
-            if (snapshot.hasData) return _list;
-            return const LunaLoader();
-          },
-        ),
-      );
+    context: context,
+    key: widget.refreshIndicatorKey,
+    onRefresh: _fetchWithoutMessage,
+    child: FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            context.read<NZBGetState>().error)
+          return LunaMessage.error(onTap: _refresh);
+        if (snapshot.hasData) return _list;
+        return const LunaLoader();
+      },
+    ),
+  );
 
   Widget get _list {
     if (_queue == null) {
@@ -148,12 +152,22 @@ class _State extends State<NZBGetQueue>
             _queue!.remove(data);
             _queue!.insert(nIndex, data);
           });
-        await NZBGetAPI.from(context.read<ProfilesStore>().active)
+        await context
+            .read<NZBGetState>()
+            .api(context)
             .moveQueue(data.id, (nIndex - oIndex))
-            .then((_) => showLunaSuccessSnackBar(
-                title: 'Moved Job in Queue', message: data.name))
-            .catchError((error) => showLunaErrorSnackBar(
-                title: 'Failed to Move Job', error: error));
+            .then(
+              (_) => showLunaSuccessSnackBar(
+                title: 'Moved Job in Queue',
+                message: data.name,
+              ),
+            )
+            .catchError(
+              (error) => showLunaErrorSnackBar(
+                title: 'Failed to Move Job',
+                error: error,
+              ),
+            );
       },
       itemCount: _queue!.length,
       itemBuilder: (context, index) => NZBGetQueueTile(

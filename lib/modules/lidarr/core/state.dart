@@ -1,13 +1,31 @@
+import 'package:flutter/widgets.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/lidarr.dart';
 
 class LidarrState extends LunaModuleState {
-  LidarrState() {
+  final LunaServiceInstance? instance;
+
+  LidarrState({this.instance}) {
     reset();
   }
 
   @override
   void reset() {}
+
+  LidarrAPI api(BuildContext context) {
+    final selected = selectedInstance(context);
+    if (selected != null) return LidarrAPI.fromInstance(selected);
+    throw StateError('No enabled Lidarr service instance is configured.');
+  }
+
+  LunaServiceInstance? selectedInstance(BuildContext context) {
+    final selected = instance;
+    if (selected != null) return selected;
+    final profile = context.read<ProfilesStore>().active;
+    final instances = profile.enabledInstances(LunaModule.LIDARR);
+    return instances.isEmpty ? null : instances.first;
+  }
 
   ///Catalogue Sticky Header Content
   String _searchCatalogueFilter = '';

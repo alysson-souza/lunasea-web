@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrRoute extends StatefulWidget {
-  const SonarrRoute({
-    Key? key,
-  }) : super(key: key);
+  final LunaServiceInstance instance;
+
+  const SonarrRoute({super.key, required this.instance});
 
   @override
   State<SonarrRoute> createState() => _State();
@@ -47,8 +48,9 @@ class _State extends State<SonarrRoute> {
   }
 
   PreferredSizeWidget _appBar() {
-    final profiles =
-        context.watch<ProfilesStore>().enabledFor(LunaModule.SONARR);
+    final profiles = context.watch<ProfilesStore>().enabledFor(
+      LunaModule.SONARR,
+    );
     List<Widget>? actions;
     if (context.watch<SonarrState>().enabled) {
       actions = [

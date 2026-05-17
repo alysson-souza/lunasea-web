@@ -1,4 +1,5 @@
 import 'package:lunasea/database/models/profile.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/system/gateway/connection_mode.dart';
 import 'package:lunasea/system/gateway/gateway.dart';
@@ -7,25 +8,46 @@ class LunaServiceEndpoint {
   final LunaModule module;
   final LunaConnectionMode mode;
   final String host;
-  final String gatewayProfile;
+  final String profileId;
+  final String instanceId;
 
   const LunaServiceEndpoint({
     required this.module,
     required this.mode,
     required this.host,
-    required this.gatewayProfile,
-  });
+    String? profileId,
+    String? gatewayProfile,
+    this.instanceId = '',
+  }) : profileId = profileId ?? gatewayProfile ?? LunaProfile.DEFAULT_PROFILE;
+
+  factory LunaServiceEndpoint.fromInstance(LunaServiceInstance instance) {
+    return LunaServiceEndpoint(
+      module: instance.module,
+      mode:
+          instance.connectionMode == LunaConnectionMode.gateway.key &&
+              LunaGateway.available
+          ? LunaConnectionMode.gateway
+          : LunaConnectionMode.direct,
+      host: instance.host,
+      profileId: instance.profileId,
+      instanceId: instance.id,
+    );
+  }
 
   factory LunaServiceEndpoint.fromProfile(
     LunaProfile profile,
     LunaModule module,
   ) {
+    final instances = profile.enabledInstances(module);
+    if (instances.isNotEmpty)
+      return LunaServiceEndpoint.fromInstance(instances.first);
+
     final mode = profile.connectionMode(module);
     return LunaServiceEndpoint(
       module: module,
       mode: mode,
       host: profile.host(module),
-      gatewayProfile: gatewayProfileFor(profile, module),
+      profileId: gatewayProfileFor(profile, module),
     );
   }
 
@@ -33,7 +55,11 @@ class LunaServiceEndpoint {
 
   String get base {
     if (isGateway) {
-      return '/_lunasea/proxy/${module.key}/$gatewayProfile';
+      final profile = sanitizeProfile(profileId);
+      final instance = instanceId.isEmpty
+          ? LunaProfile.DEFAULT_PROFILE
+          : sanitizeProfile(instanceId);
+      return '/_lunasea/proxy/${module.key}/$profile/$instance';
     }
     return normalizeHost(host);
   }

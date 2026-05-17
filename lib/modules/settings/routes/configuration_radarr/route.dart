@@ -4,9 +4,7 @@ import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationRadarrRoute extends StatefulWidget {
-  const ConfigurationRadarrRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRadarrRoute({super.key});
 
   @override
   State<ConfigurationRadarrRoute> createState() => _State();
@@ -37,8 +35,7 @@ class _State extends State<ConfigurationRadarrRoute>
       controller: scrollController,
       children: [
         LunaModule.RADARR.informationBanner(),
-        _enabledToggle(),
-        _connectionDetailsPage(),
+        _serviceInstancesPage(),
         LunaDivider(),
         _defaultOptionsPage(),
         _defaultPagesPage(),
@@ -48,35 +45,18 @@ class _State extends State<ConfigurationRadarrRoute>
     );
   }
 
-  Widget _enabledToggle() {
-    return Consumer<ProfilesStore>(
-      builder: (context, profiles, _) => LunaBlock(
-        title: 'settings.EnableModule'.tr(args: [LunaModule.RADARR.title]),
-        trailing: LunaSwitch(
-          value: context.watch<ProfilesStore>().active.radarrEnabled,
-          onChanged: (value) async {
-            await context.read<ProfilesStore>().updateActive((profile) {
-              profile.radarrEnabled = value;
-            });
-            context.read<RadarrState>().reset();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _connectionDetailsPage() {
+  Widget _serviceInstancesPage() {
     return LunaBlock(
-      title: 'settings.ConnectionDetails'.tr(),
+      title: 'Service Instances',
       body: [
         TextSpan(
-          text: 'settings.ConnectionDetailsDescription'.tr(
-            args: [LunaModule.RADARR.title],
-          ),
+          text: 'Configure ${LunaModule.RADARR.title} service instances.',
         ),
       ],
       trailing: const LunaIconButton.arrow(),
-      onTap: SettingsRoutes.CONFIGURATION_RADARR_CONNECTION_DETAILS.go,
+      onTap: () => SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+        params: {'service': LunaModule.RADARR.key},
+      ),
     );
   }
 
@@ -105,8 +85,9 @@ class _State extends State<ConfigurationRadarrRoute>
         body: [TextSpan(text: 'radarr.DiscoverSuggestionsDescription'.tr())],
         trailing: LunaSwitch(
           value: settings.radarrDiscoverUseSuggestions,
-          onChanged:
-              context.read<SettingsStore>().setRadarrDiscoverUseSuggestions,
+          onChanged: context
+              .read<SettingsStore>()
+              .setRadarrDiscoverUseSuggestions,
         ),
       ),
     );
@@ -127,12 +108,13 @@ class _State extends State<ConfigurationRadarrRoute>
         ],
         trailing: const LunaIconButton(icon: Icons.queue_play_next_rounded),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await RadarrDialogs().setQueuePageSize(context);
+          Tuple2<bool, int> result = await RadarrDialogs().setQueuePageSize(
+            context,
+          );
           if (result.item1) {
             await context.read<SettingsStore>().setRadarrQueuePageSize(
-                  result.item2,
-                );
+              result.item2,
+            );
           }
         },
       ),
