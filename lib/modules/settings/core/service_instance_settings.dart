@@ -24,7 +24,7 @@ class SettingsServiceInstanceSettings {
       profileId: profileId,
       module: module,
       displayName: module.title,
-      enabled: true,
+      enabled: false,
       sortOrder: sortOrder,
       connectionMode: LunaConnectionMode.gateway.key,
     );

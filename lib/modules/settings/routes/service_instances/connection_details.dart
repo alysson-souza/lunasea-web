@@ -108,7 +108,8 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           context,
           prefill: instance.host,
         );
-        if (values.item1) await _save(_copy(instance, host: values.item2));
+        if (!values.item1) return;
+        await _saveAndAutoTest(instance, _copy(instance, host: values.item2));
       },
     );
   }
@@ -130,7 +131,8 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           'settings.ApiKey'.tr(),
           prefill: instance.apiKey,
         );
-        if (values.item1) await _save(_copy(instance, apiKey: values.item2));
+        if (!values.item1) return;
+        await _saveAndAutoTest(instance, _copy(instance, apiKey: values.item2));
       },
     );
   }
@@ -154,7 +156,8 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           'settings.Username'.tr(),
           prefill: instance.username,
         );
-        if (values.item1) await _save(_copy(instance, username: values.item2));
+        if (!values.item1) return;
+        await _saveAndAutoTest(instance, _copy(instance, username: values.item2));
       },
     );
   }
@@ -176,7 +179,8 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           'settings.Password'.tr(),
           prefill: instance.password,
         );
-        if (values.item1) await _save(_copy(instance, password: values.item2));
+        if (!values.item1) return;
+        await _saveAndAutoTest(instance, _copy(instance, password: values.item2));
       },
     );
   }
@@ -210,6 +214,34 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
   Future<void> _save(LunaServiceInstance instance) async {
     final saved = await SettingsServiceInstanceSettings.save(instance);
     _upsert(saved);
+  }
+
+  Future<void> _saveAndAutoTest(
+    LunaServiceInstance original,
+    LunaServiceInstance updated,
+  ) async {
+    final saved = await SettingsServiceInstanceSettings.save(updated);
+    if (!original.enabled) {
+      _upsert(saved);
+      return;
+    }
+    try {
+      await SettingsServiceInstanceSettings.test(saved);
+      _upsert(saved);
+    } catch (error, trace) {
+      LunaLogger().error('Connection Test Failed After Edit', error, trace);
+      final disabled = await SettingsServiceInstanceSettings.save(
+        _copy(saved, enabled: false),
+      );
+      _upsert(disabled);
+      if (mounted) {
+        showLunaErrorSnackBar(
+          title: 'Connection test failed',
+          message:
+              'The instance has been disabled due to invalid connection settings.',
+        );
+      }
+    }
   }
 
   Future<void> _test(LunaServiceInstance instance) async {
@@ -253,6 +285,7 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
     String? apiKey,
     String? username,
     String? password,
+    bool? enabled,
   }) {
     return LunaServiceInstance.fromJson({
       ...instance.toJson(),
@@ -261,6 +294,7 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
       if (apiKey != null) 'apiKey': apiKey,
       if (username != null) 'username': username,
       if (password != null) 'password': password,
+      if (enabled != null) 'enabled': enabled,
     });
   }
 }

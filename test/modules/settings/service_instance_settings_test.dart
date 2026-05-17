@@ -7,7 +7,7 @@ import 'package:lunasea/system/gateway/connection_mode.dart';
 void main() {
   group('SettingsServiceInstanceSettings', () {
     test(
-      'newDraft uses module title, next sort order, and enables instance',
+      'newDraft uses module title, next sort order, and disables instance by default',
       () {
         final draft = SettingsServiceInstanceSettings.newDraft(
           'profile-a',
@@ -32,7 +32,7 @@ void main() {
         expect(draft.profileId, 'profile-a');
         expect(draft.module, LunaModule.RADARR);
         expect(draft.displayName, LunaModule.RADARR.title);
-        expect(draft.enabled, isTrue);
+        expect(draft.enabled, isFalse);
         expect(draft.sortOrder, 5);
         expect(draft.connectionMode, LunaConnectionMode.gateway.key);
       },

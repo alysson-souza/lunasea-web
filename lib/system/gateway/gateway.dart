@@ -67,7 +67,7 @@ class LunaGateway {
     required String profile,
     required LunaModule module,
     String? displayName,
-    bool enabled = true,
+    bool enabled = false,
     int? sortOrder,
     String? connectionMode,
     String? upstreamUrl,

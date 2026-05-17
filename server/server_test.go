@@ -126,8 +126,8 @@ func TestCreateServiceInstanceDefaultsAndReturnsID(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
 		t.Fatal(err)
 	}
-	if !body.Enabled {
-		t.Fatalf("response enabled = false")
+	if body.Enabled {
+		t.Fatalf("response enabled = true, want disabled by default")
 	}
 	if body.InstanceID == "" {
 		t.Fatalf("id = %q", body.InstanceID)
@@ -143,7 +143,7 @@ func TestCreateServiceInstanceDefaultsAndReturnsID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !cfg.Enabled || cfg.DisplayName != serviceRadarr || cfg.ConnectionMode != "gateway" {
+	if cfg.Enabled || cfg.DisplayName != serviceRadarr || cfg.ConnectionMode != "gateway" {
 		t.Fatalf("stored defaults = %#v", cfg)
 	}
 	if cfg.UpstreamURL != "https://new.example/radarr" || cfg.APIKey != "new-key" {

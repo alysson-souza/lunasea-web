@@ -180,7 +180,7 @@ LunaServiceInstance? serviceInstanceFromProfile(
 ) {
   if (instanceId == null) return null;
   for (final instance in profile.instancesFor(module)) {
-    if (instance.id == instanceId && instance.enabled) return instance;
+    if (instance.id == instanceId && instance.enabled && instance.host.isNotEmpty) return instance;
   }
   return null;
 }

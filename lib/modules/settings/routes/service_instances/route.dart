@@ -80,6 +80,20 @@ class _State extends State<ServiceInstancesRoute>
       trailing: LunaSwitch(
         value: instance.enabled,
         onChanged: (value) async {
+          if (value) {
+            try {
+              await SettingsServiceInstanceSettings.test(instance);
+            } catch (error, trace) {
+              LunaLogger().error('Connection Test Failed', error, trace);
+              if (mounted) {
+                showLunaErrorSnackBar(
+                  title: 'settings.ConnectionTestFailed'.tr(),
+                  error: error,
+                );
+              }
+              return;
+            }
+          }
           final saved = await SettingsServiceInstanceSettings.save(
             _copy(instance, enabled: value),
           );

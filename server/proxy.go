@@ -43,7 +43,7 @@ func (h *proxyHandler) serve(w http.ResponseWriter, r *http.Request) {
 	}
 	cfg, err := h.store.getService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service instance was not found")
 		return
 	}
 	if err != nil {
@@ -51,7 +51,7 @@ func (h *proxyHandler) serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !cfg.Enabled || cfg.UpstreamURL == "" {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service instance is disabled or has no upstream URL configured")
 		return
 	}
 	upstream, err := buildUpstreamURL(cfg.UpstreamURL, suffix, r.URL.RawQuery)

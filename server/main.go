@@ -124,7 +124,7 @@ func (a *app) createServiceInstance(w http.ResponseWriter, r *http.Request) {
 		Profile:        profile,
 		InstanceID:     newServiceInstanceID(),
 		DisplayName:    service,
-		Enabled:        true,
+		Enabled:        false,
 		ConnectionMode: "gateway",
 		Headers:        map[string]string{},
 	}
@@ -174,7 +174,7 @@ func (a *app) deleteServiceInstance(w http.ResponseWriter, r *http.Request) {
 	}
 	err := a.store.deleteService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service instance was not found")
 		return
 	}
 	if err != nil {
@@ -191,15 +191,15 @@ func (a *app) testServiceInstance(w http.ResponseWriter, r *http.Request) {
 	}
 	cfg, err := a.store.getService(r.Context(), service, profile, instanceID)
 	if errors.Is(err, errNotFound) {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service instance was not found")
 		return
 	}
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "store_error", err.Error())
 		return
 	}
-	if !cfg.Enabled || cfg.UpstreamURL == "" {
-		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service is not configured")
+	if cfg.UpstreamURL == "" {
+		writeError(w, http.StatusServiceUnavailable, "unconfigured", "Service instance has no upstream URL configured")
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)

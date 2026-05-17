@@ -11,19 +11,29 @@ void main() {
       profileId: 'default',
       module: LunaModule.RADARR,
       enabled: true,
+      host: 'http://radarr:7878',
     );
     final disabled = LunaServiceInstance(
       id: 'seedbox-films',
       profileId: 'default',
       module: LunaModule.RADARR,
     );
+    final noHost = LunaServiceInstance(
+      id: 'cloud-films',
+      profileId: 'default',
+      module: LunaModule.RADARR,
+      enabled: true,
+    );
     final sonarr = LunaServiceInstance(
       id: 'nas-tv',
       profileId: 'default',
       module: LunaModule.SONARR,
       enabled: true,
+      host: 'http://sonarr:8989',
     );
-    final profile = LunaProfile(serviceInstances: [enabled, disabled, sonarr]);
+    final profile = LunaProfile(
+      serviceInstances: [enabled, disabled, noHost, sonarr],
+    );
 
     final selected = serviceInstanceFromProfile(
       'nas-films',
@@ -36,6 +46,10 @@ void main() {
     expect(selected?.enabled, isTrue);
     expect(
       serviceInstanceFromProfile('seedbox-films', profile, LunaModule.RADARR),
+      isNull,
+    );
+    expect(
+      serviceInstanceFromProfile('cloud-films', profile, LunaModule.RADARR),
       isNull,
     );
     expect(
