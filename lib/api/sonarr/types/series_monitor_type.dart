@@ -1,4 +1,4 @@
-part of sonarr_types;
+part of '../types.dart';
 
 enum SonarrSeriesMonitorType {
   ALL,
@@ -53,8 +53,6 @@ extension SonarrSeriesMonitorTypeExtension on SonarrSeriesMonitorType {
         return 'latestSeason';
       case SonarrSeriesMonitorType.NONE:
         return 'none';
-      default:
-        return null;
     }
   }
 }

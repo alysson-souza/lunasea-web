@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to the filesystem from Radarr.
 ///
@@ -21,13 +21,12 @@ class RadarrCommandHandlerFileSystem {
     String? path,
     bool? allowFoldersWithoutTrailingSlashes,
     bool? includeFiles,
-  }) async =>
-      _commandGetFileSystem(
-        _client,
-        path: path,
-        allowFoldersWithoutTrailingSlashes: allowFoldersWithoutTrailingSlashes,
-        includeFiles: includeFiles,
-      );
+  }) async => _commandGetFileSystem(
+    _client,
+    path: path,
+    allowFoldersWithoutTrailingSlashes: allowFoldersWithoutTrailingSlashes,
+    includeFiles: includeFiles,
+  );
 
   /// Handler for `diskspace`.
   ///

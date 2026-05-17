@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to movies within Radarr.
 ///
@@ -32,12 +32,7 @@ class RadarrCommandHandlerMovie {
   Future<RadarrMovie> update({
     required RadarrMovie movie,
     bool moveFiles = false,
-  }) async =>
-      _commandUpdateMovie(
-        _client,
-        movie: movie,
-        moveFiles: moveFiles,
-      );
+  }) async => _commandUpdateMovie(_client, movie: movie, moveFiles: moveFiles);
 
   /// Handler for [movie/{id}](https://radarr.video/docs/api/#/Movie/deleteMovie).
   ///
@@ -53,11 +48,12 @@ class RadarrCommandHandlerMovie {
     required int movieId,
     bool addImportExclusion = false,
     bool deleteFiles = false,
-  }) =>
-      _commandDeleteMovie(_client,
-          movieId: movieId,
-          addImportExclusion: addImportExclusion,
-          deleteFiles: deleteFiles);
+  }) => _commandDeleteMovie(
+    _client,
+    movieId: movieId,
+    addImportExclusion: addImportExclusion,
+    deleteFiles: deleteFiles,
+  );
 
   /// Handler for [movie](https://radarr.video/docs/api/#/Movie/post_movie).
   ///
@@ -81,15 +77,14 @@ class RadarrCommandHandlerMovie {
     required RadarrQualityProfile qualityProfile,
     List<RadarrTag>? tags,
     bool searchForMovie = false,
-  }) async =>
-      _commandAddMovie(
-        _client,
-        movie: movie,
-        rootFolder: rootFolder,
-        monitored: monitored,
-        minimumAvailability: minimumAvailability,
-        qualityProfile: qualityProfile,
-        tags: tags,
-        searchForMovie: searchForMovie,
-      );
+  }) async => _commandAddMovie(
+    _client,
+    movie: movie,
+    rootFolder: rootFolder,
+    monitored: monitored,
+    minimumAvailability: minimumAvailability,
+    qualityProfile: qualityProfile,
+    tags: tags,
+    searchForMovie: searchForMovie,
+  );
 }

@@ -5,10 +5,7 @@ import 'package:lunasea/modules/sonarr.dart';
 class SonarrSeriesDetailsSeasonsPage extends StatefulWidget {
   final SonarrSeries? series;
 
-  const SonarrSeriesDetailsSeasonsPage({
-    Key? key,
-    required this.series,
-  }) : super(key: key);
+  const SonarrSeriesDetailsSeasonsPage({super.key, required this.series});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -31,9 +28,8 @@ class _State extends State<SonarrSeriesDetailsSeasonsPage> {
     return LunaRefreshIndicator(
       key: _refreshKey,
       context: context,
-      onRefresh: () async => context.read<SonarrState>().fetchSeries(
-            widget.series!.id!,
-          ),
+      onRefresh: () async =>
+          context.read<SonarrState>().fetchSeries(widget.series!.id!),
       child: _list(),
     );
   }

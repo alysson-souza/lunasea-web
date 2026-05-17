@@ -4,9 +4,7 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/router.dart';
 
 class SonarrEditSeriesActionBar extends StatelessWidget {
-  const SonarrEditSeriesActionBar({
-    Key? key,
-  }) : super(key: key);
+  const SonarrEditSeriesActionBar({super.key});
 
   @override
   Widget build(BuildContext context) {

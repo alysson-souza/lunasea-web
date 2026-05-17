@@ -1,7 +1,8 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<List<RadarrQualityDefinition>> _commandGetQualityDefinitions(
-    Dio client) async {
+  Dio client,
+) async {
   Response response = await client.get('qualitydefinition');
   return (response.data as List)
       .map((profile) => RadarrQualityDefinition.fromJson(profile))

@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all user groups used in Tautulli.
-enum TautulliUserGroup {
-  ADMIN,
-  GUEST,
-  NULL,
-}
+enum TautulliUserGroup { ADMIN, GUEST, NULL }
 
 /// Extension on [TautulliUserGroup] to implement extended functionality.
 extension TautulliUserGroupExtension on TautulliUserGroup {

@@ -8,10 +8,10 @@ class TautulliSearchResultTile extends StatefulWidget {
   final TautulliMediaType mediaType;
 
   const TautulliSearchResultTile({
-    Key? key,
+    super.key,
     required this.result,
     required this.mediaType,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -27,13 +27,14 @@ class _State extends State<TautulliSearchResultTile> {
         TextSpan(text: widget.result.grandparentTitle),
         _library(),
       ],
-      posterUrl: context
-          .watch<TautulliState>()
-          .getImageURLFromPath(widget.result.thumb),
+      posterUrl: context.watch<TautulliState>().getImageURLFromPath(
+        widget.result.thumb,
+      ),
       posterHeaders: context.watch<TautulliState>().headers,
       backgroundHeaders: context.watch<TautulliState>().headers,
-      backgroundUrl:
-          context.watch<TautulliState>().getImageURLFromPath(widget.result.art),
+      backgroundUrl: context.watch<TautulliState>().getImageURLFromPath(
+        widget.result.art,
+      ),
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       onTap: _onTap,
     );
@@ -75,9 +76,11 @@ class _State extends State<TautulliSearchResultTile> {
   }
 
   void _onTap() {
-    TautulliRoutes.MEDIA_DETAILS.go(params: {
-      'rating_key': widget.result.ratingKey.toString(),
-      'media_type': widget.mediaType.value,
-    });
+    TautulliRoutes.MEDIA_DETAILS.go(
+      params: {
+        'rating_key': widget.result.ratingKey.toString(),
+        'media_type': widget.mediaType.value,
+      },
+    );
   }
 }

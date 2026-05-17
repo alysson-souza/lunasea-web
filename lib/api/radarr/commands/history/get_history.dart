@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrHistory> _commandGetHistory(
   Dio client, {
@@ -7,11 +7,14 @@ Future<RadarrHistory> _commandGetHistory(
   RadarrSortDirection? sortDirection,
   RadarrHistorySortKey? sortKey,
 }) async {
-  Response response = await client.get('history', queryParameters: {
-    if (page != null) 'page': page,
-    if (pageSize != null) 'pageSize': pageSize,
-    if (sortDirection != null) 'sortDirection': sortDirection.value,
-    if (sortKey != null) 'sortKey': sortKey.value,
-  });
+  Response response = await client.get(
+    'history',
+    queryParameters: {
+      if (page != null) 'page': page,
+      if (pageSize != null) 'pageSize': pageSize,
+      if (sortDirection != null) 'sortDirection': sortDirection.value,
+      if (sortKey != null) 'sortKey': sortKey.value,
+    },
+  );
   return RadarrHistory.fromJson(response.data);
 }

@@ -8,8 +8,11 @@ class ArtistEditRoute extends StatefulWidget {
   final LidarrCatalogueData? data;
   final int? artistId;
 
-  const ArtistEditRoute({Key? key, required this.data, required this.artistId})
-    : super(key: key);
+  const ArtistEditRoute({
+    super.key,
+    required this.data,
+    required this.artistId,
+  });
 
   @override
   State<ArtistEditRoute> createState() => _State();
@@ -117,7 +120,6 @@ class _State extends State<ArtistEditRoute> with LunaScrollControllerMixin {
         case ConnectionState.none:
         case ConnectionState.waiting:
         case ConnectionState.active:
-        default:
           return const LunaLoader();
       }
     },

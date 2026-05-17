@@ -5,9 +5,7 @@ import 'package:lunasea/modules/dashboard/core/dialogs.dart';
 import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/navigation_bar.dart';
 
 class ConfigurationDashboardDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationDashboardDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationDashboardDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationDashboardDefaultPagesRoute> createState() => _State();
@@ -34,12 +32,7 @@ class _State extends State<ConfigurationDashboardDefaultPagesRoute>
   }
 
   Widget _body() {
-    return LunaListView(
-      controller: scrollController,
-      children: [
-        _homePage(),
-      ],
-    );
+    return LunaListView(controller: scrollController, children: [_homePage()]);
   }
 
   Widget _homePage() {
@@ -48,7 +41,8 @@ class _State extends State<ConfigurationDashboardDefaultPagesRoute>
         title: 'lunasea.Home'.tr(),
         body: [
           TextSpan(
-              text: HomeNavigationBar.titles[settings.dashboardDefaultPage]),
+            text: HomeNavigationBar.titles[settings.dashboardDefaultPage],
+          ),
         ],
         trailing: LunaIconButton(
           icon: HomeNavigationBar.icons[settings.dashboardDefaultPage],
@@ -56,9 +50,9 @@ class _State extends State<ConfigurationDashboardDefaultPagesRoute>
         onTap: () async {
           final values = await DashboardDialogs().defaultPage(context);
           if (values.item1) {
-            await context
-                .read<SettingsStore>()
-                .setDashboardDefaultPage(values.item2);
+            await context.read<SettingsStore>().setDashboardDefaultPage(
+              values.item2,
+            );
           }
         },
       ),

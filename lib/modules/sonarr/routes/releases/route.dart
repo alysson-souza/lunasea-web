@@ -9,11 +9,11 @@ class ReleasesRoute extends StatefulWidget {
   final int? seasonNumber;
 
   const ReleasesRoute({
-    Key? key,
+    super.key,
     this.episodeId,
     this.seriesId,
     this.seasonNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -46,9 +46,7 @@ class _State extends State<ReleasesRoute> with LunaScrollControllerMixin {
       title: 'sonarr.Releases'.tr(),
       scrollControllers: [scrollController],
       bottom: SonarrReleasesSearchBar(scrollController: scrollController),
-      actions: const [
-        DownloadClientButton(),
-      ],
+      actions: const [DownloadClientButton()],
     );
   }
 
@@ -115,15 +113,13 @@ class _State extends State<ReleasesRoute> with LunaScrollControllerMixin {
     SonarrReleasesState state,
   ) {
     if (releases.isEmpty) return releases;
-    List<SonarrRelease> filtered = releases.where(
-      (release) {
-        String _query = state.searchQuery;
-        if (_query.isNotEmpty) {
-          return release.title!.toLowerCase().contains(_query.toLowerCase());
-        }
-        return true;
-      },
-    ).toList();
+    List<SonarrRelease> filtered = releases.where((release) {
+      String _query = state.searchQuery;
+      if (_query.isNotEmpty) {
+        return release.title!.toLowerCase().contains(_query.toLowerCase());
+      }
+      return true;
+    }).toList();
     filtered = state.filterType.filter(filtered);
     filtered = state.sortType.sort(filtered, state.sortAscending);
     return filtered;

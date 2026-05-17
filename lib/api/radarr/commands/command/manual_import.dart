@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrCommand> _commandManualImport(
   Dio client, {
@@ -9,10 +9,13 @@ Future<RadarrCommand> _commandManualImport(
     files.isNotEmpty,
     'Files must contain at least one RadarrManualImportFile',
   );
-  Response response = await client.post('command', data: {
-    'name': 'ManualImport',
-    'files': files.map((file) => file.toJson()).toList(),
-    'importMode': importMode.value,
-  });
+  Response response = await client.post(
+    'command',
+    data: {
+      'name': 'ManualImport',
+      'files': files.map((file) => file.toJson()).toList(),
+      'importMode': importMode.value,
+    },
+  );
   return RadarrCommand.fromJson(response.data);
 }

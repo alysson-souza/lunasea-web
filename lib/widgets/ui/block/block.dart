@@ -42,7 +42,7 @@ class LunaBlock extends StatelessWidget {
   final Map? backgroundHeaders;
 
   const LunaBlock({
-    Key? key,
+    super.key,
     this.skeletonEnabled = false,
     this.skeletonPoster = true,
     this.skeletonSubtitles = 2,
@@ -66,7 +66,7 @@ class LunaBlock extends StatelessWidget {
     this.onLongPress,
     this.leading,
     this.trailing,
-  }) : super(key: key);
+  });
 
   static double calculateItemExtent(
     int subtitleLines, {
@@ -144,10 +144,7 @@ class LunaBlock extends StatelessWidget {
             Opacity(
               opacity: disabled! ? LunaUI.OPACITY_DISABLED : 1.0,
               child: Row(
-                children: [
-                  _poster(context, _height),
-                  _tile(context, _height),
-                ],
+                children: [_poster(context, _height), _tile(context, _height)],
               ),
             ),
           ],
@@ -186,10 +183,8 @@ class LunaBlock extends StatelessWidget {
           url: backgroundUrl!,
           headers: backgroundHeaders?.cast<String, String>(),
         ).imageProvider,
-        imageErrorBuilder: (context, error, stack) => SizedBox(
-          height: _height,
-          width: MediaQuery.of(context).size.width,
-        ),
+        imageErrorBuilder: (context, error, stack) =>
+            SizedBox(height: _height, width: MediaQuery.of(context).size.width),
       ),
     );
   }
@@ -375,10 +370,7 @@ class LunaBlock extends StatelessWidget {
     }
 
     if (bottom != null) {
-      _children.add(SizedBox(
-        height: bottomHeight,
-        child: bottom,
-      ));
+      _children.add(SizedBox(height: bottomHeight, child: bottom));
     }
 
     return _children.isEmpty ? null : _wrapper(_children);

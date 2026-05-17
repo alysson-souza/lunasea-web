@@ -9,10 +9,7 @@ import 'package:lunasea/router/routes/tautulli.dart';
 class TautulliLibrariesLibraryTile extends StatelessWidget {
   final TautulliTableLibrary library;
 
-  const TautulliLibrariesLibraryTile({
-    Key? key,
-    required this.library,
-  }) : super(key: key);
+  const TautulliLibrariesLibraryTile({super.key, required this.library});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +33,13 @@ class TautulliLibrariesLibraryTile extends StatelessWidget {
           text: library.lastAccessed?.asAge() ?? 'Unknown',
         ),
       ],
-      backgroundUrl:
-          context.watch<TautulliState>().getImageURLFromPath(library.thumb),
+      backgroundUrl: context.watch<TautulliState>().getImageURLFromPath(
+        library.thumb,
+      ),
       backgroundHeaders: context.watch<TautulliState>().headers,
-      onTap: () => TautulliRoutes.LIBRARIES_DETAILS.go(params: {
-        'section': library.sectionId.toString(),
-      }),
+      onTap: () => TautulliRoutes.LIBRARIES_DETAILS.go(
+        params: {'section': library.sectionId.toString()},
+      ),
     );
   }
 }

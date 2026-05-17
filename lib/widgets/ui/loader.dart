@@ -8,27 +8,24 @@ class LunaLoader extends StatelessWidget {
   final bool useSafeArea;
 
   const LunaLoader({
-    Key? key,
+    super.key,
     this.size = 25.0,
     this.color,
     this.useSafeArea = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SafeArea(
-        left: useSafeArea,
-        right: useSafeArea,
-        top: useSafeArea,
-        bottom: useSafeArea,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SpinKitThreeBounce(
-              color: color ?? LunaColours.accent,
-              size: size,
-            ),
-          ],
-        ),
-      );
+    left: useSafeArea,
+    right: useSafeArea,
+    top: useSafeArea,
+    bottom: useSafeArea,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        SpinKitThreeBounce(color: color ?? LunaColours.accent, size: size),
+      ],
+    ),
+  );
 }

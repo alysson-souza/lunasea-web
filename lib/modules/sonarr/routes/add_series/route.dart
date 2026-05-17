@@ -5,10 +5,7 @@ import 'package:lunasea/modules/sonarr.dart';
 class AddSeriesRoute extends StatefulWidget {
   final String query;
 
-  const AddSeriesRoute({
-    Key? key,
-    required this.query,
-  }) : super(key: key);
+  const AddSeriesRoute({super.key, required this.query});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -20,10 +17,7 @@ class _State extends State<AddSeriesRoute> with LunaScrollControllerMixin {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => SonarrAddSeriesState(
-        context,
-        widget.query,
-      ),
+      create: (context) => SonarrAddSeriesState(context, widget.query),
       builder: (context, _) => LunaScaffold(
         scaffoldKey: _scaffoldKey,
         appBar: _appBar() as PreferredSizeWidget?,

@@ -1,12 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all API lookup services available in Tautulli.
-enum TautulliAPILookupService {
-  THEMOVIEDB,
-  TVMAZE,
-  MUSICBRAINZ,
-  NULL,
-}
+enum TautulliAPILookupService { THEMOVIEDB, TVMAZE, MUSICBRAINZ, NULL }
 
 /// Extension on [TautulliAPILookupService] to implement extended functionality.
 extension TautulliAPILookupServiceExtension on TautulliAPILookupService {

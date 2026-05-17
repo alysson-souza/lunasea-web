@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 
 class ConfigurationDrawerRoute extends StatefulWidget {
-  const ConfigurationDrawerRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationDrawerRoute({super.key});
 
   @override
   State<ConfigurationDrawerRoute> createState() => _State();
@@ -57,17 +55,17 @@ class _State extends State<ConfigurationDrawerRoute>
           LunaDivider(),
           Expanded(
             child: LunaReorderableListViewBuilder(
-              padding: MediaQuery.of(context).padding.copyWith(top: 0).add(
+              padding: MediaQuery.of(context).padding
+                  .copyWith(top: 0)
+                  .add(
                     EdgeInsets.only(
                       bottom: LunaUI.MARGIN_H_DEFAULT_V_HALF.bottom,
                     ),
                   ),
               controller: scrollController,
               itemCount: _modules!.length,
-              itemBuilder: (context, index) => _reorderableModuleTile(
-                index,
-                settings.drawerAutomaticManage,
-              ),
+              itemBuilder: (context, index) =>
+                  _reorderableModuleTile(index, settings.drawerAutomaticManage),
               onReorder: (oIndex, nIndex) {
                 if (oIndex > _modules!.length) oIndex = _modules!.length;
                 if (oIndex < nIndex) nIndex--;
@@ -90,8 +88,9 @@ class _State extends State<ConfigurationDrawerRoute>
       title: _modules![index].title,
       body: [TextSpan(text: _modules![index].description)],
       leading: LunaIconButton(icon: _modules![index].icon),
-      trailing:
-          automaticManage ? null : LunaReorderableListViewDragger(index: index),
+      trailing: automaticManage
+          ? null
+          : LunaReorderableListViewDragger(index: index),
     );
   }
 }

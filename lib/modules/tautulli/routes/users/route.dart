@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliUsersRoute extends StatefulWidget {
-  const TautulliUsersRoute({
-    Key? key,
-  }) : super(key: key);
+  const TautulliUsersRoute({super.key});
 
   @override
   State<TautulliUsersRoute> createState() => _State();
@@ -75,9 +73,8 @@ class _State extends State<TautulliUsersRoute>
     return LunaListViewBuilder(
       controller: TautulliNavigationBar.scrollControllers[1],
       itemCount: users!.users!.length,
-      itemBuilder: (context, index) => TautulliUserTile(
-        user: users.users![index],
-      ),
+      itemBuilder: (context, index) =>
+          TautulliUserTile(user: users.users![index]),
     );
   }
 }

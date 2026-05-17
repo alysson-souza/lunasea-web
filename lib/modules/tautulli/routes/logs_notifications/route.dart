@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class LogsNotificationsRoute extends StatefulWidget {
-  const LogsNotificationsRoute({
-    Key? key,
-  }) : super(key: key);
+  const LogsNotificationsRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -42,8 +40,9 @@ class _State extends State<LogsNotificationsRoute>
       onRefresh: () async =>
           context.read<TautulliLogsNotificationsState>().fetchLogs(context),
       child: FutureBuilder(
-        future: context
-            .select((TautulliLogsNotificationsState state) => state.logs),
+        future: context.select(
+          (TautulliLogsNotificationsState state) => state.logs,
+        ),
         builder: (context, AsyncSnapshot<TautulliNotificationLogs> snapshot) {
           if (snapshot.hasError) {
             if (snapshot.connectionState != ConnectionState.waiting)

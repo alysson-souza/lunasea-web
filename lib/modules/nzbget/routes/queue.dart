@@ -6,8 +6,7 @@ class NZBGetQueue extends StatefulWidget {
   static const ROUTE_NAME = '/nzbget/queue';
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const NZBGetQueue({Key? key, required this.refreshIndicatorKey})
-    : super(key: key);
+  const NZBGetQueue({super.key, required this.refreshIndicatorKey});
 
   @override
   State<NZBGetQueue> createState() => _State();

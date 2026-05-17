@@ -1,4 +1,4 @@
-part of sonarr_types;
+part of '../types.dart';
 
 enum SonarrTrackedDownloadState {
   DOWNLOADING,
@@ -33,8 +33,6 @@ extension SonarrTrackedDownloadStateExtension on SonarrTrackedDownloadState {
         return 'importing';
       case SonarrTrackedDownloadState.FAILED_PENDING:
         return 'failedPending';
-      default:
-        return null;
     }
   }
 }

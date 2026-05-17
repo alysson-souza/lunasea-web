@@ -10,7 +10,7 @@ import 'package:lunasea/router/router.dart';
 class LidarrReleasesTile extends StatefulWidget {
   final LidarrReleaseData release;
 
-  const LidarrReleasesTile({Key? key, required this.release}) : super(key: key);
+  const LidarrReleasesTile({super.key, required this.release});
 
   @override
   State<StatefulWidget> createState() => _State();

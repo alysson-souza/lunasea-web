@@ -9,10 +9,7 @@ import 'package:lunasea/modules/tautulli.dart';
 class SettingsHeaderRoute extends StatefulWidget {
   final LunaModule module;
 
-  const SettingsHeaderRoute({
-    Key? key,
-    required this.module,
-  }) : super(key: key);
+  const SettingsHeaderRoute({super.key, required this.module});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -35,15 +32,16 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
     return LunaBottomActionBar(
       actions: [
         LunaButton.text(
-            text: 'settings.AddHeader'.tr(),
-            icon: Icons.add_rounded,
-            onTap: () async {
-              await HeaderUtility().addHeader(
-                context,
-                headers: _headers(context.read<ProfilesStore>()),
-              );
-              _resetState();
-            }),
+          text: 'settings.AddHeader'.tr(),
+          icon: Icons.add_rounded,
+          onTap: () async {
+            await HeaderUtility().addHeader(
+              context,
+              headers: _headers(context.read<ProfilesStore>()),
+            );
+            _resetState();
+          },
+        ),
       ],
     );
   }
@@ -83,16 +81,17 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
       title: key,
       body: [TextSpan(text: value)],
       trailing: LunaIconButton(
-          icon: LunaIcons.DELETE,
-          color: LunaColours.red,
-          onPressed: () async {
-            await HeaderUtility().deleteHeader(
-              context,
-              key: key,
-              headers: _headers(store),
-            );
-            _resetState();
-          }),
+        icon: LunaIcons.DELETE,
+        color: LunaColours.red,
+        onPressed: () async {
+          await HeaderUtility().deleteHeader(
+            context,
+            key: key,
+            headers: _headers(store),
+          );
+          _resetState();
+        },
+      ),
     );
   }
 

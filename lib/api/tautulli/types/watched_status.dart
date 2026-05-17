@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all watched statuses in Tautulli.
-enum TautulliWatchedStatus {
-  UNWATCHED,
-  PARTIALLY_WATCHED,
-  WATCHED,
-}
+enum TautulliWatchedStatus { UNWATCHED, PARTIALLY_WATCHED, WATCHED }
 
 /// Extension on [TautulliWatchedStatus] to implement extended functionality.
 extension TautulliWatchedStatusExtension on TautulliWatchedStatus {

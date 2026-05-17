@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class SystemStatusRoute extends StatefulWidget {
-  const SystemStatusRoute({
-    Key? key,
-  }) : super(key: key);
+  const SystemStatusRoute({super.key});
 
   @override
   State<SystemStatusRoute> createState() => _State();
@@ -28,8 +26,9 @@ class _State extends State<SystemStatusRoute> {
     return LunaScaffold(
       scaffoldKey: _scaffoldKey,
       appBar: _appBar(),
-      bottomNavigationBar:
-          context.watch<RadarrState>().enabled ? _bottomNavigationBar() : null,
+      bottomNavigationBar: context.watch<RadarrState>().enabled
+          ? _bottomNavigationBar()
+          : null,
       body: _body(),
     );
   }

@@ -8,10 +8,10 @@ class SonarrSeasonHeader extends StatelessWidget {
   final int? seasonNumber;
 
   const SonarrSeasonHeader({
-    Key? key,
+    super.key,
     required this.seriesId,
     required this.seasonNumber,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +19,17 @@ class SonarrSeasonHeader extends StatelessWidget {
       child: LunaHeader(
         text: seasonNumber == 0
             ? 'sonarr.Specials'.tr()
-            : 'sonarr.SeasonNumber'.tr(
-                args: [seasonNumber.toString()],
-              ),
+            : 'sonarr.SeasonNumber'.tr(args: [seasonNumber.toString()]),
       ),
       onTap: () => context
           .read<SonarrSeasonDetailsState>()
           .toggleSeasonEpisodes(seasonNumber!),
       onLongPress: () async {
         HapticFeedback.heavyImpact();
-        Tuple2<bool, SonarrSeasonSettingsType?> result =
-            await SonarrDialogs().seasonSettings(context, seasonNumber);
+        Tuple2<bool, SonarrSeasonSettingsType?> result = await SonarrDialogs()
+            .seasonSettings(context, seasonNumber);
         if (result.item1) {
-          result.item2!.execute(
-            context,
-            seriesId,
-            seasonNumber,
-          );
+          result.item2!.execute(context, seriesId, seasonNumber);
         }
       },
     );

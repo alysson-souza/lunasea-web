@@ -4,7 +4,6 @@ import 'package:lunasea/modules/radarr/core/types/filter_movies.dart';
 import 'package:lunasea/modules/radarr/core/types/filter_releases.dart';
 import 'package:lunasea/modules/radarr/core/types/sorting_movies.dart';
 import 'package:lunasea/modules/radarr/core/types/sorting_releases.dart';
-import 'package:lunasea/vendor.dart';
 
 enum RadarrPreferences<T> with BackendPreference<T> {
   NAVIGATION_INDEX<int>(0),

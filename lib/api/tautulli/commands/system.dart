@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls for any system calls within Tautulli.
 ///
@@ -36,9 +36,12 @@ class TautulliCommandHandlerSystem {
     int? ratingKey,
     TautulliImageHostService? service,
     bool? deleteAll,
-  }) async =>
-      _commandDeleteHostedImages(_client,
-          ratingKey: ratingKey, service: service, deleteAll: deleteAll);
+  }) async => _commandDeleteHostedImages(
+    _client,
+    ratingKey: ratingKey,
+    service: service,
+    deleteAll: deleteAll,
+  );
 
   /// Handler for [delete_image_cache](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_image_cache).
   ///
@@ -62,9 +65,12 @@ class TautulliCommandHandlerSystem {
     int? ratingKey,
     TautulliAPILookupService? service,
     bool? deleteAll,
-  }) async =>
-      _commandDeleteLookupInfo(_client,
-          ratingKey: ratingKey, service: service, deleteAll: deleteAll);
+  }) async => _commandDeleteLookupInfo(
+    _client,
+    ratingKey: ratingKey,
+    service: service,
+    deleteAll: deleteAll,
+  );
 
   /// Handler for [delete_media_info_cache](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_media_info_cache).
   ///
@@ -72,9 +78,7 @@ class TautulliCommandHandlerSystem {
   ///
   /// Required Parameters:
   /// - `sectionId`: The ID of the Plex library section
-  Future<void> deleteMediaInfoCache({
-    required int sectionId,
-  }) async =>
+  Future<void> deleteMediaInfoCache({required int sectionId}) async =>
       _commandDeleteMediaInfoCache(_client, sectionId: sectionId);
 
   /// Handler for [delete_newsletter_log](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_newsletter_log).
@@ -114,9 +118,7 @@ class TautulliCommandHandlerSystem {
   ///
   /// Optional Parameters:
   /// - `key`: The name/key of a config section to return
-  Future<Map<String, dynamic>?> getSettings({
-    String? key,
-  }) async =>
+  Future<Map<String, dynamic>?> getSettings({String? key}) async =>
       _commandGetSettings(_client, key: key);
 
   /// Handler for [restart](https://github.com/Tautulli/Tautulli/blob/master/API.md#restart).

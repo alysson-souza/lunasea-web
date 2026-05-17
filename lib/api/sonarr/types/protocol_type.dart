@@ -1,9 +1,6 @@
-part of sonarr_types;
+part of '../types.dart';
 
-enum SonarrProtocol {
-  USENET,
-  TORRENT,
-}
+enum SonarrProtocol { USENET, TORRENT }
 
 extension SonarrProtocolExtension on SonarrProtocol {
   SonarrProtocol? from(String? type) {
@@ -23,8 +20,6 @@ extension SonarrProtocolExtension on SonarrProtocol {
         return 'usenet';
       case SonarrProtocol.TORRENT:
         return 'torrent';
-      default:
-        return null;
     }
   }
 
@@ -34,8 +29,6 @@ extension SonarrProtocolExtension on SonarrProtocol {
         return 'Usenet';
       case SonarrProtocol.TORRENT:
         return 'Torrent';
-      default:
-        return null;
     }
   }
 }

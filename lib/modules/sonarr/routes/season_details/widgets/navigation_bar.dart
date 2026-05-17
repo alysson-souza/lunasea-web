@@ -14,18 +14,20 @@ class SonarrSeasonDetailsNavigationBar extends StatefulWidget {
     'sonarr.History'.tr(),
   ];
 
-  static List<ScrollController> scrollControllers =
-      List.generate(icons.length, (_) => ScrollController());
+  static List<ScrollController> scrollControllers = List.generate(
+    icons.length,
+    (_) => ScrollController(),
+  );
   final PageController? pageController;
   final int seriesId;
   final int seasonNumber;
 
   const SonarrSeasonDetailsNavigationBar({
-    Key? key,
+    super.key,
     required this.pageController,
     required this.seriesId,
     required this.seasonNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -74,9 +76,11 @@ class _State extends State<SonarrSeasonDetailsNavigationBar> {
   }
 
   Future<void> _manual() async {
-    return SonarrRoutes.RELEASES.go(queryParams: {
-      'series': widget.seriesId.toString(),
-      'season': widget.seasonNumber.toString(),
-    });
+    return SonarrRoutes.RELEASES.go(
+      queryParams: {
+        'series': widget.seriesId.toString(),
+        'season': widget.seasonNumber.toString(),
+      },
+    );
   }
 }

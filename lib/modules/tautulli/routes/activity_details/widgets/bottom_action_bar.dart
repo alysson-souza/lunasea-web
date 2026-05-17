@@ -7,9 +7,9 @@ class TautulliActivityDetailsBottomActionBar extends StatelessWidget {
   final int sessionKey;
 
   const TautulliActivityDetailsBottomActionBar({
-    Key? key,
+    super.key,
     required this.sessionKey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,9 @@ class TautulliActivityDetailsBottomActionBar extends StatelessWidget {
       builder: (context, AsyncSnapshot<TautulliActivity?> snapshot) {
         if (snapshot.hasError) return Container(height: 0.0);
         if (snapshot.hasData) {
-          TautulliSession? session = snapshot.data!.sessions!
-              .firstWhereOrNull((element) => element.sessionKey == sessionKey);
+          TautulliSession? session = snapshot.data!.sessions!.firstWhereOrNull(
+            (element) => element.sessionKey == sessionKey,
+          );
           if (session != null)
             return LunaBottomActionBar(
               actions: [
@@ -28,18 +29,18 @@ class TautulliActivityDetailsBottomActionBar extends StatelessWidget {
                   icon: Icons.close_rounded,
                   color: LunaColours.red,
                   onTap: () async {
-                    Tuple2<bool, String> _result =
-                        await TautulliDialogs().terminateSession(context);
+                    Tuple2<bool, String> _result = await TautulliDialogs()
+                        .terminateSession(context);
                     if (_result.item1)
                       TautulliAPIHelper()
                           .terminateSession(
-                        context: context,
-                        session: session,
-                        terminationMessage: _result.item2,
-                      )
+                            context: context,
+                            session: session,
+                            terminationMessage: _result.item2,
+                          )
                           .then((value) {
-                        if (value) Navigator.of(context).pop();
-                      });
+                            if (value) Navigator.of(context).pop();
+                          });
                   },
                 ),
               ],

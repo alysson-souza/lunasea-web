@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class HistoryRoute extends StatefulWidget {
-  const HistoryRoute({
-    Key? key,
-  }) : super(key: key);
+  const HistoryRoute({super.key});
 
   @override
   State<HistoryRoute> createState() => _State();
@@ -15,8 +13,9 @@ class _State extends State<HistoryRoute>
     with LunaScrollControllerMixin, LunaLoadCallbackMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
-  final _pagingController =
-      PagingController<int, SonarrHistoryRecord>(firstPageKey: 1);
+  final _pagingController = PagingController<int, SonarrHistoryRecord>(
+    firstPageKey: 1,
+  );
 
   @override
   Future<void> loadCallback() async {
@@ -42,18 +41,19 @@ class _State extends State<HistoryRoute>
           includeEpisode: true,
         )
         .then((data) {
-      if (data.totalRecords! > (data.page! * data.pageSize!)) {
-        return _pagingController.appendPage(data.records!, pageKey + 1);
-      }
-      return _pagingController.appendLastPage(data.records!);
-    }).catchError((error, stack) {
-      LunaLogger().error(
-        'Unable to fetch Sonarr history page: $pageKey',
-        error,
-        stack,
-      );
-      _pagingController.error = error;
-    });
+          if (data.totalRecords! > (data.page! * data.pageSize!)) {
+            return _pagingController.appendPage(data.records!, pageKey + 1);
+          }
+          return _pagingController.appendLastPage(data.records!);
+        })
+        .catchError((error, stack) {
+          LunaLogger().error(
+            'Unable to fetch Sonarr history page: $pageKey',
+            error,
+            stack,
+          );
+          _pagingController.error = error;
+        });
   }
 
   @override

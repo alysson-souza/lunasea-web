@@ -4,9 +4,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliGraphsPlayCountByDayOfWeekGraph extends StatelessWidget {
-  const TautulliGraphsPlayCountByDayOfWeekGraph({
-    Key? key,
-  }) : super(key: key);
+  const TautulliGraphsPlayCountByDayOfWeekGraph({super.key});
 
   @override
   Widget build(BuildContext context) =>
@@ -18,9 +16,10 @@ class TautulliGraphsPlayCountByDayOfWeekGraph extends StatelessWidget {
             if (snapshot.hasError) {
               if (snapshot.connectionState != ConnectionState.waiting) {
                 LunaLogger().error(
-                    'Unable to fetch Tautulli graph data: getPlaysByDayOfWeek',
-                    snapshot.error,
-                    snapshot.stackTrace);
+                  'Unable to fetch Tautulli graph data: getPlaysByDayOfWeek',
+                  snapshot.error,
+                  snapshot.stackTrace,
+                );
               }
               return TautulliGraphHelper().errorContainer(context);
             }
@@ -43,12 +42,17 @@ class TautulliGraphsPlayCountByDayOfWeekGraph extends StatelessWidget {
                 BarChartData(
                   alignment: TautulliGraphHelper().chartAlignment(),
                   gridData: TautulliGraphHelper().gridData(),
-                  titlesData: TautulliGraphHelper().titlesData(data,
-                      maxTitleLength: 3, titleOverFlowShowEllipsis: false),
+                  titlesData: TautulliGraphHelper().titlesData(
+                    data,
+                    maxTitleLength: 3,
+                    titleOverFlowShowEllipsis: false,
+                  ),
                   borderData: TautulliGraphHelper().borderData(),
                   barGroups: TautulliBarGraphHelper.barGroups(context, data),
-                  barTouchData:
-                      TautulliBarGraphHelper.barTouchData(context, data),
+                  barTouchData: TautulliBarGraphHelper.barTouchData(
+                    context,
+                    data,
+                  ),
                 ),
               ),
               padding: LunaUI.MARGIN_DEFAULT,

@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteTempSessions(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'delete_temp_sessions',
-    },
+    queryParameters: {'cmd': 'delete_temp_sessions'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

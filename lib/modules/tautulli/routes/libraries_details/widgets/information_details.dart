@@ -7,9 +7,9 @@ class TautulliLibrariesDetailsInformationDetails extends StatelessWidget {
   final TautulliTableLibrary library;
 
   const TautulliLibrariesDetailsInformationDetails({
-    Key? key,
+    super.key,
     required this.library,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +18,19 @@ class TautulliLibrariesDetailsInformationDetails extends StatelessWidget {
         BackendPreferenceGroupContent(title: 'name', body: library.sectionName),
         if (library.count != null)
           BackendPreferenceGroupContent(
-              title: _count(library.count),
-              body: '${library.count} ${_count(library.count)}'),
+            title: _count(library.count),
+            body: '${library.count} ${_count(library.count)}',
+          ),
         if (library.parentCount != null)
           BackendPreferenceGroupContent(
-              title: _parentCount(library.parentCount),
-              body:
-                  '${library.parentCount} ${_parentCount(library.parentCount)}'),
+            title: _parentCount(library.parentCount),
+            body: '${library.parentCount} ${_parentCount(library.parentCount)}',
+          ),
         if (library.childCount != null)
           BackendPreferenceGroupContent(
-              title: _childCount(library.childCount),
-              body: '${library.childCount} ${_childCount(library.childCount)}'),
+            title: _childCount(library.childCount),
+            body: '${library.childCount} ${_childCount(library.childCount)}',
+          ),
         BackendPreferenceGroupContent(
           title: 'last played',
           body: [

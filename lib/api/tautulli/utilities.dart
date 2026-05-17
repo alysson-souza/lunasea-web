@@ -1,5 +1,5 @@
 /// Library containing all utilty functions for Tautulli data.
-library tautulli_utilities;
+library;
 
 // ignore: always_use_package_imports
 import './types.dart';
@@ -23,13 +23,13 @@ class TautulliUtilities {
   /// - boolean => true = 1, false = 0
   static int? ensureIntegerFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case double:
+      case const (double):
         return (value as double).floor();
-      case int:
+      case const (int):
         return (value as int?);
-      case String:
+      case const (String):
         return int.tryParse(value as String);
-      case bool:
+      case const (bool):
         return (value as bool) ? 1 : 0;
       default:
         return null;
@@ -45,13 +45,13 @@ class TautulliUtilities {
   /// - boolean => true = 1, false = 0
   static double? ensureDoubleFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case double:
+      case const (double):
         return (value as double?);
-      case int:
+      case const (int):
         return (value as int).toDouble();
-      case String:
+      case const (String):
         return double.tryParse(value as String);
-      case bool:
+      case const (bool):
         return (value as bool) ? 1 : 0;
       default:
         return null;
@@ -67,13 +67,13 @@ class TautulliUtilities {
   /// - boolean => original value
   static bool? ensureBooleanFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case double:
+      case const (double):
         return (value as double?) == 0 ? false : true;
-      case int:
+      case const (int):
         return (value as int?) == 0 ? false : true;
-      case String:
+      case const (String):
         return (value as String?) == "" || value == "0" ? false : true;
-      case bool:
+      case const (bool):
         return (value as bool?);
       default:
         return null;
@@ -89,20 +89,20 @@ class TautulliUtilities {
   /// - boolean => true = "1", false = "0"
   static String? ensureStringFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case double:
+      case const (double):
         return (value as double?).toString();
-      case int:
+      case const (int):
         return (value as int?).toString();
-      case String:
+      case const (String):
         return (value as String?);
-      case bool:
+      case const (bool):
         return (value as bool) ? "1" : "0";
       default:
         return null;
     }
   }
 
-  /// Ensures that the passed in value results in a List<String>.
+  /// Ensures that the passed in value results in a list of strings.
   /// Can handle lists, integers, doubles, strings, or booleans. Any other types will return null.
   ///
   /// - list => runs [ensureStringFromJson] on each element and returns the list
@@ -112,10 +112,10 @@ class TautulliUtilities {
   /// - boolean => true = "1", false = "0" within a list
   static List<String?>? ensureStringListFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case bool:
-      case int:
-      case String:
-      case double:
+      case const (bool):
+      case const (int):
+      case const (String):
+      case const (double):
         return [ensureStringFromJson(value)];
     }
     if (value is List<dynamic>)
@@ -123,7 +123,7 @@ class TautulliUtilities {
     return null;
   }
 
-  /// Ensures that the passed in value results in a List<int>.
+  /// Ensures that the passed in value results in a list of integers.
   /// Can handle lists, integers, doubles, strings, or booleans. Any other types will return null.
   ///
   /// - list => runs [ensureStringFromJson] on each element and returns the list
@@ -133,10 +133,10 @@ class TautulliUtilities {
   /// - boolean => true = "1", false = "0" within a list
   static List<int?>? ensureIntegerListFromJson(dynamic value) {
     switch (value.runtimeType) {
-      case bool:
-      case int:
-      case String:
-      case double:
+      case const (bool):
+      case const (int):
+      case const (String):
+      case const (double):
         return [ensureIntegerFromJson(value)];
     }
     if (value is List<dynamic>)
@@ -152,16 +152,18 @@ class TautulliUtilities {
   static DateTime? millisecondsDateTimeFromJson(dynamic value) {
     try {
       switch (value.runtimeType) {
-        case bool:
+        case const (bool):
           return null;
-        case int:
+        case const (int):
           return DateTime.fromMillisecondsSinceEpoch((value as int) * 1000);
-        case double:
+        case const (double):
           return DateTime.fromMillisecondsSinceEpoch(
-              ((value as double).floor()) * 1000);
-        case String:
+            ((value as double).floor()) * 1000,
+          );
+        case const (String):
           return DateTime.fromMillisecondsSinceEpoch(
-              (int.parse(value as String)) * 1000);
+            (int.parse(value as String)) * 1000,
+          );
         default:
           return null;
       }
@@ -178,13 +180,13 @@ class TautulliUtilities {
   static Duration? millisecondsDurationFromJson(dynamic value) {
     try {
       switch (value.runtimeType) {
-        case bool:
+        case const (bool):
           return null;
-        case int:
+        case const (int):
           return Duration(milliseconds: (value as int));
-        case double:
+        case const (double):
           return Duration(milliseconds: (value as double).floor());
-        case String:
+        case const (String):
           return Duration(milliseconds: int.parse(value as String));
         default:
           return null;
@@ -202,13 +204,13 @@ class TautulliUtilities {
   static Duration? secondsDurationFromJson(dynamic value) {
     try {
       switch (value.runtimeType) {
-        case bool:
+        case const (bool):
           return null;
-        case int:
+        case const (int):
           return Duration(seconds: (value as int));
-        case double:
+        case const (double):
           return Duration(seconds: (value as double).floor());
-        case String:
+        case const (String):
           return Duration(seconds: int.parse(value as String));
         default:
           return null;
@@ -225,8 +227,7 @@ class TautulliUtilities {
   static List<String>? stringToListStringFromJson(
     String? list, {
     String delimiter = ',',
-  }) =>
-      list?.split(delimiter);
+  }) => list?.split(delimiter);
 
   /**
      * Tautulli Types
@@ -257,8 +258,8 @@ class TautulliUtilities {
 
   /// Converts a string to a [TautulliTranscodeDecision] object.
   static TautulliTranscodeDecision? transcodeDecisionFromJson(
-          String? decision) =>
-      TautulliTranscodeDecision.COPY.from(decision);
+    String? decision,
+  ) => TautulliTranscodeDecision.COPY.from(decision);
 
   /// Converts a [TautulliTranscodeDecision] object back to its string representation.
   static String? transcodeDecisionToJson(TautulliTranscodeDecision? decision) =>

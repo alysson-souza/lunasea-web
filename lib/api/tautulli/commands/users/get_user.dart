@@ -1,15 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
-Future<TautulliUser> _commandGetUser(
-  Dio client, {
-  required int userId,
-}) async {
+Future<TautulliUser> _commandGetUser(Dio client, {required int userId}) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_user',
-      'user_id': userId,
-    },
+    queryParameters: {'cmd': 'get_user', 'user_id': userId},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

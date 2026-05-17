@@ -4,9 +4,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliGraphsPlayCountByTopUsersGraph extends StatelessWidget {
-  const TautulliGraphsPlayCountByTopUsersGraph({
-    Key? key,
-  }) : super(key: key);
+  const TautulliGraphsPlayCountByTopUsersGraph({super.key});
 
   @override
   Widget build(BuildContext context) =>
@@ -18,9 +16,10 @@ class TautulliGraphsPlayCountByTopUsersGraph extends StatelessWidget {
             if (snapshot.hasError) {
               if (snapshot.connectionState != ConnectionState.waiting) {
                 LunaLogger().error(
-                    'Unable to fetch Tautulli graph data: getPlaysByTopTenUsers',
-                    snapshot.error,
-                    snapshot.stackTrace);
+                  'Unable to fetch Tautulli graph data: getPlaysByTopTenUsers',
+                  snapshot.error,
+                  snapshot.stackTrace,
+                );
               }
               return TautulliGraphHelper().errorContainer(context);
             }
@@ -46,8 +45,10 @@ class TautulliGraphsPlayCountByTopUsersGraph extends StatelessWidget {
                   titlesData: TautulliGraphHelper().titlesData(data),
                   borderData: TautulliGraphHelper().borderData(),
                   barGroups: TautulliBarGraphHelper.barGroups(context, data),
-                  barTouchData:
-                      TautulliBarGraphHelper.barTouchData(context, data),
+                  barTouchData: TautulliBarGraphHelper.barTouchData(
+                    context,
+                    data,
+                  ),
                 ),
               ),
               padding: LunaUI.MARGIN_DEFAULT,

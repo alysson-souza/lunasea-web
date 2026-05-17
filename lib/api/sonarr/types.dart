@@ -1,5 +1,5 @@
 /// Library containing all type definitions for Sonarr data.
-library sonarr_types;
+library;
 
 part 'types/event_type.dart';
 part 'types/history_sort_key.dart';

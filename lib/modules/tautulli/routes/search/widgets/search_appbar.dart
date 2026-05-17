@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 // ignore: non_constant_identifier_names
-Widget TautulliSearchAppBar({
-  required ScrollController scrollController,
-}) =>
+Widget TautulliSearchAppBar({required ScrollController scrollController}) =>
     LunaAppBar(
       title: 'Search',
       scrollControllers: [scrollController],
@@ -15,10 +13,7 @@ Widget TautulliSearchAppBar({
 class _SearchBar extends StatefulWidget implements PreferredSizeWidget {
   final ScrollController scrollController;
 
-  const _SearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const _SearchBar({required this.scrollController});
 
   @override
   Size get preferredSize =>
@@ -39,28 +34,28 @@ class _State extends State<_SearchBar> {
 
   @override
   Widget build(BuildContext context) => Consumer<TautulliState>(
-        builder: (context, state, _) => SizedBox(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: LunaTextInputBar(
-                  controller: _controller,
-                  scrollController: widget.scrollController,
-                  autofocus: state.searchQuery.isEmpty,
-                  onChanged: (value) =>
-                      context.read<TautulliState>().searchQuery = value,
-                  onSubmitted: (value) {
-                    if (value.isNotEmpty)
-                      context.read<TautulliState>().fetchSearch();
-                  },
-                  margin: LunaTextInputBar.appBarMargin,
-                ),
-              ),
-            ],
+    builder: (context, state, _) => SizedBox(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: LunaTextInputBar(
+              controller: _controller,
+              scrollController: widget.scrollController,
+              autofocus: state.searchQuery.isEmpty,
+              onChanged: (value) =>
+                  context.read<TautulliState>().searchQuery = value,
+              onSubmitted: (value) {
+                if (value.isNotEmpty)
+                  context.read<TautulliState>().fetchSearch();
+              },
+              margin: LunaTextInputBar.appBarMargin,
+            ),
           ),
-          height: LunaTextInputBar.defaultAppBarHeight,
-        ),
-      );
+        ],
+      ),
+      height: LunaTextInputBar.defaultAppBarHeight,
+    ),
+  );
 }

@@ -7,10 +7,7 @@ import 'package:lunasea/types/list_view_option.dart';
 class SonarrSeriesSearchBarViewButton extends StatefulWidget {
   final ScrollController controller;
 
-  const SonarrSeriesSearchBarViewButton({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
+  const SonarrSeriesSearchBarViewButton({super.key, required this.controller});
 
   @override
   State<SonarrSeriesSearchBarViewButton> createState() => _State();
@@ -31,21 +28,22 @@ class _State extends State<SonarrSeriesSearchBarViewButton> {
           },
           itemBuilder: (context) =>
               List<PopupMenuEntry<LunaListViewOption>>.generate(
-            LunaListViewOption.values.length,
-            (index) => PopupMenuItem<LunaListViewOption>(
-              value: LunaListViewOption.values[index],
-              child: Text(
-                LunaListViewOption.values[index].readable,
-                style: TextStyle(
-                  fontSize: LunaUI.FONT_SIZE_H3,
-                  color:
-                      state.seriesViewType == LunaListViewOption.values[index]
+                LunaListViewOption.values.length,
+                (index) => PopupMenuItem<LunaListViewOption>(
+                  value: LunaListViewOption.values[index],
+                  child: Text(
+                    LunaListViewOption.values[index].readable,
+                    style: TextStyle(
+                      fontSize: LunaUI.FONT_SIZE_H3,
+                      color:
+                          state.seriesViewType ==
+                              LunaListViewOption.values[index]
                           ? LunaColours.accent
                           : Colors.white,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
         ),
       ),
       margin: const EdgeInsets.only(left: LunaUI.DEFAULT_MARGIN_SIZE),

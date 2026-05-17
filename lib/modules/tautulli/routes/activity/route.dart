@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliActivityRoute extends StatefulWidget {
-  const TautulliActivityRoute({
-    Key? key,
-  }) : super(key: key);
+  const TautulliActivityRoute({super.key});
 
   @override
   State<TautulliActivityRoute> createState() => _State();
@@ -43,7 +41,8 @@ class _State extends State<TautulliActivityRoute>
       onRefresh: loadCallback,
       child: FutureBuilder(
         future: context.select<TautulliState, Future<TautulliActivity?>>(
-            (state) => state.activity!),
+          (state) => state.activity!,
+        ),
         builder: (context, AsyncSnapshot<TautulliActivity?> snapshot) {
           if (snapshot.hasError) {
             if (snapshot.connectionState != ConnectionState.waiting)

@@ -5,10 +5,7 @@ import 'package:shimmer/shimmer.dart';
 class LunaShimmer extends StatelessWidget {
   final Widget child;
 
-  const LunaShimmer({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const LunaShimmer({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

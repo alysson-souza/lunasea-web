@@ -6,9 +6,9 @@ class TautulliMediaDetailsMetadataHeaderTile extends StatelessWidget {
   final TautulliMetadata? metadata;
 
   const TautulliMediaDetailsMetadataHeaderTile({
-    Key? key,
+    super.key,
     required this.metadata,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,14 @@ class TautulliMediaDetailsMetadataHeaderTile extends StatelessWidget {
       body: _body,
       backgroundHeaders: context.watch<TautulliState>().headers,
       backgroundUrl: context.watch<TautulliState>().getImageURLFromPath(
-            metadata!.art,
-            width: MediaQuery.of(context).size.width.truncate(),
-          ),
+        metadata!.art,
+        width: MediaQuery.of(context).size.width.truncate(),
+      ),
       bottom: const SizedBox(),
       bottomHeight: _bottomHeight,
-      posterUrl:
-          context.watch<TautulliState>().getImageURLFromPath(_posterLink),
+      posterUrl: context.watch<TautulliState>().getImageURLFromPath(
+        _posterLink,
+      ),
       posterHeaders: context.watch<TautulliState>().headers,
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
     );
@@ -31,12 +32,12 @@ class TautulliMediaDetailsMetadataHeaderTile extends StatelessWidget {
 
   String? get _title =>
       metadata!.grandparentTitle == null || metadata!.grandparentTitle!.isEmpty
-          ? metadata!.parentTitle == null || metadata!.parentTitle!.isEmpty
-              ? metadata!.title == null || metadata!.title!.isEmpty
+      ? metadata!.parentTitle == null || metadata!.parentTitle!.isEmpty
+            ? metadata!.title == null || metadata!.title!.isEmpty
                   ? 'Unknown Title'
                   : metadata!.title
-              : metadata!.parentTitle
-          : metadata!.grandparentTitle;
+            : metadata!.parentTitle
+      : metadata!.grandparentTitle;
 
   String? get _posterLink {
     switch (metadata!.mediaType) {

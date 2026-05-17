@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class TagsRoute extends StatefulWidget {
-  const TagsRoute({
-    Key? key,
-  }) : super(key: key);
+  const TagsRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -36,9 +34,7 @@ class _State extends State<TagsRoute>
     return LunaAppBar(
       title: 'Tags',
       scrollControllers: [scrollController],
-      actions: const [
-        SonarrTagsAppBarActionAddTag(),
-      ],
+      actions: const [SonarrTagsAppBarActionAddTag()],
     );
   }
 
@@ -77,10 +73,8 @@ class _State extends State<TagsRoute>
     return LunaListViewBuilder(
       controller: scrollController,
       itemCount: tags!.length,
-      itemBuilder: (context, index) => SonarrTagsTagTile(
-        key: ObjectKey(tags[index].id),
-        tag: tags[index],
-      ),
+      itemBuilder: (context, index) =>
+          SonarrTagsTagTile(key: ObjectKey(tags[index].id), tag: tags[index]),
     );
   }
 }

@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lunasea/core.dart';
 
-enum LunaSnackbarType {
-  SUCCESS,
-  ERROR,
-  INFO,
-}
+enum LunaSnackbarType { SUCCESS, ERROR, INFO }
 
 extension LunaSnackbarTypeExtension on LunaSnackbarType {
   Color get color {
@@ -17,8 +13,6 @@ extension LunaSnackbarTypeExtension on LunaSnackbarType {
         return LunaColours.red;
       case LunaSnackbarType.INFO:
         return LunaColours.blue;
-      default:
-        return LunaColours.purple;
     }
   }
 
@@ -30,8 +24,6 @@ extension LunaSnackbarTypeExtension on LunaSnackbarType {
         return Icons.error_outline_rounded;
       case LunaSnackbarType.INFO:
         return Icons.info_outline_rounded;
-      default:
-        return Icons.help_outline_rounded;
     }
   }
 }
@@ -50,8 +42,9 @@ Future<void> showLunaSnackBar({
     context: LunaState.context,
     duration: duration ?? Duration(seconds: showButton ? 4 : 2),
     transitionDuration: const Duration(milliseconds: LunaUI.ANIMATION_SPEED),
-    reverseTransitionDuration:
-        const Duration(milliseconds: LunaUI.ANIMATION_SPEED),
+    reverseTransitionDuration: const Duration(
+      milliseconds: LunaUI.ANIMATION_SPEED,
+    ),
     builder: (context, controller) => FlashBar(
       controller: controller,
       backgroundColor: Theme.of(context).primaryColor,
@@ -60,8 +53,9 @@ Future<void> showLunaSnackBar({
       position: position,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color:
-              LunaUI.shouldUseBorder ? LunaColours.white10 : Colors.transparent,
+          color: LunaUI.shouldUseBorder
+              ? LunaColours.white10
+              : Colors.transparent,
         ),
         borderRadius: BorderRadius.circular(LunaUI.BORDER_RADIUS),
       ),
@@ -77,13 +71,8 @@ Future<void> showLunaSnackBar({
       ),
       shouldIconPulse: false,
       icon: Padding(
-        child: LunaIconButton(
-          icon: type.icon,
-          color: type.color,
-        ),
-        padding: const EdgeInsets.only(
-          left: LunaUI.DEFAULT_MARGIN_SIZE / 2,
-        ),
+        child: LunaIconButton(icon: type.icon, color: type.color),
+        padding: const EdgeInsets.only(left: LunaUI.DEFAULT_MARGIN_SIZE / 2),
       ),
       primaryAction: showButton
           ? TextButton(

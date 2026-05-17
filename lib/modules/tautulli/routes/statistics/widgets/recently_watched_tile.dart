@@ -7,10 +7,7 @@ import 'package:lunasea/router/routes/tautulli.dart';
 class TautulliStatisticsRecentlyWatchedTile extends StatefulWidget {
   final Map<String, dynamic> data;
 
-  const TautulliStatisticsRecentlyWatchedTile({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
+  const TautulliStatisticsRecentlyWatchedTile({super.key, required this.data});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -23,13 +20,14 @@ class _State extends State<TautulliStatisticsRecentlyWatchedTile> {
       title: widget.data['title'] ?? 'lunasea.Unknown'.tr(),
       body: _body(),
       onTap: _onTap,
-      posterUrl: context
-          .read<TautulliState>()
-          .getImageURLFromPath(widget.data['thumb']),
+      posterUrl: context.read<TautulliState>().getImageURLFromPath(
+        widget.data['thumb'],
+      ),
       posterHeaders: context.watch<TautulliState>().headers,
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
-      backgroundUrl:
-          context.read<TautulliState>().getImageURLFromPath(widget.data['art']),
+      backgroundUrl: context.read<TautulliState>().getImageURLFromPath(
+        widget.data['art'],
+      ),
       backgroundHeaders: context.watch<TautulliState>().headers,
     );
   }
@@ -45,14 +43,16 @@ class _State extends State<TautulliStatisticsRecentlyWatchedTile> {
               text:
                   'Watched ${DateTime.fromMillisecondsSinceEpoch(widget.data['last_watch'] * 1000).asAge()}',
             )
-          : const TextSpan(text: LunaUI.TEXT_EMDASH)
+          : const TextSpan(text: LunaUI.TEXT_EMDASH),
     ];
   }
 
   Future<void> _onTap() async {
-    TautulliRoutes.MEDIA_DETAILS.go(params: {
-      'rating_key': widget.data['rating_key'].toString(),
-      'media_type': TautulliMediaType.from(widget.data['media_type']).value,
-    });
+    TautulliRoutes.MEDIA_DETAILS.go(
+      params: {
+        'rating_key': widget.data['rating_key'].toString(),
+        'media_type': TautulliMediaType.from(widget.data['media_type']).value,
+      },
+    );
   }
 }

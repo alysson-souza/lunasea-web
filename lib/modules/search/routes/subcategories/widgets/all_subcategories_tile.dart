@@ -4,9 +4,7 @@ import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/router/routes/search.dart';
 
 class SearchSubcategoryAllTile extends StatelessWidget {
-  const SearchSubcategoryAllTile({
-    Key? key,
-  }) : super(key: key);
+  const SearchSubcategoryAllTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +14,9 @@ class SearchSubcategoryAllTile extends StatelessWidget {
         title: 'search.AllSubcategories'.tr(),
         body: [TextSpan(text: category?.name ?? 'lunasea.Unknown'.tr())],
         trailing: LunaIconButton(
-            icon: context.read<SearchState>().activeCategory?.icon,
-            color: LunaColours().byListIndex(0)),
+          icon: context.read<SearchState>().activeCategory?.icon,
+          color: LunaColours().byListIndex(0),
+        ),
         onTap: () async {
           context.read<SearchState>().activeSubcategory = null;
           SearchRoutes.RESULTS.go();

@@ -9,10 +9,10 @@ class TautulliMediaDetailsOpenPlexButton extends StatelessWidget {
   final int ratingKey;
 
   const TautulliMediaDetailsOpenPlexButton({
-    Key? key,
+    super.key,
     required this.mediaType,
     required this.ratingKey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +31,7 @@ class TautulliMediaDetailsOpenPlexButton extends StatelessWidget {
   }
 
   bool _isValidMediaType() {
-    const invalidTypes = [
-      TautulliMediaType.TRACK,
-      TautulliMediaType.PHOTO,
-    ];
+    const invalidTypes = [TautulliMediaType.TRACK, TautulliMediaType.PHOTO];
     return !invalidTypes.contains(mediaType);
   }
 

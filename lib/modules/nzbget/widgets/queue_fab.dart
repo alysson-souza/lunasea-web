@@ -8,8 +8,7 @@ import 'package:lunasea/modules/nzbget.dart';
 class NZBGetQueueFAB extends StatefulWidget {
   final ScrollController scrollController;
 
-  const NZBGetQueueFAB({Key? key, required this.scrollController})
-    : super(key: key);
+  const NZBGetQueueFAB({super.key, required this.scrollController});
 
   @override
   State<StatefulWidget> createState() => _State();

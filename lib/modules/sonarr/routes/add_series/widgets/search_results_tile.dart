@@ -18,12 +18,12 @@ class SonarrSeriesAddSearchResultTile extends StatefulWidget {
   final bool isExcluded;
 
   const SonarrSeriesAddSearchResultTile({
-    Key? key,
+    super.key,
     required this.series,
     required this.exists,
     required this.isExcluded,
     this.onTapShowOverview = false,
-  }) : super(key: key);
+  });
 
   @override
   State<SonarrSeriesAddSearchResultTile> createState() => _State();
@@ -49,13 +49,15 @@ class _State extends State<SonarrSeriesAddSearchResultTile> {
   }
 
   TextSpan _subtitle1() {
-    return TextSpan(children: [
-      TextSpan(text: widget.series.lunaSeasonCount),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.series.lunaYear),
-      TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-      TextSpan(text: widget.series.lunaNetwork),
-    ]);
+    return TextSpan(
+      children: [
+        TextSpan(text: widget.series.lunaSeasonCount),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.series.lunaYear),
+        TextSpan(text: LunaUI.TEXT_BULLET.pad()),
+        TextSpan(text: widget.series.lunaNetwork),
+      ],
+    );
   }
 
   Widget _subtitle2() {
@@ -68,9 +70,7 @@ class _State extends State<SonarrSeriesAddSearchResultTile> {
             fontSize: LunaUI.FONT_SIZE_H3,
             color: LunaColours.grey,
           ),
-          children: [
-            LunaTextSpan.extended(text: widget.series.lunaOverview),
-          ],
+          children: [LunaTextSpan.extended(text: widget.series.lunaOverview)],
         ),
         overflow: TextOverflow.ellipsis,
         maxLines: 2,

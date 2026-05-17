@@ -1,4 +1,4 @@
-part of sonarr_types;
+part of '../types.dart';
 
 enum SonarrQueueStatus {
   DOWNLOADING,
@@ -53,8 +53,6 @@ extension SonarrQueueStatusExtension on SonarrQueueStatus {
         return 'failed';
       case SonarrQueueStatus.WARNING:
         return 'warning';
-      default:
-        return null;
     }
   }
 }

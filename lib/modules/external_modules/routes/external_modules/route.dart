@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/external_modules/routes/external_modules/widgets/module_tile.dart';
 
 class ExternalModulesRoute extends StatefulWidget {
-  const ExternalModulesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ExternalModulesRoute({super.key});
 
   @override
   State<ExternalModulesRoute> createState() => _State();
@@ -55,9 +53,11 @@ class _State extends State<ExternalModulesRoute>
     final list = store.modules
         .map((module) => ExternalModulesModuleTile(module: module))
         .toList();
-    list.sort((a, b) => a.module!.displayName
-        .toLowerCase()
-        .compareTo(b.module!.displayName.toLowerCase()));
+    list.sort(
+      (a, b) => a.module!.displayName.toLowerCase().compareTo(
+        b.module!.displayName.toLowerCase(),
+      ),
+    );
 
     return list;
   }

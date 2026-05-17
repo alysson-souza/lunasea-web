@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class ConfigurationSonarrDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationSonarrDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSonarrDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationSonarrDefaultPagesRoute> createState() => _State();
@@ -34,11 +32,7 @@ class _State extends State<ConfigurationSonarrDefaultPagesRoute>
   Widget _body() {
     return LunaListView(
       controller: scrollController,
-      children: [
-        _homePage(),
-        _seriesDetailsPage(),
-        _seasonDetailsPage(),
-      ],
+      children: [_homePage(), _seriesDetailsPage(), _seasonDetailsPage()],
     );
   }
 
@@ -50,7 +44,7 @@ class _State extends State<ConfigurationSonarrDefaultPagesRoute>
           body: [
             TextSpan(
               text: SonarrNavigationBar.titles[settings.sonarrDefaultPage],
-            )
+            ),
           ],
           trailing: LunaIconButton(
             icon: SonarrNavigationBar.icons[settings.sonarrDefaultPage],
@@ -77,7 +71,7 @@ class _State extends State<ConfigurationSonarrDefaultPagesRoute>
             TextSpan(
               text: SonarrSeriesDetailsNavigationBar
                   .titles[settings.sonarrSeriesDetailsDefaultPage],
-            )
+            ),
           ],
           trailing: LunaIconButton(
             icon: SonarrSeriesDetailsNavigationBar
@@ -107,7 +101,7 @@ class _State extends State<ConfigurationSonarrDefaultPagesRoute>
             TextSpan(
               text: SonarrSeasonDetailsNavigationBar
                   .titles[settings.sonarrSeasonDetailsDefaultPage],
-            )
+            ),
           ],
           trailing: LunaIconButton(
             icon: SonarrSeasonDetailsNavigationBar

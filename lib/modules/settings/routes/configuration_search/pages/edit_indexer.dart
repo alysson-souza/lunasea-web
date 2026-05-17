@@ -8,10 +8,7 @@ import 'package:lunasea/router/routes/settings.dart';
 class ConfigurationSearchEditIndexerRoute extends StatefulWidget {
   final int id;
 
-  const ConfigurationSearchEditIndexerRoute({
-    Key? key,
-    required this.id,
-  }) : super(key: key);
+  const ConfigurationSearchEditIndexerRoute({super.key, required this.id});
 
   @override
   State<ConfigurationSearchEditIndexerRoute> createState() => _State();
@@ -77,12 +74,7 @@ class _State extends State<ConfigurationSearchEditIndexerRoute>
         if (_indexer == null) return Container();
         return LunaListView(
           controller: scrollController,
-          children: [
-            _displayName(),
-            _apiURL(),
-            _apiKey(),
-            _headers(),
-          ],
+          children: [_displayName(), _apiURL(), _apiKey(), _headers()],
         );
       },
     );
@@ -154,9 +146,7 @@ class _State extends State<ConfigurationSearchEditIndexerRoute>
       body: [TextSpan(text: 'settings.CustomHeadersDescription'.tr())],
       trailing: const LunaIconButton.arrow(),
       onTap: () => SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER_HEADERS.go(
-        params: {
-          'id': widget.id.toString(),
-        },
+        params: {'id': widget.id.toString()},
       ),
     );
   }

@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/nzbget.dart';
 
 class ConfigurationNZBGetDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationNZBGetDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationNZBGetDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationNZBGetDefaultPagesRoute> createState() => _State();
@@ -32,12 +30,7 @@ class _State extends State<ConfigurationNZBGetDefaultPagesRoute>
   }
 
   Widget _body() {
-    return LunaListView(
-      controller: scrollController,
-      children: [
-        _homePage(),
-      ],
-    );
+    return LunaListView(controller: scrollController, children: [_homePage()]);
   }
 
   Widget _homePage() {
@@ -45,7 +38,9 @@ class _State extends State<ConfigurationNZBGetDefaultPagesRoute>
       builder: (context, settings, _) => LunaBlock(
         title: 'lunasea.Home'.tr(),
         body: [
-          TextSpan(text: NZBGetNavigationBar.titles[settings.nzbgetDefaultPage])
+          TextSpan(
+            text: NZBGetNavigationBar.titles[settings.nzbgetDefaultPage],
+          ),
         ],
         trailing: LunaIconButton(
           icon: NZBGetNavigationBar.icons[settings.nzbgetDefaultPage],

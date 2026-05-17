@@ -1,4 +1,3 @@
-import 'package:lunasea/core.dart';
 import 'package:lunasea/types/log_type.dart';
 import 'package:stack_trace/stack_trace.dart';
 
@@ -28,11 +27,7 @@ class LunaLog {
     String? methodName,
   }) {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    return LunaLog(
-      timestamp: timestamp,
-      type: type,
-      message: message,
-    );
+    return LunaLog(timestamp: timestamp, type: type, message: message);
   }
 
   factory LunaLog.withError({
@@ -63,8 +58,9 @@ class LunaLog {
 
   Map<String, dynamic> toJson() {
     return {
-      "timestamp":
-          DateTime.fromMillisecondsSinceEpoch(timestamp).toIso8601String(),
+      "timestamp": DateTime.fromMillisecondsSinceEpoch(
+        timestamp,
+      ).toIso8601String(),
       "type": type.title,
       "message": message,
       if (className?.isNotEmpty ?? false) "class_name": className,

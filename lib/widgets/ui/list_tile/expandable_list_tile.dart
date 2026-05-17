@@ -18,7 +18,7 @@ class LunaExpandableListTile extends StatefulWidget {
   /// If [expandedWidget] is supplied, that widget is used as the body within the expanded card.
   /// Any
   const LunaExpandableListTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.collapsedSubtitles,
     required this.expandedTableContent,
@@ -29,7 +29,7 @@ class LunaExpandableListTile extends StatefulWidget {
     this.expandedTableButtons,
     this.backgroundColor,
     this.initialExpanded = false,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -54,10 +54,7 @@ class _State extends State<LunaExpandableListTile> {
   Widget build(BuildContext context) {
     return ExpandableNotifier(
       controller: controller,
-      child: Expandable(
-        collapsed: collapsed(),
-        expanded: expanded(),
-      ),
+      child: Expandable(collapsed: collapsed(), expanded: expanded()),
     );
   }
 
@@ -125,14 +122,14 @@ class _State extends State<LunaExpandableListTile> {
                           bottom: LunaUI.DEFAULT_MARGIN_SIZE / 2,
                         ),
                       ),
-                    ...widget.expandedTableContent
-                        .map((child) => Padding(
-                              child: child,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: LunaUI.DEFAULT_MARGIN_SIZE,
-                              ),
-                            ))
-                        .toList(),
+                    ...widget.expandedTableContent.map(
+                      (child) => Padding(
+                        child: child,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: LunaUI.DEFAULT_MARGIN_SIZE,
+                        ),
+                      ),
+                    ),
                     if (widget.expandedTableButtons != null)
                       Padding(
                         child: Wrap(

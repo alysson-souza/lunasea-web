@@ -5,11 +5,7 @@ import 'package:lunasea/extensions/scroll_controller.dart';
 import 'package:lunasea/router/router.dart';
 import 'package:lunasea/utils/profile_tools.dart';
 
-enum _AppBarType {
-  DEFAULT,
-  EMPTY,
-  DROPDOWN,
-}
+enum _AppBarType { DEFAULT, EMPTY, DROPDOWN }
 
 class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   static const APPBAR_HEIGHT = kToolbarHeight;
@@ -67,8 +63,10 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     List<ScrollController>? scrollControllers,
   }) {
     if (pageController != null)
-      assert(scrollControllers != null,
-          'pageController is defined, scrollControllers should as well.');
+      assert(
+        scrollControllers != null,
+        'pageController is defined, scrollControllers should as well.',
+      );
     return LunaAppBar._internal(
       title: title,
       actions: actions,
@@ -127,8 +125,10 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     Color? backgroundColor,
   }) {
     if (pageController != null)
-      assert(scrollControllers != null,
-          'if pageController is defined, scrollControllers should as well.');
+      assert(
+        scrollControllers != null,
+        'if pageController is defined, scrollControllers should as well.',
+      );
     if (profiles.length < 2)
       return LunaAppBar._internal(
         title: title,
@@ -188,9 +188,10 @@ class _State extends State<LunaAppBar> {
       }
     } catch (error, stack) {
       LunaLogger().error(
-          'Failed to scroll back: Index: $_index, ScrollControllers: ${widget.scrollControllers?.length ?? 0}',
-          error,
-          stack);
+        'Failed to scroll back: Index: $_index, ScrollControllers: ${widget.scrollControllers?.length ?? 0}',
+        error,
+        stack,
+      );
     }
   }
 
@@ -207,13 +208,8 @@ class _State extends State<LunaAppBar> {
       case _AppBarType.DROPDOWN:
         child = _dropdown(context);
         break;
-      default:
-        throw Exception('Unknown AppBar type.');
     }
-    return GestureDetector(
-      child: child,
-      onTap: _onTap,
-    );
+    return GestureDetector(child: child, onTap: _onTap);
   }
 
   Widget? _sharedLeading(BuildContext context) {
@@ -299,10 +295,9 @@ class _State extends State<LunaAppBar> {
         ),
         onSelected: (result) async {
           HapticFeedback.selectionClick();
-          await LunaProfileTools(context.read<ProfilesStore>()).changeTo(
-            result,
-            popToRootRoute: true,
-          );
+          await LunaProfileTools(
+            context.read<ProfilesStore>(),
+          ).changeTo(result, popToRootRoute: true);
         },
         itemBuilder: (context) {
           return <PopupMenuEntry<String>>[
@@ -318,7 +313,7 @@ class _State extends State<LunaAppBar> {
                         : Colors.white,
                   ),
                 ),
-              )
+              ),
           ];
         },
       ),

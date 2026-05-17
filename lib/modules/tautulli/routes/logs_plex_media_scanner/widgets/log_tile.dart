@@ -5,19 +5,13 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliLogsPlexMediaScannerLogTile extends StatelessWidget {
   final TautulliPlexLog log;
 
-  const TautulliLogsPlexMediaScannerLogTile({
-    Key? key,
-    required this.log,
-  }) : super(key: key);
+  const TautulliLogsPlexMediaScannerLogTile({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: log.message!.trim(),
-      collapsedSubtitles: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      collapsedSubtitles: [_subtitle1(), _subtitle2()],
       expandedTableContent: _tableContent(),
     );
   }

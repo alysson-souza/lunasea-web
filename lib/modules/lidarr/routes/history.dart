@@ -8,10 +8,10 @@ class LidarrHistory extends StatefulWidget {
   final Function refreshAllPages;
 
   const LidarrHistory({
-    Key? key,
+    super.key,
     required this.refreshIndicatorKey,
     required this.refreshAllPages,
-  }) : super(key: key);
+  });
 
   @override
   State<LidarrHistory> createState() => _State();
@@ -68,7 +68,6 @@ class _State extends State<LidarrHistory> with AutomaticKeepAliveClientMixin {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-            default:
               return const LunaLoader();
           }
         },

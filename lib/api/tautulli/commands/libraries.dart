@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to libraries within Tautulli.
 ///
@@ -23,9 +23,12 @@ class TautulliCommandHandlerLibraries {
     required int sectionId,
     String? serverId,
     List<int>? rowIds,
-  }) async =>
-      _commandDeleteAllLibraryHistory(_client,
-          sectionId: sectionId, serverId: serverId, rowIds: rowIds);
+  }) async => _commandDeleteAllLibraryHistory(
+    _client,
+    sectionId: sectionId,
+    serverId: serverId,
+    rowIds: rowIds,
+  );
 
   /// Handler for [delete_library](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_library).
   ///
@@ -41,9 +44,12 @@ class TautulliCommandHandlerLibraries {
     required int sectionId,
     String? serverId,
     List<int>? rowIds,
-  }) async =>
-      _commandDeleteLibrary(_client,
-          sectionId: sectionId, serverId: serverId, rowIds: rowIds);
+  }) async => _commandDeleteLibrary(
+    _client,
+    sectionId: sectionId,
+    serverId: serverId,
+    rowIds: rowIds,
+  );
 
   /// Handler for [delete_recently_added](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_recently_added).
   ///
@@ -67,12 +73,13 @@ class TautulliCommandHandlerLibraries {
     String? customThumb,
     String? customArt,
     bool? keepHistory,
-  }) async =>
-      _commandEditLibrary(_client,
-          sectionId: sectionId,
-          customThumb: customThumb,
-          customArt: customArt,
-          keepHistory: keepHistory);
+  }) async => _commandEditLibrary(
+    _client,
+    sectionId: sectionId,
+    customThumb: customThumb,
+    customArt: customArt,
+    keepHistory: keepHistory,
+  );
 
   /// Handler for [get_libraries_table](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_libraries_table).
   ///
@@ -92,16 +99,15 @@ class TautulliCommandHandlerLibraries {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetLibrariesTable(
-        _client,
-        grouping: grouping,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetLibrariesTable(
+    _client,
+    grouping: grouping,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_libraries](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_libraries).
   ///
@@ -115,9 +121,7 @@ class TautulliCommandHandlerLibraries {
   ///
   /// Required Parameters:
   /// - `sectionId`: The library section ID in Plex.
-  Future<TautulliSingleLibrary> getLibrary({
-    required int sectionId,
-  }) async =>
+  Future<TautulliSingleLibrary> getLibrary({required int sectionId}) async =>
       _commandGetLibrary(_client, sectionId: sectionId);
 
   /// Handler for [get_library_media_info](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_library_media_info).
@@ -146,19 +150,18 @@ class TautulliCommandHandlerLibraries {
     int? length,
     String? search,
     bool? refresh,
-  }) async =>
-      _commandGetLibraryMediaInfo(
-        _client,
-        sectionId: sectionId,
-        ratingKey: ratingKey,
-        sectionType: sectionType,
-        orderDirection: orderDirection,
-        orderColumn: orderColumn,
-        start: start,
-        length: length,
-        search: search,
-        refresh: refresh,
-      );
+  }) async => _commandGetLibraryMediaInfo(
+    _client,
+    sectionId: sectionId,
+    ratingKey: ratingKey,
+    sectionType: sectionType,
+    orderDirection: orderDirection,
+    orderColumn: orderColumn,
+    start: start,
+    length: length,
+    search: search,
+    refresh: refresh,
+  );
 
   /// Handler for [get_library_names](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_library_names).
   ///
@@ -178,9 +181,11 @@ class TautulliCommandHandlerLibraries {
   Future<List<TautulliLibraryUserStats>> getLibraryUserStats({
     required int sectionId,
     bool? grouping,
-  }) async =>
-      _commandGetLibraryUserStats(_client,
-          sectionId: sectionId, grouping: grouping);
+  }) async => _commandGetLibraryUserStats(
+    _client,
+    sectionId: sectionId,
+    grouping: grouping,
+  );
 
   /// Handler for [get_library_watch_time_stats](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_library_watch_time_stats).
   ///
@@ -196,9 +201,12 @@ class TautulliCommandHandlerLibraries {
     required int sectionId,
     bool? grouping,
     List<int>? queryDays,
-  }) async =>
-      _commandGetLibraryWatchTimeStats(_client,
-          sectionId: sectionId, grouping: grouping, queryDays: queryDays);
+  }) async => _commandGetLibraryWatchTimeStats(
+    _client,
+    sectionId: sectionId,
+    grouping: grouping,
+    queryDays: queryDays,
+  );
 
   /// Handler for [get_metadata](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_metadata).
   ///
@@ -206,9 +214,7 @@ class TautulliCommandHandlerLibraries {
   ///
   /// Required Parameters:
   /// - `ratingKey`: Rating key of the content item
-  Future<TautulliMetadata> getMetadata({
-    required int ratingKey,
-  }) async =>
+  Future<TautulliMetadata> getMetadata({required int ratingKey}) async =>
       _commandGetMetadata(_client, ratingKey: ratingKey);
 
   /// Handler for [get_new_rating_keys](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_new_rating_keys).
@@ -223,9 +229,11 @@ class TautulliCommandHandlerLibraries {
   Future<Map<String, dynamic>?> getNewRatingKeys({
     required int ratingKey,
     required TautulliMediaType mediaType,
-  }) async =>
-      _commandGetNewRatingKeys(_client,
-          ratingKey: ratingKey, mediaType: mediaType);
+  }) async => _commandGetNewRatingKeys(
+    _client,
+    ratingKey: ratingKey,
+    mediaType: mediaType,
+  );
 
   /// Handler for [get_old_rating_keys](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_old_rating_keys).
   ///
@@ -239,9 +247,11 @@ class TautulliCommandHandlerLibraries {
   Future<Map<String, dynamic>?> getOldRatingKeys({
     required int ratingKey,
     required TautulliMediaType mediaType,
-  }) async =>
-      _commandGetOldRatingKeys(_client,
-          ratingKey: ratingKey, mediaType: mediaType);
+  }) async => _commandGetOldRatingKeys(
+    _client,
+    ratingKey: ratingKey,
+    mediaType: mediaType,
+  );
 
   /// Handler for [get_recently_added](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_recently_added).
   ///
@@ -259,12 +269,13 @@ class TautulliCommandHandlerLibraries {
     int? start,
     TautulliMediaType? mediaType,
     int? sectionId,
-  }) async =>
-      _commandGetRecentlyAdded(_client,
-          count: count,
-          start: start,
-          mediaType: mediaType,
-          sectionId: sectionId);
+  }) async => _commandGetRecentlyAdded(
+    _client,
+    count: count,
+    start: start,
+    mediaType: mediaType,
+    sectionId: sectionId,
+  );
 
   /// Handler for [get_synced_items](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_synced_items).
   ///
@@ -294,10 +305,7 @@ class TautulliCommandHandlerLibraries {
   ///
   /// Optional Parameters:
   /// - `limit`: The maximum amount of items to return per media type
-  Future<TautulliSearch> search({
-    required String query,
-    int? limit,
-  }) async =>
+  Future<TautulliSearch> search({required String query, int? limit}) async =>
       _commandSearch(_client, query: query, limit: limit);
 
   /// Handler for [update_metadata_details](https://github.com/Tautulli/Tautulli/blob/master/API.md#update_metadata_details).
@@ -312,11 +320,12 @@ class TautulliCommandHandlerLibraries {
     required int oldRatingKey,
     required int newRatingKey,
     required TautulliMediaType mediaType,
-  }) async =>
-      _commandUpdateMetadataDetails(_client,
-          oldRatingKey: oldRatingKey,
-          newRatingKey: newRatingKey,
-          mediaType: mediaType);
+  }) async => _commandUpdateMetadataDetails(
+    _client,
+    oldRatingKey: oldRatingKey,
+    newRatingKey: newRatingKey,
+    mediaType: mediaType,
+  );
 
   /// Handler for [undelete_library](https://github.com/Tautulli/Tautulli/blob/master/API.md#undelete_library).
   ///
@@ -328,7 +337,9 @@ class TautulliCommandHandlerLibraries {
   Future<void> undeleteLibrary({
     required int sectionId,
     required String sectionName,
-  }) async =>
-      _commandUndeleteLibrary(_client,
-          sectionId: sectionId, sectionName: sectionName);
+  }) async => _commandUndeleteLibrary(
+    _client,
+    sectionId: sectionId,
+    sectionName: sectionName,
+  );
 }

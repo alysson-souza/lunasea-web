@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandRefreshUsersList(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'refresh_users_list',
-    },
+    queryParameters: {'cmd': 'refresh_users_list'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

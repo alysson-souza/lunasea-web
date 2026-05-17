@@ -6,10 +6,7 @@ class SonarrReleasesSearchBar extends StatefulWidget
     implements PreferredSizeWidget {
   final ScrollController scrollController;
 
-  const SonarrReleasesSearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const SonarrReleasesSearchBar({super.key, required this.scrollController});
 
   @override
   Size get preferredSize =>

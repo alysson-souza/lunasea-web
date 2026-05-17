@@ -1,4 +1,4 @@
-part of sonarr_types;
+part of '../types.dart';
 
 enum SonarrQueueSortKey {
   EPISODE,

@@ -6,10 +6,7 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliLogsLoginsLogTile extends StatelessWidget {
   final TautulliUserLoginRecord login;
 
-  const TautulliLogsLoginsLogTile({
-    Key? key,
-    required this.login,
-  }) : super(key: key);
+  const TautulliLogsLoginsLogTile({super.key, required this.login});
 
   @override
   Widget build(BuildContext context) {

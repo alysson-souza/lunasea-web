@@ -2,7 +2,6 @@ import 'package:lunasea/system/preferences/preference.dart';
 import 'package:lunasea/modules/lidarr/core/api/data/metadata.dart';
 import 'package:lunasea/modules/lidarr/core/api/data/qualityprofile.dart';
 import 'package:lunasea/modules/lidarr/core/api/data/rootfolder.dart';
-import 'package:lunasea/vendor.dart';
 
 enum LidarrPreferences<T> with BackendPreference<T> {
   NAVIGATION_INDEX<int>(0),

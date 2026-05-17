@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrMovie> _commandUpdateMovie(
   Dio client, {
@@ -8,9 +8,7 @@ Future<RadarrMovie> _commandUpdateMovie(
   Response response = await client.put(
     'movie',
     data: movie.toJson(),
-    queryParameters: {
-      'moveFiles': moveFiles,
-    },
+    queryParameters: {'moveFiles': moveFiles},
   );
   return RadarrMovie.fromJson(response.data);
 }

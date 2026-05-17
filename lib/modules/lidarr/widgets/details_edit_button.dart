@@ -6,10 +6,7 @@ import 'package:lunasea/router/routes/lidarr.dart';
 class LidarrDetailsEditButton extends StatefulWidget {
   final LidarrCatalogueData? data;
 
-  const LidarrDetailsEditButton({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
+  const LidarrDetailsEditButton({super.key, required this.data});
 
   @override
   State<LidarrDetailsEditButton> createState() => _State();
@@ -18,18 +15,16 @@ class LidarrDetailsEditButton extends StatefulWidget {
 class _State extends State<LidarrDetailsEditButton> {
   @override
   Widget build(BuildContext context) => Consumer<LidarrState>(
-        builder: (context, model, widget) => LunaIconButton(
-          icon: Icons.edit_rounded,
-          onPressed: () async => _enterEditArtist(context),
-        ),
-      );
+    builder: (context, model, widget) => LunaIconButton(
+      icon: Icons.edit_rounded,
+      onPressed: () async => _enterEditArtist(context),
+    ),
+  );
 
   Future<void> _enterEditArtist(BuildContext context) async {
     LidarrRoutes.ARTIST_EDIT.go(
       extra: widget.data,
-      params: {
-        'artist': widget.data!.artistID.toString(),
-      },
+      params: {'artist': widget.data!.artistID.toString()},
     );
   }
 }

@@ -6,10 +6,7 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrMovieDetailsFilesFileBlock extends StatefulWidget {
   final RadarrMovieFile file;
 
-  const RadarrMovieDetailsFilesFileBlock({
-    Key? key,
-    required this.file,
-  }) : super(key: key);
+  const RadarrMovieDetailsFilesFileBlock({super.key, required this.file});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -82,8 +79,10 @@ class _State extends State<RadarrMovieDetailsFilesFileBlock> {
     setState(() => _deleteFileState = LunaLoadingState.ACTIVE);
     bool result = await RadarrDialogs().deleteMovieFile(context);
     if (result) {
-      bool execute = await RadarrAPIHelper()
-          .deleteMovieFile(context: context, movieFile: widget.file);
+      bool execute = await RadarrAPIHelper().deleteMovieFile(
+        context: context,
+        movieFile: widget.file,
+      );
       if (execute) context.read<RadarrMovieDetailsState>().fetchFiles(context);
     }
     setState(() => _deleteFileState = LunaLoadingState.INACTIVE);

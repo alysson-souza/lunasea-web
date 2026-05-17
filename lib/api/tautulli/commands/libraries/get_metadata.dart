@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliMetadata> _commandGetMetadata(
   Dio client, {
@@ -6,10 +6,7 @@ Future<TautulliMetadata> _commandGetMetadata(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_metadata',
-      'rating_key': ratingKey,
-    },
+    queryParameters: {'cmd': 'get_metadata', 'rating_key': ratingKey},
   );
   switch (response.data['response']['result']) {
     case 'success':

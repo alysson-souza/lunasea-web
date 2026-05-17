@@ -10,11 +10,11 @@ class LidarrHistoryTile extends StatefulWidget {
   final Function refresh;
 
   const LidarrHistoryTile({
-    Key? key,
+    super.key,
     required this.entry,
     required this.scaffoldKey,
     required this.refresh,
-  }) : super(key: key);
+  });
 
   @override
   State<LidarrHistoryTile> createState() => _State();
@@ -23,11 +23,11 @@ class LidarrHistoryTile extends StatefulWidget {
 class _State extends State<LidarrHistoryTile> {
   @override
   Widget build(BuildContext context) => LunaBlock(
-        title: widget.entry.title,
-        body: widget.entry.subtitle,
-        trailing: const LunaIconButton.arrow(),
-        onTap: () async => _enterArtist(),
-      );
+    title: widget.entry.title,
+    body: widget.entry.subtitle,
+    trailing: const LunaIconButton.arrow(),
+    onTap: () async => _enterArtist(),
+  );
 
   Future<void> _enterArtist() async {
     if (widget.entry.artistID == -1) {
@@ -37,9 +37,7 @@ class _State extends State<LidarrHistoryTile> {
       );
     } else {
       LidarrRoutes.ARTIST.go(
-        params: {
-          'artist': widget.entry.artistID.toString(),
-        },
+        params: {'artist': widget.entry.artistID.toString()},
       );
     }
   }

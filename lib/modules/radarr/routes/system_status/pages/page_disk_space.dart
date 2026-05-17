@@ -6,9 +6,9 @@ class RadarrSystemStatusDiskSpacePage extends StatefulWidget {
   final ScrollController scrollController;
 
   const RadarrSystemStatusDiskSpacePage({
-    Key? key,
+    super.key,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -26,10 +26,7 @@ class _State extends State<RadarrSystemStatusDiskSpacePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Future<void> _refresh() async {
@@ -53,8 +50,11 @@ class _State extends State<RadarrSystemStatusDiskSpacePage>
         ]),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasError) {
-            LunaLogger().error('Unable to fetch Radarr disk space',
-                snapshot.error, snapshot.stackTrace);
+            LunaLogger().error(
+              'Unable to fetch Radarr disk space',
+              snapshot.error,
+              snapshot.stackTrace,
+            );
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.hasData)
@@ -71,7 +71,7 @@ class _State extends State<RadarrSystemStatusDiskSpacePage>
   ) {
     // Compile Disks
     List<Widget> _disks = [
-      LunaMessage.inList(text: 'radarr.NoDisksFound'.tr())
+      LunaMessage.inList(text: 'radarr.NoDisksFound'.tr()),
     ];
     if (diskSpace.isNotEmpty)
       _disks = [
@@ -83,7 +83,7 @@ class _State extends State<RadarrSystemStatusDiskSpacePage>
       ];
     // Compile root folders
     List<Widget> _rootFolders = [
-      LunaMessage.inList(text: 'radarr.NoRootFoldersFound'.tr())
+      LunaMessage.inList(text: 'radarr.NoRootFoldersFound'.tr()),
     ];
     if (rootFolders.isNotEmpty)
       _rootFolders = [
@@ -95,10 +95,7 @@ class _State extends State<RadarrSystemStatusDiskSpacePage>
       ];
     return LunaListView(
       controller: RadarrSystemStatusNavigationBar.scrollControllers[1],
-      children: [
-        ..._disks,
-        ..._rootFolders,
-      ],
+      children: [..._disks, ..._rootFolders],
     );
   }
 }

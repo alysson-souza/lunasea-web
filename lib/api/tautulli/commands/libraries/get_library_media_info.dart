@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliLibraryMediaInfo> _commandGetLibraryMediaInfo(
   Dio client, {
@@ -14,7 +14,9 @@ Future<TautulliLibraryMediaInfo> _commandGetLibraryMediaInfo(
 }) async {
   if (sectionId != null)
     assert(
-        ratingKey == null, 'sectionId and ratingKey both cannot be defined.');
+      ratingKey == null,
+      'sectionId and ratingKey both cannot be defined.',
+    );
   if (sectionId == null)
     assert(ratingKey != null, 'sectionId and ratingKey cannot both be null.');
   if (ratingKey == null)
@@ -42,7 +44,8 @@ Future<TautulliLibraryMediaInfo> _commandGetLibraryMediaInfo(
   switch (response.data['response']['result']) {
     case 'success':
       return TautulliLibraryMediaInfo.fromJson(
-          response.data['response']['data']);
+        response.data['response']['data'],
+      );
     case 'error':
     default:
       throw Exception(response.data['response']['message']);

@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/search.dart';
 
 class SearchRoute extends StatefulWidget {
-  const SearchRoute({
-    Key? key,
-  }) : super(key: key);
+  const SearchRoute({super.key});
 
   @override
   State<SearchRoute> createState() => _State();
@@ -52,9 +50,11 @@ class _State extends State<SearchRoute> with LunaScrollControllerMixin {
     final list = store.indexers
         .map((indexer) => SearchIndexerTile(indexer: indexer))
         .toList();
-    list.sort((a, b) => a.indexer!.displayName
-        .toLowerCase()
-        .compareTo(b.indexer!.displayName.toLowerCase()));
+    list.sort(
+      (a, b) => a.indexer!.displayName.toLowerCase().compareTo(
+        b.indexer!.displayName.toLowerCase(),
+      ),
+    );
 
     return list;
   }

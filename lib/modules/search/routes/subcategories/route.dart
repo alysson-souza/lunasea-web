@@ -4,9 +4,7 @@ import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/router/routes/search.dart';
 
 class SubcategoriesRoute extends StatefulWidget {
-  const SubcategoriesRoute({
-    Key? key,
-  }) : super(key: key);
+  const SubcategoriesRoute({super.key});
 
   @override
   State<SubcategoriesRoute> createState() => _State();
@@ -26,7 +24,8 @@ class _State extends State<SubcategoriesRoute> with LunaScrollControllerMixin {
 
   Widget _appBar() {
     return LunaAppBar(
-      title: context.read<SearchState>().activeCategory?.name ??
+      title:
+          context.read<SearchState>().activeCategory?.name ??
           'search.Subcategories'.tr(),
       scrollControllers: [scrollController],
       actions: [

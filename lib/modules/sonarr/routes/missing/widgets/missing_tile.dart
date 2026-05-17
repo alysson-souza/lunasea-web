@@ -11,11 +11,7 @@ class SonarrMissingTile extends StatefulWidget {
   final SonarrMissingRecord record;
   final SonarrSeries? series;
 
-  const SonarrMissingTile({
-    Key? key,
-    required this.record,
-    this.series,
-  }) : super(key: key);
+  const SonarrMissingTile({super.key, required this.record, this.series});
 
   @override
   State<SonarrMissingTile> createState() => _State();
@@ -25,20 +21,19 @@ class _State extends State<SonarrMissingTile> {
   @override
   Widget build(BuildContext context) {
     return LunaBlock(
-      backgroundUrl:
-          context.read<SonarrState>().getFanartURL(widget.record.seriesId),
-      posterUrl:
-          context.read<SonarrState>().getPosterURL(widget.record.seriesId),
+      backgroundUrl: context.read<SonarrState>().getFanartURL(
+        widget.record.seriesId,
+      ),
+      posterUrl: context.read<SonarrState>().getPosterURL(
+        widget.record.seriesId,
+      ),
       posterHeaders: context.read<SonarrState>().headers,
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
-      title: widget.record.series?.title ??
+      title:
+          widget.record.series?.title ??
           widget.series?.title ??
           LunaUI.TEXT_EMDASH,
-      body: [
-        _subtitle1(),
-        _subtitle2(),
-        _subtitle3(),
-      ],
+      body: [_subtitle1(), _subtitle2(), _subtitle3()],
       disabled: !widget.record.monitored!,
       onTap: _onTap,
       onLongPress: _onLongPress,
@@ -58,9 +53,10 @@ class _State extends State<SonarrMissingTile> {
     return TextSpan(
       children: [
         TextSpan(
-            text: widget.record.seasonNumber == 0
-                ? 'Specials'
-                : 'Season ${widget.record.seasonNumber}'),
+          text: widget.record.seasonNumber == 0
+              ? 'Specials'
+              : 'Season ${widget.record.seasonNumber}',
+        ),
         TextSpan(text: LunaUI.TEXT_BULLET.pad()),
         TextSpan(text: 'Episode ${widget.record.episodeNumber}'),
       ],
@@ -69,9 +65,7 @@ class _State extends State<SonarrMissingTile> {
 
   TextSpan _subtitle2() {
     return TextSpan(
-      style: const TextStyle(
-        fontStyle: FontStyle.italic,
-      ),
+      style: const TextStyle(fontStyle: FontStyle.italic),
       text: widget.record.title ?? 'lunasea.Unknown'.tr(),
     );
   }
@@ -85,50 +79,51 @@ class _State extends State<SonarrMissingTile> {
       ),
       children: [
         TextSpan(
-            text: widget.record.airDateUtc == null
-                ? 'Aired'
-                : 'Aired ${widget.record.airDateUtc!.toLocal().asAge()}'),
+          text: widget.record.airDateUtc == null
+              ? 'Aired'
+              : 'Aired ${widget.record.airDateUtc!.toLocal().asAge()}',
+        ),
       ],
     );
   }
 
   Future<void> _onTap() async {
-    SonarrRoutes.SERIES_SEASON.go(params: {
-      'series': (widget.record.seriesId ?? -1).toString(),
-      'season': (widget.record.seasonNumber ?? -1).toString(),
-    });
+    SonarrRoutes.SERIES_SEASON.go(
+      params: {
+        'series': (widget.record.seriesId ?? -1).toString(),
+        'season': (widget.record.seasonNumber ?? -1).toString(),
+      },
+    );
   }
 
   Future<void> _onLongPress() async {
-    SonarrRoutes.SERIES.go(params: {
-      'series': widget.record.seriesId!.toString(),
-    });
+    SonarrRoutes.SERIES.go(
+      params: {'series': widget.record.seriesId!.toString()},
+    );
   }
 
   Future<void> _trailingOnTap() async {
-    Provider.of<SonarrState>(context, listen: false)
-        .api!
-        .command
+    Provider.of<SonarrState>(context, listen: false).api!.command
         .episodeSearch(episodeIds: [widget.record.id!])
-        .then((_) => showLunaSuccessSnackBar(
-              title: 'Searching for Episode...',
-              message: widget.record.title,
-            ))
+        .then(
+          (_) => showLunaSuccessSnackBar(
+            title: 'Searching for Episode...',
+            message: widget.record.title,
+          ),
+        )
         .catchError((error, stack) {
           LunaLogger().error(
-              'Failed to search for episode: ${widget.record.id}',
-              error,
-              stack);
-          showLunaErrorSnackBar(
-            title: 'Failed to Search',
-            error: error,
+            'Failed to search for episode: ${widget.record.id}',
+            error,
+            stack,
           );
+          showLunaErrorSnackBar(title: 'Failed to Search', error: error);
         });
   }
 
   Future<void> _trailingOnLongPress() async {
-    return SonarrRoutes.RELEASES.go(queryParams: {
-      'episode': widget.record.id!.toString(),
-    });
+    return SonarrRoutes.RELEASES.go(
+      queryParams: {'episode': widget.record.id!.toString()},
+    );
   }
 }

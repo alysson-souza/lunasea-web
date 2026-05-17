@@ -1,13 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all log order columns used in Tautulli.
-enum TautulliLogsOrderColumn {
-  TIME,
-  THREAD,
-  MESSAGE,
-  LEVEL,
-  NULL,
-}
+enum TautulliLogsOrderColumn { TIME, THREAD, MESSAGE, LEVEL, NULL }
 
 /// Extension on [TautulliLogsOrderColumn] to implement extended functionality.
 extension TautulliLogsOrderColumnExtension on TautulliLogsOrderColumn {

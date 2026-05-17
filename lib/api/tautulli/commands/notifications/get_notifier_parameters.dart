@@ -1,12 +1,11 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<List<TautulliNotifierParameter>> _commandGetNotifierParameters(
-    Dio client) async {
+  Dio client,
+) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_notifier_parameters',
-    },
+    queryParameters: {'cmd': 'get_notifier_parameters'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

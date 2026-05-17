@@ -8,9 +8,9 @@ class ConfigurationExternalModulesEditRoute extends StatefulWidget {
   final int moduleId;
 
   const ConfigurationExternalModulesEditRoute({
-    Key? key,
+    super.key,
     required this.moduleId,
-  }) : super(key: key);
+  });
 
   @override
   State<ConfigurationExternalModulesEditRoute> createState() => _State();
@@ -56,11 +56,12 @@ class _State extends State<ConfigurationExternalModulesEditRoute>
             bool result = await SettingsDialogs().deleteExternalModule(context);
             if (result) {
               showLunaSuccessSnackBar(
-                  title: 'settings.DeleteModuleSuccess'.tr(),
-                  message: _module!.displayName);
-              await context
-                  .read<ExternalModulesStore>()
-                  .delete(widget.moduleId);
+                title: 'settings.DeleteModuleSuccess'.tr(),
+                message: _module!.displayName,
+              );
+              await context.read<ExternalModulesStore>().delete(
+                widget.moduleId,
+              );
               Navigator.of(context).pop();
             }
           },
@@ -76,10 +77,7 @@ class _State extends State<ConfigurationExternalModulesEditRoute>
         if (_module == null) return Container();
         return LunaListView(
           controller: scrollController,
-          children: [
-            _displayNameTile(),
-            _hostTile(),
-          ],
+          children: [_displayNameTile(), _hostTile()],
         );
       },
     );
@@ -103,9 +101,10 @@ class _State extends State<ConfigurationExternalModulesEditRoute>
         );
         if (values.item1) {
           _module!.displayName = values.item2;
-          await context
-              .read<ExternalModulesStore>()
-              .update(widget.moduleId, _module!);
+          await context.read<ExternalModulesStore>().update(
+            widget.moduleId,
+            _module!,
+          );
         }
       },
     );
@@ -115,21 +114,17 @@ class _State extends State<ConfigurationExternalModulesEditRoute>
     String _host = _module!.host;
     return LunaBlock(
       title: 'settings.Host'.tr(),
-      body: [
-        TextSpan(text: _host.isEmpty ? 'lunasea.NotSet'.tr() : _host),
-      ],
+      body: [TextSpan(text: _host.isEmpty ? 'lunasea.NotSet'.tr() : _host)],
       trailing: const LunaIconButton.arrow(),
       onTap: () async {
-        Tuple2<bool, String> values =
-            await SettingsDialogs().editExternalModuleHost(
-          context,
-          prefill: _host,
-        );
+        Tuple2<bool, String> values = await SettingsDialogs()
+            .editExternalModuleHost(context, prefill: _host);
         if (values.item1) {
           _module!.host = values.item2;
-          await context
-              .read<ExternalModulesStore>()
-              .update(widget.moduleId, _module!);
+          await context.read<ExternalModulesStore>().update(
+            widget.moduleId,
+            _module!,
+          );
         }
       },
     );

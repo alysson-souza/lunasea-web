@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandTerminateSession(
   Dio client, {
@@ -8,7 +8,9 @@ Future<void> _commandTerminateSession(
 }) async {
   if (sessionKey != null)
     assert(
-        sessionId == null, 'sessionKey and sessionId both cannot be defined.');
+      sessionId == null,
+      'sessionKey and sessionId both cannot be defined.',
+    );
   if (sessionKey == null)
     assert(sessionId != null, 'sessionKey and sessionId cannot both be null.');
   if (sessionId == null)

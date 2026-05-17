@@ -6,10 +6,7 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrAddMovieSearchPage extends StatefulWidget {
   final bool autofocusSearchBar;
 
-  const RadarrAddMovieSearchPage({
-    Key? key,
-    required this.autofocusSearchBar,
-  }) : super(key: key);
+  const RadarrAddMovieSearchPage({super.key, required this.autofocusSearchBar});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -57,21 +54,25 @@ class _State extends State<RadarrAddMovieSearchPage>
   Widget _body() {
     return Selector<RadarrState, Future<List<RadarrMovie>>?>(
       selector: (_, state) => state.movies,
-      builder: (context, movies, _) => Selector<RadarrAddMovieState,
-          Tuple2<Future<List<RadarrMovie>>?, Future<List<RadarrExclusion>>?>>(
-        selector: (_, state) => Tuple2(state.lookup, state.exclusions),
-        builder: (context, tuple, _) {
-          if (tuple.item1 == null) return Container();
-          return _builder(movies, tuple.item1, tuple.item2);
-        },
-      ),
+      builder: (context, movies, _) =>
+          Selector<
+            RadarrAddMovieState,
+            Tuple2<Future<List<RadarrMovie>>?, Future<List<RadarrExclusion>>?>
+          >(
+            selector: (_, state) => Tuple2(state.lookup, state.exclusions),
+            builder: (context, tuple, _) {
+              if (tuple.item1 == null) return Container();
+              return _builder(movies, tuple.item1, tuple.item2);
+            },
+          ),
     );
   }
 
   Widget _builder(
-      Future<List<RadarrMovie>>? movies,
-      Future<List<RadarrMovie>>? lookup,
-      Future<List<RadarrExclusion>>? exclusions) {
+    Future<List<RadarrMovie>>? movies,
+    Future<List<RadarrMovie>>? lookup,
+    Future<List<RadarrExclusion>>? exclusions,
+  ) {
     return LunaRefreshIndicator(
       context: context,
       key: _refreshKey,
@@ -90,7 +91,10 @@ class _State extends State<RadarrAddMovieSearchPage>
           }
           if (snapshot.hasData)
             return _list(
-                snapshot.data![0], snapshot.data![1], snapshot.data![2]);
+              snapshot.data![0],
+              snapshot.data![1],
+              snapshot.data![2],
+            );
           return const LunaLoader();
         },
       ),
@@ -105,18 +109,18 @@ class _State extends State<RadarrAddMovieSearchPage>
     if (results.isEmpty)
       return LunaListView(
         controller: RadarrAddMovieNavigationBar.scrollControllers[0],
-        children: [
-          LunaMessage.inList(text: 'radarr.NoResultsFound'.tr()),
-        ],
+        children: [LunaMessage.inList(text: 'radarr.NoResultsFound'.tr())],
       );
     return LunaListViewBuilder(
       controller: RadarrAddMovieNavigationBar.scrollControllers[0],
       itemCount: results.length,
       itemBuilder: (context, index) {
         RadarrExclusion? exclusion = exclusions.firstWhereOrNull(
-            (exclusion) => exclusion.tmdbId == results[index].tmdbId);
-        RadarrMovie? movie = movies
-            .firstWhereOrNull((movie) => (movie.id ?? -1) == results[index].id);
+          (exclusion) => exclusion.tmdbId == results[index].tmdbId,
+        );
+        RadarrMovie? movie = movies.firstWhereOrNull(
+          (movie) => (movie.id ?? -1) == results[index].id,
+        );
         return RadarrAddMovieSearchResultTile(
           movie: results[index],
           exists: movie != null,

@@ -5,9 +5,7 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/types/list_view_option.dart';
 
 class ConfigurationSonarrDefaultOptionsRoute extends StatefulWidget {
-  const ConfigurationSonarrDefaultOptionsRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSonarrDefaultOptionsRoute({super.key});
 
   @override
   State<ConfigurationSonarrDefaultOptionsRoute> createState() => _State();
@@ -75,9 +73,9 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
 
             if (values.item1) {
               LunaListViewOption _opt = LunaListViewOption.values[values.item2];
-              await context
-                  .read<SettingsStore>()
-                  .setSonarrSeriesDefaultView(_opt);
+              await context.read<SettingsStore>().setSonarrSeriesDefaultView(
+                _opt,
+              );
               context.read<SonarrState>().seriesViewType = _opt;
             }
           },
@@ -107,9 +105,9 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
 
           if (values.item1) {
             final sorting = SonarrSeriesSorting.values[values.item2];
-            await context
-                .read<SettingsStore>()
-                .setSonarrSeriesDefaultSorting(sorting);
+            await context.read<SettingsStore>().setSonarrSeriesDefaultSorting(
+              sorting,
+            );
             context.read<SonarrState>().seriesSortType = sorting;
             context.read<SonarrState>().seriesSortAscending = context
                 .read<SettingsStore>()
@@ -162,8 +160,8 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
 
           if (values.item1) {
             await context.read<SettingsStore>().setSonarrSeriesDefaultFilter(
-                  SonarrSeriesFilter.values[values.item2],
-                );
+              SonarrSeriesFilter.values[values.item2],
+            );
           }
         },
       ),
@@ -191,8 +189,8 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
 
           if (values.item1) {
             await context.read<SettingsStore>().setSonarrReleasesDefaultSorting(
-                  SonarrReleasesSorting.values[values.item2],
-                );
+              SonarrReleasesSorting.values[values.item2],
+            );
           }
         },
       ),
@@ -241,8 +239,8 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
 
           if (values.item1) {
             await context.read<SettingsStore>().setSonarrReleasesDefaultFilter(
-                  SonarrReleasesFilter.values[values.item2],
-                );
+              SonarrReleasesFilter.values[values.item2],
+            );
           }
         },
       ),

@@ -7,10 +7,7 @@ import 'package:lunasea/router/routes/search.dart';
 class SearchIndexerTile extends StatelessWidget {
   final LunaIndexer? indexer;
 
-  const SearchIndexerTile({
-    Key? key,
-    required this.indexer,
-  }) : super(key: key);
+  const SearchIndexerTile({super.key, required this.indexer});
 
   @override
   Widget build(BuildContext context) {

@@ -1,13 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all transcode decisions used in Tautulli.
-enum TautulliTranscodeDecision {
-  TRANSCODE,
-  COPY,
-  DIRECT_PLAY,
-  BURN,
-  NULL,
-}
+enum TautulliTranscodeDecision { TRANSCODE, COPY, DIRECT_PLAY, BURN, NULL }
 
 /// Extension on [TautulliTranscodeDecision] to implement extended functionality.
 extension TautulliTranscodeDecisionExtension on TautulliTranscodeDecision {

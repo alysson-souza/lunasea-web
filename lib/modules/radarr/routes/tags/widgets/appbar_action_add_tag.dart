@@ -5,10 +5,7 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrTagsAppBarActionAddTag extends StatelessWidget {
   final bool asDialogButton;
 
-  const RadarrTagsAppBarActionAddTag({
-    Key? key,
-    this.asDialogButton = false,
-  }) : super(key: key);
+  const RadarrTagsAppBarActionAddTag({super.key, this.asDialogButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +24,9 @@ class RadarrTagsAppBarActionAddTag extends StatelessWidget {
   Future<void> _onPressed(BuildContext context) async {
     Tuple2<bool, String> values = await RadarrDialogs().addNewTag(context);
     if (values.item1)
-      RadarrAPIHelper()
-          .addTag(context: context, label: values.item2)
-          .then((value) {
+      RadarrAPIHelper().addTag(context: context, label: values.item2).then((
+        value,
+      ) {
         if (value) context.read<RadarrState>().fetchTags();
       });
   }

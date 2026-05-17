@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all session locations used in Tautulli.
-enum TautulliSessionLocation {
-  LAN,
-  WAN,
-  NULL,
-}
+enum TautulliSessionLocation { LAN, WAN, NULL }
 
 /// Extension on [TautulliSessionLocation] to implement extended functionality.
 extension TautulliSessionLocationExtension on TautulliSessionLocation {

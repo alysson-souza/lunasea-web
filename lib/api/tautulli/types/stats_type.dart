@@ -1,10 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all statistic types for home stats.
-enum TautulliStatsType {
-  PLAYS,
-  DURATION,
-}
+enum TautulliStatsType { PLAYS, DURATION }
 
 /// Extension on [TautulliStatsType] to implement extended functionality.
 extension TautulliStatsTypeExtension on TautulliStatsType {

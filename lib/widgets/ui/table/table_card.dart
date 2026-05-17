@@ -7,11 +7,11 @@ class BackendPreferenceGroupCard extends StatelessWidget {
   final List<LunaButton>? buttons;
 
   const BackendPreferenceGroupCard({
-    Key? key,
+    super.key,
     this.content,
     this.buttons,
     this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,8 @@ class BackendPreferenceGroupCard extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-              horizontal: LunaUI.DEFAULT_MARGIN_SIZE),
+            horizontal: LunaUI.DEFAULT_MARGIN_SIZE,
+          ),
           child: LunaText.title(text: title!),
         ),
       ],
@@ -55,12 +56,14 @@ class BackendPreferenceGroupCard extends StatelessWidget {
 
   List<Widget> _content() {
     return content!
-        .map((child) => Padding(
-              child: child,
-              padding: const EdgeInsets.symmetric(
-                horizontal: LunaUI.DEFAULT_MARGIN_SIZE / 2,
-              ),
-            ))
+        .map(
+          (child) => Padding(
+            child: child,
+            padding: const EdgeInsets.symmetric(
+              horizontal: LunaUI.DEFAULT_MARGIN_SIZE / 2,
+            ),
+          ),
+        )
         .toList();
   }
 
@@ -68,8 +71,9 @@ class BackendPreferenceGroupCard extends StatelessWidget {
     if (buttons == null) return Container(height: 0.0);
     return Padding(
       child: Row(
-        children:
-            buttons!.map<Widget>((button) => Expanded(child: button)).toList(),
+        children: buttons!
+            .map<Widget>((button) => Expanded(child: button))
+            .toList(),
       ),
       padding: const EdgeInsets.only(
         top: LunaUI.DEFAULT_MARGIN_SIZE / 2 - LunaUI.DEFAULT_MARGIN_SIZE / 4,

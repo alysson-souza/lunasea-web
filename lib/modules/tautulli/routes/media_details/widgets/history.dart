@@ -10,8 +10,8 @@ class TautulliMediaDetailsHistory extends StatefulWidget {
   const TautulliMediaDetailsHistory({
     required this.type,
     required this.ratingKey,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -34,14 +34,14 @@ class _State extends State<TautulliMediaDetailsHistory>
 
   Future<void> _refresh() async {
     context.read<TautulliState>().setIndividualHistory(
-          widget.ratingKey,
-          context.read<TautulliState>().api!.history.getHistory(
-                ratingKey: _ratingKey,
-                parentRatingKey: _parentRatingKey,
-                grandparentRatingKey: _grandparentRatingKey,
-                length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
-              ),
-        );
+      widget.ratingKey,
+      context.read<TautulliState>().api!.history.getHistory(
+        ratingKey: _ratingKey,
+        parentRatingKey: _parentRatingKey,
+        grandparentRatingKey: _grandparentRatingKey,
+        length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
+      ),
+    );
     await context.read<TautulliState>().individualHistory[widget.ratingKey];
   }
 
@@ -83,10 +83,7 @@ class _State extends State<TautulliMediaDetailsHistory>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {
@@ -95,8 +92,9 @@ class _State extends State<TautulliMediaDetailsHistory>
       key: _refreshKey,
       onRefresh: _refresh,
       child: FutureBuilder(
-        future:
-            context.watch<TautulliState>().individualHistory[widget.ratingKey],
+        future: context
+            .watch<TautulliState>()
+            .individualHistory[widget.ratingKey],
         builder: (context, AsyncSnapshot<TautulliHistory> snapshot) {
           if (snapshot.hasError) {
             if (snapshot.connectionState != ConnectionState.waiting)

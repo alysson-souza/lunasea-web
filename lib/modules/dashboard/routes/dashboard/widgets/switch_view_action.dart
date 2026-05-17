@@ -7,10 +7,7 @@ import 'package:lunasea/modules/dashboard/core/state.dart';
 
 class SwitchViewAction extends StatefulWidget {
   final PageController? pageController;
-  const SwitchViewAction({
-    Key? key,
-    required this.pageController,
-  }) : super(key: key);
+  const SwitchViewAction({super.key, required this.pageController});
 
   @override
   State<StatefulWidget> createState() => _State();

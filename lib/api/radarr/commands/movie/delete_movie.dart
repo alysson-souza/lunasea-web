@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteMovie(
   Dio client, {
@@ -6,9 +6,12 @@ Future<void> _commandDeleteMovie(
   bool addImportExclusion = false,
   bool deleteFiles = false,
 }) async {
-  await client.delete('movie/$movieId', queryParameters: {
-    'addImportExclusion': addImportExclusion,
-    'deleteFiles': deleteFiles,
-  });
+  await client.delete(
+    'movie/$movieId',
+    queryParameters: {
+      'addImportExclusion': addImportExclusion,
+      'deleteFiles': deleteFiles,
+    },
+  );
   return;
 }

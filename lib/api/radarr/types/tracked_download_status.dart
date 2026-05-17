@@ -1,10 +1,6 @@
-part of radarr_types;
+part of '../types.dart';
 
-enum RadarrTrackedDownloadStatus {
-  OK,
-  ERROR,
-  WARNING,
-}
+enum RadarrTrackedDownloadStatus { OK, ERROR, WARNING }
 
 extension RadarrTrackedDownloadStatusExtension on RadarrTrackedDownloadStatus {
   RadarrTrackedDownloadStatus? from(String? key) {

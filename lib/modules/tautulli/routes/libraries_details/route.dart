@@ -6,10 +6,7 @@ import 'package:lunasea/widgets/pages/invalid_route.dart';
 class LibrariesDetailsRoute extends StatefulWidget {
   final int? sectionId;
 
-  const LibrariesDetailsRoute({
-    Key? key,
-    required this.sectionId,
-  }) : super(key: key);
+  const LibrariesDetailsRoute({super.key, required this.sectionId});
 
   @override
   State<LibrariesDetailsRoute> createState() => _State();
@@ -23,8 +20,8 @@ class _State extends State<LibrariesDetailsRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage:
-          TautulliPreferences.NAVIGATION_INDEX_LIBRARIES_DETAILS.read(),
+      initialPage: TautulliPreferences.NAVIGATION_INDEX_LIBRARIES_DETAILS
+          .read(),
     );
   }
 

@@ -4,10 +4,7 @@ import 'package:lunasea/core.dart';
 class LunaReorderableListViewDragger extends StatelessWidget {
   final int index;
 
-  const LunaReorderableListViewDragger({
-    Key? key,
-    required this.index,
-  }) : super(key: key);
+  const LunaReorderableListViewDragger({super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {

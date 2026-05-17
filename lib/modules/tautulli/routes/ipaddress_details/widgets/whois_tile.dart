@@ -5,17 +5,16 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliIPAddressDetailsWHOISTile extends StatelessWidget {
   final TautulliWHOISInfo whois;
 
-  const TautulliIPAddressDetailsWHOISTile({
-    Key? key,
-    required this.whois,
-  }) : super(key: key);
+  const TautulliIPAddressDetailsWHOISTile({super.key, required this.whois});
 
   @override
   Widget build(BuildContext context) {
     return BackendPreferenceGroupCard(
       content: [
         BackendPreferenceGroupContent(
-            title: 'host', body: whois.host ?? LunaUI.TEXT_EMDASH),
+          title: 'host',
+          body: whois.host ?? LunaUI.TEXT_EMDASH,
+        ),
         ..._subnets(),
       ],
     );
@@ -23,18 +22,22 @@ class TautulliIPAddressDetailsWHOISTile extends StatelessWidget {
 
   List<BackendPreferenceGroupContent> _subnets() {
     if (whois.subnets?.isEmpty ?? true) return [];
-    return whois.subnets!.fold<List<BackendPreferenceGroupContent>>([],
-        (list, subnet) {
-      list.add(BackendPreferenceGroupContent(
-        title: 'isp',
-        body: [
-          subnet.description ?? LunaUI.TEXT_EMDASH,
-          '\n\n${subnet.address ?? LunaUI.TEXT_EMDASH}',
-          '\n${subnet.city}, ${subnet.state ?? LunaUI.TEXT_EMDASH}',
-          '\n${subnet.postalCode ?? LunaUI.TEXT_EMDASH}',
-          '\n${subnet.country ?? LunaUI.TEXT_EMDASH}',
-        ].join(),
-      ));
+    return whois.subnets!.fold<List<BackendPreferenceGroupContent>>([], (
+      list,
+      subnet,
+    ) {
+      list.add(
+        BackendPreferenceGroupContent(
+          title: 'isp',
+          body: [
+            subnet.description ?? LunaUI.TEXT_EMDASH,
+            '\n\n${subnet.address ?? LunaUI.TEXT_EMDASH}',
+            '\n${subnet.city}, ${subnet.state ?? LunaUI.TEXT_EMDASH}',
+            '\n${subnet.postalCode ?? LunaUI.TEXT_EMDASH}',
+            '\n${subnet.country ?? LunaUI.TEXT_EMDASH}',
+          ].join(),
+        ),
+      );
       return list;
     });
   }

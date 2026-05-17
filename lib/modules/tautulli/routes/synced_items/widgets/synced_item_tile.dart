@@ -8,30 +8,23 @@ import 'package:lunasea/router/routes/tautulli.dart';
 class TautulliSyncedItemTile extends StatelessWidget {
   final TautulliSyncedItem syncedItem;
 
-  const TautulliSyncedItemTile({
-    Key? key,
-    required this.syncedItem,
-  }) : super(key: key);
+  const TautulliSyncedItemTile({super.key, required this.syncedItem});
 
   @override
   Widget build(BuildContext context) {
     return LunaBlock(
       title: syncedItem.syncTitle,
-      body: [
-        _subtitle1(),
-        _subtitle2(),
-        _subtitle3(),
-      ],
+      body: [_subtitle1(), _subtitle2(), _subtitle3()],
       backgroundHeaders: context.watch<TautulliState>().headers,
       backgroundUrl: context.watch<TautulliState>().getImageURLFromRatingKey(
-            syncedItem.ratingKey,
-            width: MediaQuery.of(context).size.width.truncate(),
-          ),
+        syncedItem.ratingKey,
+        width: MediaQuery.of(context).size.width.truncate(),
+      ),
       posterHeaders: context.watch<TautulliState>().headers,
       posterUrl: context.watch<TautulliState>().getImageURLFromRatingKey(
-            syncedItem.ratingKey,
-            width: MediaQuery.of(context).size.width.truncate(),
-          ),
+        syncedItem.ratingKey,
+        width: MediaQuery.of(context).size.width.truncate(),
+      ),
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       onTap: () async => _onTap(context),
     );
@@ -77,9 +70,11 @@ class TautulliSyncedItemTile extends StatelessWidget {
   }
 
   Future<void> _onTap(BuildContext context) async {
-    TautulliRoutes.MEDIA_DETAILS.go(params: {
-      'rating_key': syncedItem.ratingKey.toString(),
-      'media_type': TautulliMediaType.from(syncedItem.metadataType).value,
-    });
+    TautulliRoutes.MEDIA_DETAILS.go(
+      params: {
+        'rating_key': syncedItem.ratingKey.toString(),
+        'media_type': TautulliMediaType.from(syncedItem.metadataType).value,
+      },
+    );
   }
 }

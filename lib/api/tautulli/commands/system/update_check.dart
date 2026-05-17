@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliUpdateCheck> _commandUpdateCheck(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'update_check',
-    },
+    queryParameters: {'cmd': 'update_check'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

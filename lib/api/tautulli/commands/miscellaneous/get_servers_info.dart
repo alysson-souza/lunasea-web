@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<List<TautulliServerInfo>> _commandGetServersInfo(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_servers_info',
-    },
+    queryParameters: {'cmd': 'get_servers_info'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

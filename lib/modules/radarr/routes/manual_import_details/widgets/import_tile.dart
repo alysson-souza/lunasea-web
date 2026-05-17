@@ -6,10 +6,7 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrManualImportDetailsTile extends StatelessWidget {
   final RadarrManualImport manualImport;
 
-  const RadarrManualImportDetailsTile({
-    Key? key,
-    required this.manualImport,
-  }) : super(key: key);
+  const RadarrManualImportDetailsTile({super.key, required this.manualImport});
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +19,15 @@ class RadarrManualImportDetailsTile extends StatelessWidget {
             .manualImport
             .relativePath!,
         collapsedTrailing: _trailing(context),
-        collapsedSubtitles: [
-          _subtitle1(context),
-          _subtitle2(context),
-        ],
+        collapsedSubtitles: [_subtitle1(context), _subtitle2(context)],
         expandedTableButtons: _buttons(context),
         expandedTableContent: _table(context),
-        backgroundColor: context
+        backgroundColor:
+            context
                 .watch<RadarrManualImportDetailsState>()
                 .selectedFiles
                 .contains(manualImport.id)
-            ? LunaColours.accent.withOpacity(LunaUI.OPACITY_SPLASH)
+            ? LunaColours.accent.withValues(alpha: LunaUI.OPACITY_SPLASH)
             : null,
       ),
     );
@@ -42,22 +37,25 @@ class RadarrManualImportDetailsTile extends StatelessWidget {
     return TextSpan(
       children: [
         TextSpan(
-            text: context
-                .watch<RadarrManualImportDetailsTileState>()
-                .manualImport
-                .lunaQualityProfile),
+          text: context
+              .watch<RadarrManualImportDetailsTileState>()
+              .manualImport
+              .lunaQualityProfile,
+        ),
         TextSpan(text: LunaUI.TEXT_BULLET.pad()),
         TextSpan(
-            text: context
-                .watch<RadarrManualImportDetailsTileState>()
-                .manualImport
-                .lunaLanguage),
+          text: context
+              .watch<RadarrManualImportDetailsTileState>()
+              .manualImport
+              .lunaLanguage,
+        ),
         TextSpan(text: LunaUI.TEXT_BULLET.pad()),
         TextSpan(
-            text: context
-                .watch<RadarrManualImportDetailsTileState>()
-                .manualImport
-                .lunaSize),
+          text: context
+              .watch<RadarrManualImportDetailsTileState>()
+              .manualImport
+              .lunaSize,
+        ),
       ],
     );
   }
@@ -133,14 +131,17 @@ class RadarrManualImportDetailsTile extends StatelessWidget {
 
   LunaButton _configureButton(BuildContext context) {
     return LunaButton.text(
-        text: 'radarr.Configure'.tr(),
-        icon: Icons.edit_rounded,
-        onTap: () async {
-          await RadarrBottomModalSheets().configureManualImport(context);
-          Future.microtask(() => context
+      text: 'radarr.Configure'.tr(),
+      icon: Icons.edit_rounded,
+      onTap: () async {
+        await RadarrBottomModalSheets().configureManualImport(context);
+        Future.microtask(
+          () => context
               .read<RadarrManualImportDetailsTileState>()
-              .checkIfShouldSelect(context));
-        });
+              .checkIfShouldSelect(context),
+        );
+      },
+    );
   }
 
   LunaButton _rejectionsButton(BuildContext context) {
@@ -182,16 +183,19 @@ class RadarrManualImportDetailsTileState extends ChangeNotifier {
   }
 
   void addLanguage(RadarrLanguage language) {
-    if ((_manualImport.languages ?? [])
-            .indexWhere((lang) => lang.id == language.id) >=
-        0) return;
+    if ((_manualImport.languages ?? []).indexWhere(
+          (lang) => lang.id == language.id,
+        ) >=
+        0)
+      return;
     _manualImport.languages!.add(language);
     notifyListeners();
   }
 
   void removeLanguage(RadarrLanguage language) {
-    int index = (_manualImport.languages ?? [])
-        .indexWhere((lang) => lang.id == language.id);
+    int index = (_manualImport.languages ?? []).indexWhere(
+      (lang) => lang.id == language.id,
+    );
     if (index == -1) return;
     _manualImport.languages!.removeAt(index);
     notifyListeners();
@@ -202,9 +206,11 @@ class RadarrManualImportDetailsTileState extends ChangeNotifier {
         _manualImport.quality != null &&
         (_manualImport.languages?.length ?? 0) > 0 &&
         _manualImport.languages![0].id! >= 0)
-      Future.microtask(() => context
-          .read<RadarrManualImportDetailsState>()
-          .addSelectedFile(_manualImport.id!));
+      Future.microtask(
+        () => context.read<RadarrManualImportDetailsState>().addSelectedFile(
+          _manualImport.id!,
+        ),
+      );
   }
 
   Future<void> fetchUpdates(BuildContext context, int? movieId) async {
@@ -216,11 +222,9 @@ class RadarrManualImportDetailsTileState extends ChangeNotifier {
         quality: manualImport.quality,
         languages: manualImport.languages,
       );
-      context
-          .read<RadarrState>()
-          .api!
-          .manualImport
-          .update(data: [data]).then((value) {
+      context.read<RadarrState>().api!.manualImport.update(data: [data]).then((
+        value,
+      ) {
         if (value.isNotEmpty) {
           RadarrManualImport _import = _manualImport;
           _import.movie = value[0].movie;

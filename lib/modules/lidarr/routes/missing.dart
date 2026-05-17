@@ -8,10 +8,10 @@ class LidarrMissing extends StatefulWidget {
   final Function refreshAllPages;
 
   const LidarrMissing({
-    Key? key,
+    super.key,
     required this.refreshIndicatorKey,
     required this.refreshAllPages,
-  }) : super(key: key);
+  });
 
   @override
   State<LidarrMissing> createState() => _State();
@@ -66,7 +66,6 @@ class _State extends State<LidarrMissing> with AutomaticKeepAliveClientMixin {
           case ConnectionState.none:
           case ConnectionState.waiting:
           case ConnectionState.active:
-          default:
             return const LunaLoader();
         }
       },

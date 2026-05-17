@@ -1,10 +1,7 @@
-part of radarr_types;
+part of '../types.dart';
 
 /// Enumerator to handle all fileystem types used in Radarr.
-enum RadarrFileSystemType {
-  FOLDER,
-  FILE,
-}
+enum RadarrFileSystemType { FOLDER, FILE }
 
 /// Extension on [RadarrFileSystemType] to implement extended functionality.
 extension RadarrFileSystemTypeExtension on RadarrFileSystemType {
@@ -26,8 +23,6 @@ extension RadarrFileSystemTypeExtension on RadarrFileSystemType {
         return 'folder';
       case RadarrFileSystemType.FILE:
         return 'file';
-      default:
-        return null;
     }
   }
 
@@ -37,8 +32,6 @@ extension RadarrFileSystemTypeExtension on RadarrFileSystemType {
         return 'Folder';
       case RadarrFileSystemType.FILE:
         return 'File';
-      default:
-        return null;
     }
   }
 }

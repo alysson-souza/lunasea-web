@@ -7,9 +7,7 @@ import 'package:lunasea/router/routes/settings.dart';
 import 'package:lunasea/system/cache/image/image_cache.dart';
 
 class SystemRoute extends StatefulWidget {
-  const SystemRoute({
-    Key? key,
-  }) : super(key: key);
+  const SystemRoute({super.key});
 
   @override
   State<SystemRoute> createState() => _State();
@@ -37,11 +35,7 @@ class _State extends State<SystemRoute> with LunaScrollControllerMixin {
   Widget _body() {
     return LunaListView(
       controller: scrollController,
-      children: <Widget>[
-        _logs(),
-        _clearImageCache(),
-        _clearConfiguration(),
-      ],
+      children: <Widget>[_logs(), _clearImageCache(), _clearConfiguration()],
     );
   }
 

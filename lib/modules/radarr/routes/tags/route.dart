@@ -4,9 +4,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class TagsRoute extends StatefulWidget {
-  const TagsRoute({
-    Key? key,
-  }) : super(key: key);
+  const TagsRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -41,9 +39,7 @@ class _State extends State<TagsRoute> with LunaScrollControllerMixin {
     return LunaAppBar(
       title: 'Tags',
       scrollControllers: [scrollController],
-      actions: const [
-        RadarrTagsAppBarActionAddTag(),
-      ],
+      actions: const [RadarrTagsAppBarActionAddTag()],
     );
   }
 
@@ -83,10 +79,8 @@ class _State extends State<TagsRoute> with LunaScrollControllerMixin {
     return LunaListViewBuilder(
       controller: scrollController,
       itemCount: tags!.length,
-      itemBuilder: (context, index) => RadarrTagsTagTile(
-        key: ObjectKey(tags[index].id),
-        tag: tags[index],
-      ),
+      itemBuilder: (context, index) =>
+          RadarrTagsTagTile(key: ObjectKey(tags[index].id), tag: tags[index]),
     );
   }
 }

@@ -5,10 +5,7 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrRootFolderTile extends StatelessWidget {
   final RadarrRootFolder rootFolder;
 
-  const RadarrRootFolderTile({
-    Key? key,
-    required this.rootFolder,
-  }) : super(key: key);
+  const RadarrRootFolderTile({super.key, required this.rootFolder});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +19,7 @@ class RadarrRootFolderTile extends StatelessWidget {
             color: LunaColours.accent,
             fontWeight: LunaUI.FONT_WEIGHT_BOLD,
           ),
-        )
+        ),
       ],
     );
   }

@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to users within Tautulli.
 ///
@@ -33,10 +33,7 @@ class TautulliCommandHandlerUsers {
   ///
   /// Optional Parameters:
   /// - `rowIds`: Optional list of row IDs to delete
-  Future<void> deleteUser({
-    required int userId,
-    List<int>? rowIds,
-  }) async =>
+  Future<void> deleteUser({required int userId, List<int>? rowIds}) async =>
       _commandDeleteUser(_client, userId: userId, rowIds: rowIds);
 
   /// Handler for [edit_user](https://github.com/Tautulli/Tautulli/blob/master/API.md#edit_user).
@@ -57,13 +54,14 @@ class TautulliCommandHandlerUsers {
     String? customThumb,
     bool? keepHistory,
     bool? allowGuest,
-  }) async =>
-      _commandEditUser(_client,
-          userId: userId,
-          friendlyName: friendlyName,
-          customThumb: customThumb,
-          keepHistory: keepHistory,
-          allowGuest: allowGuest);
+  }) async => _commandEditUser(
+    _client,
+    userId: userId,
+    friendlyName: friendlyName,
+    customThumb: customThumb,
+    keepHistory: keepHistory,
+    allowGuest: allowGuest,
+  );
 
   /// Handler for [get_user](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_user).
   ///
@@ -71,9 +69,7 @@ class TautulliCommandHandlerUsers {
   ///
   /// Required Parameters:
   /// - `userId`: The user's ID
-  Future<TautulliUser> getUser({
-    required int userId,
-  }) async =>
+  Future<TautulliUser> getUser({required int userId}) async =>
       _commandGetUser(_client, userId: userId);
 
   /// Handler for [get_user_logins](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_user_logins).
@@ -94,16 +90,15 @@ class TautulliCommandHandlerUsers {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetUserLogins(
-        _client,
-        userId: userId,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetUserLogins(
+    _client,
+    userId: userId,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_user_ips](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_user_ips).
   ///
@@ -125,16 +120,15 @@ class TautulliCommandHandlerUsers {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetUserIPs(
-        _client,
-        userId: userId,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetUserIPs(
+    _client,
+    userId: userId,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_user_names](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_user_names).
   ///
@@ -171,9 +165,12 @@ class TautulliCommandHandlerUsers {
     required int userId,
     bool? grouping,
     List<int>? queryDays,
-  }) async =>
-      _commandGetUserWatchTimeStats(_client,
-          userId: userId, grouping: grouping, queryDays: queryDays);
+  }) async => _commandGetUserWatchTimeStats(
+    _client,
+    userId: userId,
+    grouping: grouping,
+    queryDays: queryDays,
+  );
 
   /// Handler for [get_users](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_users).
   ///
@@ -198,16 +195,15 @@ class TautulliCommandHandlerUsers {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetUsersTable(
-        _client,
-        grouping: grouping,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetUsersTable(
+    _client,
+    grouping: grouping,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [refresh_users_list](https://github.com/Tautulli/Tautulli/blob/master/API.md#refresh_users_list).
   ///
@@ -224,6 +220,5 @@ class TautulliCommandHandlerUsers {
   Future<void> undeleteUser({
     required int userId,
     required String username,
-  }) async =>
-      _commandUndeleteUser(_client, userId: userId, username: username);
+  }) async => _commandUndeleteUser(_client, userId: userId, username: username);
 }

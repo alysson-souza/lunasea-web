@@ -4,9 +4,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class QueueRoute extends StatefulWidget {
-  const QueueRoute({
-    Key? key,
-  }) : super(key: key);
+  const QueueRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -69,10 +67,7 @@ class _State extends State<QueueRoute>
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.hasData) {
-            return _list(
-              snapshot.data![0],
-              snapshot.data![1],
-            );
+            return _list(snapshot.data![0], snapshot.data![1]);
           }
           return const LunaLoader();
         },
@@ -95,10 +90,7 @@ class _State extends State<QueueRoute>
         RadarrMovie? movie = movies.firstWhereOrNull(
           (movie) => movie.id == queue.records![index].movieId,
         );
-        return RadarrQueueTile(
-          record: queue.records![index],
-          movie: movie,
-        );
+        return RadarrQueueTile(record: queue.records![index], movie: movie);
       },
     );
   }

@@ -16,25 +16,21 @@ class LunaListViewModalBuilder extends StatelessWidget {
   final double? itemExtent;
 
   const LunaListViewModalBuilder({
-    Key? key,
+    super.key,
     required this.itemCount,
     required this.itemBuilder,
     this.appBar,
     this.appBarHeight,
     this.actionBar,
     this.itemExtent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (appBar != null)
-          SizedBox(
-            child: appBar,
-            height: appBarHeight,
-          ),
+        if (appBar != null) SizedBox(child: appBar, height: appBarHeight),
         Flexible(
           child: Scrollbar(
             controller: ModalScrollController.of(context),
@@ -69,8 +65,8 @@ class LunaListViewModalBuilder extends StatelessWidget {
       actionBar != null
           ? 0
           : _padding.bottom +
-              _viewInsets.bottom +
-              LunaUI.MARGIN_H_DEFAULT_V_HALF.bottom,
+                _viewInsets.bottom +
+                LunaUI.MARGIN_H_DEFAULT_V_HALF.bottom,
     );
   }
 }

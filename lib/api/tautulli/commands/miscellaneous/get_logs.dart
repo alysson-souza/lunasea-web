@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<List<TautulliLog>> _commandGetLogs(
   Dio client, {

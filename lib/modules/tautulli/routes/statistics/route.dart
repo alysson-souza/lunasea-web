@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class StatisticsRoute extends StatefulWidget {
-  const StatisticsRoute({
-    Key? key,
-  }) : super(key: key);
+  const StatisticsRoute({super.key});
 
   @override
   State<StatisticsRoute> createState() => _State();
@@ -16,11 +14,7 @@ class _State extends State<StatisticsRoute>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
-  final List<String> denylist = [
-    'top_libraries',
-    'popular_music',
-    'top_music',
-  ];
+  final List<String> denylist = ['top_libraries', 'popular_music', 'top_music'];
 
   @override
   Future<void> loadCallback() async {
@@ -117,7 +111,8 @@ class _State extends State<StatisticsRoute>
             );
           case 'last_watched':
             return TautulliStatisticsRecentlyWatchedTile(
-                data: stats.data![index]);
+              data: stats.data![index],
+            );
           case 'top_users':
             return TautulliStatisticsUserTile(data: stats.data![index]);
           case 'top_platforms':
@@ -127,7 +122,7 @@ class _State extends State<StatisticsRoute>
           default:
             return Container();
         }
-      })
+      }),
     ];
   }
 }

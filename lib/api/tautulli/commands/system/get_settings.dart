@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<Map<String, dynamic>?> _commandGetSettings(
   Dio client, {
@@ -6,10 +6,7 @@ Future<Map<String, dynamic>?> _commandGetSettings(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_settings',
-      if (key != null) 'key': key,
-    },
+    queryParameters: {'cmd': 'get_settings', if (key != null) 'key': key},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

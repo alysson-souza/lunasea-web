@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to exclusions within Radarr.
 ///
@@ -15,9 +15,7 @@ class RadarrCommandHandlerExclusions {
   ///
   /// Required Parameters:
   /// - `exclusionId`: Identifier for the exclusion rule
-  Future<RadarrExclusion> get({
-    required int exclusionId,
-  }) async =>
+  Future<RadarrExclusion> get({required int exclusionId}) async =>
       _commandGetExclusions(_client, exclusionId: exclusionId);
 
   /// Handler for `exclusions`.

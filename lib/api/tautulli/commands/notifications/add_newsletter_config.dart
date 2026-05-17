@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<String?> _commandAddNewsletterConfig(
   Dio client, {
@@ -6,10 +6,7 @@ Future<String?> _commandAddNewsletterConfig(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'add_newsletter_config',
-      'agent_id': agentId,
-    },
+    queryParameters: {'cmd': 'add_newsletter_config', 'agent_id': agentId},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

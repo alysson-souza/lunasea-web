@@ -7,10 +7,7 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliUserDetailsProfile extends StatefulWidget {
   final TautulliTableUser user;
 
-  const TautulliUserDetailsProfile({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+  const TautulliUserDetailsProfile({super.key, required this.user});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -32,28 +29,26 @@ class _State extends State<TautulliUserDetailsProfile>
   Future<void> loadCallback() async {
     // Initial load or refresh of the user profile data
     context.read<TautulliState>().setUserProfile(
-          widget.user.userId!,
-          context
-              .read<TautulliState>()
-              .api!
-              .users
-              .getUser(userId: widget.user.userId!),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.users.getUser(
+        userId: widget.user.userId!,
+      ),
+    );
     // Initial load or refresh of the user watch stats
     context.read<TautulliState>().setUserWatchStats(
-          widget.user.userId!,
-          context.read<TautulliState>().api!.users.getUserWatchTimeStats(
-              userId: widget.user.userId!, queryDays: [1, 7, 30, 0]),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.users.getUserWatchTimeStats(
+        userId: widget.user.userId!,
+        queryDays: [1, 7, 30, 0],
+      ),
+    );
     // Initial load or refresh of the user player stats
     context.read<TautulliState>().setUserPlayerStats(
-          widget.user.userId!,
-          context
-              .read<TautulliState>()
-              .api!
-              .users
-              .getUserPlayerStats(userId: widget.user.userId!),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.users.getUserPlayerStats(
+        userId: widget.user.userId!,
+      ),
+    );
     setState(() => _initialLoad = true);
     // This await keeps the refresh indicator showing until the data is loaded
     await Future.wait([
@@ -136,13 +131,21 @@ class _State extends State<TautulliUserDetailsProfile>
         ),
         BackendPreferenceGroupContent(title: '', body: ''),
         BackendPreferenceGroupContent(
-            title: 'title', body: widget.user.lastPlayed ?? 'None'),
+          title: 'title',
+          body: widget.user.lastPlayed ?? 'None',
+        ),
         BackendPreferenceGroupContent(
-            title: 'platform', body: widget.user.platform ?? 'None'),
+          title: 'platform',
+          body: widget.user.platform ?? 'None',
+        ),
         BackendPreferenceGroupContent(
-            title: 'player', body: widget.user.player ?? 'None'),
+          title: 'player',
+          body: widget.user.player ?? 'None',
+        ),
         BackendPreferenceGroupContent(
-            title: 'location', body: widget.user.ipAddress ?? 'None'),
+          title: 'location',
+          body: widget.user.ipAddress ?? 'None',
+        ),
       ],
     );
   }
@@ -154,7 +157,9 @@ class _State extends State<TautulliUserDetailsProfile>
         (index) => BackendPreferenceGroupContent(
           title: _globalStatsTitle(watchtime[index].queryDays),
           body: _globalStatsContent(
-              watchtime[index].totalPlays, watchtime[index].totalTime!),
+            watchtime[index].totalPlays,
+            watchtime[index].totalTime!,
+          ),
         ),
       ),
     );
@@ -177,14 +182,19 @@ class _State extends State<TautulliUserDetailsProfile>
         (index) => BackendPreferenceGroupCard(
           content: [
             BackendPreferenceGroupContent(
-                title: 'player', body: player[index].playerName),
+              title: 'player',
+              body: player[index].playerName,
+            ),
             BackendPreferenceGroupContent(
-                title: 'platform', body: player[index].platform),
+              title: 'platform',
+              body: player[index].platform,
+            ),
             BackendPreferenceGroupContent(
-                title: 'plays',
-                body: player[index].totalPlays == 1
-                    ? '1 Play'
-                    : '${player[index].totalPlays} Plays'),
+              title: 'plays',
+              body: player[index].totalPlays == 1
+                  ? '1 Play'
+                  : '${player[index].totalPlays} Plays',
+            ),
           ],
         ),
       );

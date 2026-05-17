@@ -1,4 +1,4 @@
-// ignore: avoid_web_libraries_in_flutter
+// ignore: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:html';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

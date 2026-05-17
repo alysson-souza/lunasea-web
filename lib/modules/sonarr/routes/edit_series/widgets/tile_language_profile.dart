@@ -6,9 +6,9 @@ class SonarrSeriesEditLanguageProfileTile extends StatelessWidget {
   final List<SonarrLanguageProfile?> profiles;
 
   const SonarrSeriesEditLanguageProfileTile({
-    Key? key,
+    super.key,
     required this.profiles,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,8 @@ class SonarrSeriesEditLanguageProfileTile extends StatelessWidget {
       title: 'sonarr.LanguageProfile'.tr(),
       body: [
         TextSpan(
-          text: context.watch<SonarrSeriesEditState>().languageProfile?.name ??
+          text:
+              context.watch<SonarrSeriesEditState>().languageProfile?.name ??
               LunaUI.TEXT_EMDASH,
         ),
       ],
@@ -26,8 +27,8 @@ class SonarrSeriesEditLanguageProfileTile extends StatelessWidget {
   }
 
   Future<void> _onTap(BuildContext context) async {
-    Tuple2<bool, SonarrLanguageProfile?> result =
-        await SonarrDialogs().editLanguageProfiles(context, profiles);
+    Tuple2<bool, SonarrLanguageProfile?> result = await SonarrDialogs()
+        .editLanguageProfiles(context, profiles);
     if (result.item1)
       context.read<SonarrSeriesEditState>().languageProfile = result.item2!;
   }

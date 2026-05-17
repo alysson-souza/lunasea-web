@@ -16,16 +16,13 @@ class SonarrNavigationBar extends StatelessWidget {
   ];
 
   static List<String> get titles => [
-        'sonarr.Series'.tr(),
-        'sonarr.Upcoming'.tr(),
-        'sonarr.Missing'.tr(),
-        'sonarr.More'.tr(),
-      ];
+    'sonarr.Series'.tr(),
+    'sonarr.Upcoming'.tr(),
+    'sonarr.Missing'.tr(),
+    'sonarr.More'.tr(),
+  ];
 
-  const SonarrNavigationBar({
-    Key? key,
-    required this.pageController,
-  }) : super(key: key);
+  const SonarrNavigationBar({super.key, required this.pageController});
 
   @override
   Widget build(BuildContext context) {

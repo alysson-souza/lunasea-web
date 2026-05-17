@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrUpcomingRoute extends StatefulWidget {
-  const SonarrUpcomingRoute({
-    Key? key,
-  }) : super(key: key);
+  const SonarrUpcomingRoute({super.key});
 
   @override
   State<SonarrUpcomingRoute> createState() => _State();
@@ -41,33 +39,39 @@ class _State extends State<SonarrUpcomingRoute>
       context: context,
       key: _refreshKey,
       onRefresh: loadCallback,
-      child: Selector<
-          SonarrState,
-          Tuple2<Future<Map<int?, SonarrSeries>>?,
-              Future<List<SonarrCalendar>>?>>(
-        selector: (_, state) => Tuple2(state.series, state.upcoming),
-        builder: (context, tuple, _) => FutureBuilder(
-          future: Future.wait([tuple.item1!, tuple.item2!]),
-          builder: (context, AsyncSnapshot<List<Object>> snapshot) {
-            if (snapshot.hasError) {
-              if (snapshot.connectionState != ConnectionState.waiting) {
-                LunaLogger().error(
-                  'Unable to fetch Sonarr upcoming episodes',
-                  snapshot.error,
-                  snapshot.stackTrace,
-                );
-              }
-              return LunaMessage.error(onTap: _refreshKey.currentState!.show);
-            }
-            if (snapshot.hasData)
-              return _episodes(
-                snapshot.data![0] as Map<int, SonarrSeries>,
-                snapshot.data![1] as List<SonarrCalendar>,
-              );
-            return const LunaLoader();
-          },
-        ),
-      ),
+      child:
+          Selector<
+            SonarrState,
+            Tuple2<
+              Future<Map<int?, SonarrSeries>>?,
+              Future<List<SonarrCalendar>>?
+            >
+          >(
+            selector: (_, state) => Tuple2(state.series, state.upcoming),
+            builder: (context, tuple, _) => FutureBuilder(
+              future: Future.wait([tuple.item1!, tuple.item2!]),
+              builder: (context, AsyncSnapshot<List<Object>> snapshot) {
+                if (snapshot.hasError) {
+                  if (snapshot.connectionState != ConnectionState.waiting) {
+                    LunaLogger().error(
+                      'Unable to fetch Sonarr upcoming episodes',
+                      snapshot.error,
+                      snapshot.stackTrace,
+                    );
+                  }
+                  return LunaMessage.error(
+                    onTap: _refreshKey.currentState!.show,
+                  );
+                }
+                if (snapshot.hasData)
+                  return _episodes(
+                    snapshot.data![0] as Map<int, SonarrSeries>,
+                    snapshot.data![1] as List<SonarrCalendar>,
+                  );
+                return const LunaLoader();
+              },
+            ),
+          ),
     );
   }
 
@@ -83,14 +87,17 @@ class _State extends State<SonarrUpcomingRoute>
       );
     }
     // Split episodes into days into a map
-    Map<String, Map<String, dynamic>> _episodeMap =
-        upcoming.fold({}, (map, entry) {
+    Map<String, Map<String, dynamic>> _episodeMap = upcoming.fold({}, (
+      map,
+      entry,
+    ) {
       if (entry.airDateUtc == null) return map;
       String _date = DateFormat('y-MM-dd').format(entry.airDateUtc!.toLocal());
       if (!map.containsKey(_date))
         map[_date] = {
-          'date': DateFormat('EEEE / MMMM dd, y')
-              .format(entry.airDateUtc!.toLocal()),
+          'date': DateFormat(
+            'EEEE / MMMM dd, y',
+          ).format(entry.airDateUtc!.toLocal()),
           'entries': [],
         };
       (map[_date]!['entries'] as List).add(entry);
@@ -101,11 +108,13 @@ class _State extends State<SonarrUpcomingRoute>
     _episodeMap.keys.toList()
       ..sort()
       ..forEach((key) {
-        _episodeWidgets.add(_buildDay(
-          (_episodeMap[key]!['date'] as String?),
-          (_episodeMap[key]!['entries'] as List).cast<SonarrCalendar>(),
-          series,
-        ));
+        _episodeWidgets.add(
+          _buildDay(
+            (_episodeMap[key]!['date'] as String?),
+            (_episodeMap[key]!['entries'] as List).cast<SonarrCalendar>(),
+            series,
+          ),
+        );
       });
     // Return the list
     return LunaListView(
@@ -118,18 +127,17 @@ class _State extends State<SonarrUpcomingRoute>
     String? date,
     List<SonarrCalendar> upcoming,
     Map<int, SonarrSeries> series,
-  ) =>
-      [
-        LunaHeader(
-          text: date,
-          // subtitle: 'This is a test',
-        ),
-        ...List.generate(
-          upcoming.length,
-          (index) => SonarrUpcomingTile(
-            record: upcoming[index],
-            series: series[upcoming[index].seriesId!],
-          ),
-        ),
-      ];
+  ) => [
+    LunaHeader(
+      text: date,
+      // subtitle: 'This is a test',
+    ),
+    ...List.generate(
+      upcoming.length,
+      (index) => SonarrUpcomingTile(
+        record: upcoming[index],
+        series: series[upcoming[index].seriesId!],
+      ),
+    ),
+  ];
 }

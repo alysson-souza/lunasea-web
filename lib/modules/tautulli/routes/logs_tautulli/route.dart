@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class LogsTautulliRoute extends StatefulWidget {
-  const LogsTautulliRoute({
-    Key? key,
-  }) : super(key: key);
+  const LogsTautulliRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();

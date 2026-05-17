@@ -1,5 +1,6 @@
 /// This file is deprecated and should no longer be actively used.
 /// All imports should happen directly and canonical export files will not be used anymore.
+library;
 
 export 'system/state.dart';
 export 'system/stores/backend_stores.dart';

@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliDateFormat> _commandGetDateFormats(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_date_formats',
-    },
+    queryParameters: {'cmd': 'get_date_formats'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

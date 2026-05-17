@@ -6,9 +6,9 @@ class RadarrSystemStatusAboutPage extends StatefulWidget {
   final ScrollController scrollController;
 
   const RadarrSystemStatusAboutPage({
-    Key? key,
+    super.key,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -26,10 +26,7 @@ class _State extends State<RadarrSystemStatusAboutPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {
@@ -42,8 +39,11 @@ class _State extends State<RadarrSystemStatusAboutPage>
         future: context.watch<RadarrSystemStatusState>().status,
         builder: (context, AsyncSnapshot<RadarrSystemStatus> snapshot) {
           if (snapshot.hasError) {
-            LunaLogger().error('Unable to fetch Radarr system status',
-                snapshot.error, snapshot.stackTrace);
+            LunaLogger().error(
+              'Unable to fetch Radarr system status',
+              snapshot.error,
+              snapshot.stackTrace,
+            );
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.hasData) return _list(snapshot.data!);
@@ -60,23 +60,35 @@ class _State extends State<RadarrSystemStatusAboutPage>
         BackendPreferenceGroupCard(
           content: [
             BackendPreferenceGroupContent(
-                title: 'Version', body: status.lunaVersion),
+              title: 'Version',
+              body: status.lunaVersion,
+            ),
             if (status.lunaIsDocker)
               BackendPreferenceGroupContent(
                 title: 'Package',
                 body: status.lunaPackageVersion,
               ),
             BackendPreferenceGroupContent(
-                title: '.NET Core', body: status.lunaNetCore),
+              title: '.NET Core',
+              body: status.lunaNetCore,
+            ),
             BackendPreferenceGroupContent(
-                title: 'Migration', body: status.lunaDBMigration),
+              title: 'Migration',
+              body: status.lunaDBMigration,
+            ),
             BackendPreferenceGroupContent(
-                title: 'AppData', body: status.lunaAppDataDirectory),
+              title: 'AppData',
+              body: status.lunaAppDataDirectory,
+            ),
             BackendPreferenceGroupContent(
-                title: 'Startup', body: status.lunaStartupDirectory),
+              title: 'Startup',
+              body: status.lunaStartupDirectory,
+            ),
             BackendPreferenceGroupContent(title: 'mode', body: status.lunaMode),
             BackendPreferenceGroupContent(
-                title: 'uptime', body: status.lunaUptime),
+              title: 'uptime',
+              body: status.lunaUptime,
+            ),
           ],
         ),
       ],

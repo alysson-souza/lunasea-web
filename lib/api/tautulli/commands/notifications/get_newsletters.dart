@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<List<TautulliNewsletter>> _commandGetNewsletters(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_newsletters',
-    },
+    queryParameters: {'cmd': 'get_newsletters'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

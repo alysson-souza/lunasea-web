@@ -8,9 +8,9 @@ class ConfigurationSearchEditIndexerHeadersRoute extends StatefulWidget {
   final int id;
 
   const ConfigurationSearchEditIndexerHeadersRoute({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   @override
   State<ConfigurationSearchEditIndexerHeadersRoute> createState() => _State();
@@ -52,8 +52,11 @@ class _State extends State<ConfigurationSearchEditIndexerHeadersRoute>
         LunaButton.text(
           text: 'settings.AddHeader'.tr(),
           icon: Icons.add_rounded,
-          onTap: () async => HeaderUtility().addHeader(context,
-              headers: _indexer!.headers, indexer: _indexer),
+          onTap: () async => HeaderUtility().addHeader(
+            context,
+            headers: _indexer!.headers,
+            indexer: _indexer,
+          ),
         ),
       ],
     );

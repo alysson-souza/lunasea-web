@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliServerIdentity> _commandGetServerIdentity(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_server_identity',
-    },
+    queryParameters: {'cmd': 'get_server_identity'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

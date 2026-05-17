@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/lidarr.dart';
 
 class ConfigurationLidarrDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationLidarrDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationLidarrDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationLidarrDefaultPagesRoute> createState() => _State();
@@ -32,12 +30,7 @@ class _State extends State<ConfigurationLidarrDefaultPagesRoute>
   }
 
   Widget _body() {
-    return LunaListView(
-      controller: scrollController,
-      children: [
-        _homePage(),
-      ],
-    );
+    return LunaListView(controller: scrollController, children: [_homePage()]);
   }
 
   Widget _homePage() {
@@ -45,7 +38,9 @@ class _State extends State<ConfigurationLidarrDefaultPagesRoute>
       builder: (context, settings, _) => LunaBlock(
         title: 'lunasea.Home'.tr(),
         body: [
-          TextSpan(text: LidarrNavigationBar.titles[settings.lidarrDefaultPage])
+          TextSpan(
+            text: LidarrNavigationBar.titles[settings.lidarrDefaultPage],
+          ),
         ],
         trailing: LunaIconButton(
           icon: LidarrNavigationBar.icons[settings.lidarrDefaultPage],

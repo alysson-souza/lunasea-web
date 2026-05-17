@@ -4,9 +4,7 @@ import 'package:lunasea/modules/radarr.dart';
 
 class RadarrManualImportDetailsConfigureMoviesSearchBar extends StatefulWidget
     implements PreferredSizeWidget {
-  const RadarrManualImportDetailsConfigureMoviesSearchBar({
-    Key? key,
-  }) : super(key: key);
+  const RadarrManualImportDetailsConfigureMoviesSearchBar({super.key});
 
   @override
   Size get preferredSize =>
@@ -31,9 +29,11 @@ class _State extends State<RadarrManualImportDetailsConfigureMoviesSearchBar> {
                 child: LunaTextInputBar(
                   controller: _controller,
                   autofocus: false,
-                  onChanged: (value) => context
-                      .read<RadarrManualImportDetailsTileState>()
-                      .configureMoviesSearchQuery = value,
+                  onChanged: (value) =>
+                      context
+                              .read<RadarrManualImportDetailsTileState>()
+                              .configureMoviesSearchQuery =
+                          value,
                   margin: LunaTextInputBar.appBarMargin,
                 ),
               ),

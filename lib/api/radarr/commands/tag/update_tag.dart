@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrTag> _commandUpdateTag(
   Dio client, {

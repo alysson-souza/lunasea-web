@@ -10,12 +10,12 @@ class SonarrSeriesDetailsOverviewInformationBlock extends StatelessWidget {
   final List<SonarrTag> tags;
 
   const SonarrSeriesDetailsOverviewInformationBlock({
-    Key? key,
+    super.key,
     required this.series,
     required this.qualityProfile,
     required this.languageProfile,
     required this.tags,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,7 @@ class SonarrSeriesDetailsOverviewInformationBlock extends StatelessWidget {
           title: 'type',
           body: series?.lunaSeriesType,
         ),
-        BackendPreferenceGroupContent(
-          title: 'path',
-          body: series?.path,
-        ),
+        BackendPreferenceGroupContent(title: 'path', body: series?.path),
         BackendPreferenceGroupContent(
           title: 'quality',
           body: qualityProfile?.name,
@@ -59,10 +56,7 @@ class SonarrSeriesDetailsOverviewInformationBlock extends StatelessWidget {
           body: series?.lunaDateAdded,
         ),
         BackendPreferenceGroupContent(title: '', body: ''),
-        BackendPreferenceGroupContent(
-          title: 'year',
-          body: series?.lunaYear,
-        ),
+        BackendPreferenceGroupContent(title: 'year', body: series?.lunaYear),
         BackendPreferenceGroupContent(
           title: 'network',
           body: series?.lunaNetwork,

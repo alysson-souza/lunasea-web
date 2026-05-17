@@ -103,7 +103,6 @@ extension SonarrEventTypeLunaExtension on SonarrEventType {
       case SonarrEventType.GRABBED:
         return _grabbedTableContent(history, showSourceTitle);
       case SonarrEventType.SERIES_FOLDER_IMPORTED:
-      default:
         return _defaultTableContent(history, showSourceTitle);
     }
   }
@@ -274,9 +273,11 @@ extension SonarrEventTypeLunaExtension on SonarrEventType {
         body: double.tryParse(history.data!['ageHours'])?.asTimeAgo(),
       ),
       BackendPreferenceGroupContent(
-          title: 'sonarr.PublishedDate'.tr(),
-          body: DateTime.tryParse(history.data!['publishedDate'])
-              ?.asDateTime(delimiter: '\n')),
+        title: 'sonarr.PublishedDate'.tr(),
+        body: DateTime.tryParse(
+          history.data!['publishedDate'],
+        )?.asDateTime(delimiter: '\n'),
+      ),
     ];
   }
 

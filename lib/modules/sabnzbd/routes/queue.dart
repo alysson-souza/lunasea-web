@@ -6,8 +6,7 @@ class SABnzbdQueue extends StatefulWidget {
   static const ROUTE_NAME = '/sabnzbd/queue';
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const SABnzbdQueue({Key? key, required this.refreshIndicatorKey})
-    : super(key: key);
+  const SABnzbdQueue({super.key, required this.refreshIndicatorKey});
 
   @override
   State<SABnzbdQueue> createState() => _State();

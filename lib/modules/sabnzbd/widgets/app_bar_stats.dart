@@ -5,7 +5,7 @@ import 'package:lunasea/extensions/string/string.dart';
 import 'package:lunasea/modules/sabnzbd.dart';
 
 class SABnzbdAppBarStats extends StatelessWidget {
-  const SABnzbdAppBarStats({Key? key}) : super(key: key);
+  const SABnzbdAppBarStats({super.key});
 
   @override
   Widget build(BuildContext context) =>

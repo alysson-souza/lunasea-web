@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../controllers.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to history within Sonarr.
 ///
@@ -29,30 +29,28 @@ class SonarrControllerHistory {
     String? downloadId,
     bool? includeSeries,
     bool? includeEpisode,
-  }) async =>
-      _commandGetHistory(
-        _client,
-        sortKey: sortKey,
-        page: page,
-        pageSize: pageSize,
-        sortDirection: sortDirection,
-        episodeId: episodeId,
-        downloadId: downloadId,
-        includeEpisode: includeEpisode,
-        includeSeries: includeSeries,
-      );
+  }) async => _commandGetHistory(
+    _client,
+    sortKey: sortKey,
+    page: page,
+    pageSize: pageSize,
+    sortDirection: sortDirection,
+    episodeId: episodeId,
+    downloadId: downloadId,
+    includeEpisode: includeEpisode,
+    includeSeries: includeSeries,
+  );
 
   Future<List<SonarrHistoryRecord>> getBySeries({
     required int seriesId,
     int? seasonNumber,
     bool? includeSeries,
     bool? includeEpisode,
-  }) async =>
-      _commandGetHistoryBySeries(
-        _client,
-        seriesId: seriesId,
-        seasonNumber: seasonNumber,
-        includeEpisode: includeEpisode,
-        includeSeries: includeSeries,
-      );
+  }) async => _commandGetHistoryBySeries(
+    _client,
+    seriesId: seriesId,
+    seasonNumber: seasonNumber,
+    includeEpisode: includeEpisode,
+    includeSeries: includeSeries,
+  );
 }

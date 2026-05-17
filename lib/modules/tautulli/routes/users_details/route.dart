@@ -7,10 +7,7 @@ import 'package:lunasea/widgets/pages/invalid_route.dart';
 class UserDetailsRoute extends StatefulWidget {
   final int? userId;
 
-  const UserDetailsRoute({
-    Key? key,
-    required this.userId,
-  }) : super(key: key);
+  const UserDetailsRoute({super.key, required this.userId});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -45,10 +42,7 @@ class _State extends State<UserDetailsRoute> with LunaLoadCallbackMixin {
   @override
   Widget build(BuildContext context) {
     if (widget.userId == null) {
-      return InvalidRoutePage(
-        title: 'User Details',
-        message: 'User Not Found',
-      );
+      return InvalidRoutePage(title: 'User Details', message: 'User Not Found');
     }
 
     return LunaScaffold(
@@ -72,32 +66,29 @@ class _State extends State<UserDetailsRoute> with LunaLoadCallbackMixin {
       TautulliUserDetailsNavigationBar(pageController: _pageController);
 
   Widget get _body => Selector<TautulliState, Future<TautulliUsersTable>>(
-        selector: (_, state) => state.users!,
-        builder: (context, future, _) => FutureBuilder(
-          future: future,
-          builder: (context, AsyncSnapshot<TautulliUsersTable> snapshot) {
-            if (snapshot.hasError) {
-              if (snapshot.connectionState != ConnectionState.waiting)
-                LunaLogger().error(
-                  'Unable to pull Tautulli user table',
-                  snapshot.error,
-                  snapshot.stackTrace,
-                );
-              return LunaMessage.error(onTap: loadCallback);
-            }
-            if (snapshot.hasData) {
-              TautulliTableUser? user = _findUser(snapshot.data!);
-              if (user == null)
-                return LunaMessage.goBack(
-                  context: context,
-                  text: 'User Not Found',
-                );
-              return _page(user);
-            }
-            return const LunaLoader();
-          },
-        ),
-      );
+    selector: (_, state) => state.users!,
+    builder: (context, future, _) => FutureBuilder(
+      future: future,
+      builder: (context, AsyncSnapshot<TautulliUsersTable> snapshot) {
+        if (snapshot.hasError) {
+          if (snapshot.connectionState != ConnectionState.waiting)
+            LunaLogger().error(
+              'Unable to pull Tautulli user table',
+              snapshot.error,
+              snapshot.stackTrace,
+            );
+          return LunaMessage.error(onTap: loadCallback);
+        }
+        if (snapshot.hasData) {
+          TautulliTableUser? user = _findUser(snapshot.data!);
+          if (user == null)
+            return LunaMessage.goBack(context: context, text: 'User Not Found');
+          return _page(user);
+        }
+        return const LunaLoader();
+      },
+    ),
+  );
 
   Widget _page(TautulliTableUser user) {
     return LunaPageView(

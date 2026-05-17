@@ -5,25 +5,32 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliActivityDetailsPlayerBlock extends StatelessWidget {
   final TautulliSession session;
 
-  const TautulliActivityDetailsPlayerBlock({
-    Key? key,
-    required this.session,
-  }) : super(key: key);
+  const TautulliActivityDetailsPlayerBlock({super.key, required this.session});
 
   @override
   Widget build(BuildContext context) {
     return BackendPreferenceGroupCard(
       content: [
         BackendPreferenceGroupContent(
-            title: 'tautulli.Location'.tr(), body: session.lunaIPAddress),
+          title: 'tautulli.Location'.tr(),
+          body: session.lunaIPAddress,
+        ),
         BackendPreferenceGroupContent(
-            title: 'tautulli.Platform'.tr(), body: session.lunaPlatform),
+          title: 'tautulli.Platform'.tr(),
+          body: session.lunaPlatform,
+        ),
         BackendPreferenceGroupContent(
-            title: 'tautulli.Product'.tr(), body: session.lunaProduct),
+          title: 'tautulli.Product'.tr(),
+          body: session.lunaProduct,
+        ),
         BackendPreferenceGroupContent(
-            title: 'tautulli.Player'.tr(), body: session.lunaPlayer),
+          title: 'tautulli.Player'.tr(),
+          body: session.lunaPlayer,
+        ),
         BackendPreferenceGroupContent(
-            title: 'tautulli.Quality'.tr(), body: session.lunaQuality),
+          title: 'tautulli.Quality'.tr(),
+          body: session.lunaQuality,
+        ),
       ],
     );
   }

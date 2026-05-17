@@ -8,9 +8,9 @@ class ConfigurationSearchAddIndexerHeadersRoute extends StatefulWidget {
   final LunaIndexer? indexer;
 
   const ConfigurationSearchAddIndexerHeadersRoute({
-    Key? key,
+    super.key,
     required this.indexer,
-  }) : super(key: key);
+  });
 
   @override
   State<ConfigurationSearchAddIndexerHeadersRoute> createState() => _State();
@@ -51,8 +51,10 @@ class _State extends State<ConfigurationSearchAddIndexerHeadersRoute>
           text: 'settings.AddHeader'.tr(),
           icon: Icons.add_rounded,
           onTap: () async {
-            await HeaderUtility()
-                .addHeader(context, headers: widget.indexer!.headers);
+            await HeaderUtility().addHeader(
+              context,
+              headers: widget.indexer!.headers,
+            );
             if (mounted) setState(() {});
           },
         ),

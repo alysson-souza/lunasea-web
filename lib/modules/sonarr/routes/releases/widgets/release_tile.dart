@@ -7,10 +7,7 @@ import 'package:lunasea/modules/sonarr.dart';
 class SonarrReleasesTile extends StatefulWidget {
   final SonarrRelease release;
 
-  const SonarrReleasesTile({
-    required this.release,
-    Key? key,
-  }) : super(key: key);
+  const SonarrReleasesTile({required this.release, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -23,10 +20,7 @@ class _State extends State<SonarrReleasesTile> {
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: widget.release.title!,
-      collapsedSubtitles: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      collapsedSubtitles: [_subtitle1(), _subtitle2()],
       collapsedTrailing: _trailing(),
       expandedHighlightedNodes: _highlightedNodes(),
       expandedTableContent: _tableContent(),
@@ -66,8 +60,9 @@ class _State extends State<SonarrReleasesTile> {
   }
 
   TextSpan _subtitle2() {
-    String? _preferredWordScore =
-        widget.release.lunaPreferredWordScore(nullOnEmpty: true);
+    String? _preferredWordScore = widget.release.lunaPreferredWordScore(
+      nullOnEmpty: true,
+    );
     return TextSpan(
       children: [
         if (_preferredWordScore != null)
@@ -176,13 +171,12 @@ class _State extends State<SonarrReleasesTile> {
 
     setDownloadState(LunaLoadingState.ACTIVE);
     SonarrAPIController()
-        .downloadRelease(
-          context: context,
-          release: widget.release,
-        )
+        .downloadRelease(context: context, release: widget.release)
         .whenComplete(() async => setDownloadState(LunaLoadingState.INACTIVE));
   }
 
-  Future<void> _showWarnings() async => await LunaDialogs()
-      .showRejections(context, widget.release.rejections ?? []);
+  Future<void> _showWarnings() async => await LunaDialogs().showRejections(
+    context,
+    widget.release.rejections ?? [],
+  );
 }

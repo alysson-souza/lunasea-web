@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<Map<String, dynamic>?> _commandGetNewRatingKeys(
   Dio client, {

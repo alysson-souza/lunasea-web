@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliActivity?> _commandGetActivity(
   Dio client, {
@@ -7,7 +7,9 @@ Future<TautulliActivity?> _commandGetActivity(
 }) async {
   if (sessionKey != null)
     assert(
-        sessionId == null, 'sessionKey and sessionId both cannot be defined.');
+      sessionId == null,
+      'sessionKey and sessionId both cannot be defined.',
+    );
   Response response = await client.get(
     '/',
     queryParameters: {

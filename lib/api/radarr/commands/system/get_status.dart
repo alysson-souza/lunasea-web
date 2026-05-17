@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrSystemStatus> _commandGetSystemStatus(Dio client) async {
   Response response = await client.get('system/status');

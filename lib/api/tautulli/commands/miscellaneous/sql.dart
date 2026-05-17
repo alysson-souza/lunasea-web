@@ -1,15 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
-Future<void> _commandSql(
-  Dio client, {
-  required String query,
-}) async {
+Future<void> _commandSql(Dio client, {required String query}) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'sql',
-      'query': query,
-    },
+    queryParameters: {'cmd': 'sql', 'query': query},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

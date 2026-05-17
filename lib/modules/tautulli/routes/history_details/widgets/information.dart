@@ -9,10 +9,10 @@ class TautulliHistoryDetailsInformation extends StatelessWidget {
   final ScrollController scrollController;
 
   const TautulliHistoryDetailsInformation({
-    Key? key,
+    super.key,
     required this.history,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +34,18 @@ class TautulliHistoryDetailsInformation extends StatelessWidget {
       content: [
         BackendPreferenceGroupContent(title: 'status', body: history.lsStatus),
         BackendPreferenceGroupContent(
-            title: 'title', body: history.lsFullTitle),
+          title: 'title',
+          body: history.lsFullTitle,
+        ),
         if (history.year != null)
           BackendPreferenceGroupContent(
-              title: 'year', body: history.year.toString()),
+            title: 'year',
+            body: history.year.toString(),
+          ),
         BackendPreferenceGroupContent(
-            title: 'user', body: history.friendlyName),
+          title: 'user',
+          body: history.friendlyName,
+        ),
       ],
     );
   }
@@ -49,17 +55,23 @@ class TautulliHistoryDetailsInformation extends StatelessWidget {
       content: [
         BackendPreferenceGroupContent(title: 'state', body: history.lsState),
         BackendPreferenceGroupContent(
-            title: 'date',
-            body: DateFormat('yyyy-MM-dd').format(history.date!)),
+          title: 'date',
+          body: DateFormat('yyyy-MM-dd').format(history.date!),
+        ),
         BackendPreferenceGroupContent(
-            title: 'started', body: history.date!.asTimeOnly()),
+          title: 'started',
+          body: history.date!.asTimeOnly(),
+        ),
         BackendPreferenceGroupContent(
-            title: 'stopped',
-            body: history.state == null
-                ? history.stopped!.asTimeOnly()
-                : LunaUI.TEXT_EMDASH),
+          title: 'stopped',
+          body: history.state == null
+              ? history.stopped!.asTimeOnly()
+              : LunaUI.TEXT_EMDASH,
+        ),
         BackendPreferenceGroupContent(
-            title: 'paused', body: history.pausedCounter!.asWordsTimestamp()),
+          title: 'paused',
+          body: history.pausedCounter!.asWordsTimestamp(),
+        ),
       ],
     );
   }
@@ -68,9 +80,13 @@ class TautulliHistoryDetailsInformation extends StatelessWidget {
     return BackendPreferenceGroupCard(
       content: [
         BackendPreferenceGroupContent(
-            title: 'location', body: history.ipAddress),
+          title: 'location',
+          body: history.ipAddress,
+        ),
         BackendPreferenceGroupContent(
-            title: 'platform', body: history.platform),
+          title: 'platform',
+          body: history.platform,
+        ),
         BackendPreferenceGroupContent(title: 'product', body: history.product),
         BackendPreferenceGroupContent(title: 'player', body: history.player),
       ],

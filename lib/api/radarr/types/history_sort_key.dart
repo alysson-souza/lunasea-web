@@ -1,11 +1,6 @@
-part of radarr_types;
+part of '../types.dart';
 
-enum RadarrHistorySortKey {
-  DATE,
-  MOVIES_TITLE,
-  LANGUAGES,
-  QUALITY,
-}
+enum RadarrHistorySortKey { DATE, MOVIES_TITLE, LANGUAGES, QUALITY }
 
 /// Extension on [RadarrHistorySortKey] to implement extended functionality.
 extension RadarrHistorySortKeyExtension on RadarrHistorySortKey {
@@ -36,8 +31,6 @@ extension RadarrHistorySortKeyExtension on RadarrHistorySortKey {
         return 'languages';
       case RadarrHistorySortKey.QUALITY:
         return 'quality';
-      default:
-        return null;
     }
   }
 }

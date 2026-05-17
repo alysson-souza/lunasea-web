@@ -8,10 +8,7 @@ import 'package:lunasea/router/routes/tautulli.dart';
 class TautulliUserDetailsIPAddresses extends StatefulWidget {
   final TautulliTableUser user;
 
-  const TautulliUserDetailsIPAddresses({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+  const TautulliUserDetailsIPAddresses({super.key, required this.user});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -29,13 +26,11 @@ class _State extends State<TautulliUserDetailsIPAddresses>
   @override
   Future<void> loadCallback() async {
     context.read<TautulliState>().setUserIPs(
-          widget.user.userId!,
-          context
-              .read<TautulliState>()
-              .api!
-              .users
-              .getUserIPs(userId: widget.user.userId!),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.users.getUserIPs(
+        userId: widget.user.userId!,
+      ),
+    );
     await context.read<TautulliState>().userIPs[widget.user.userId!];
   }
 
@@ -102,13 +97,13 @@ class _State extends State<TautulliUserDetailsIPAddresses>
         TextSpan(text: record.lastPlayed),
       ],
       backgroundUrl: context.read<TautulliState>().getImageURLFromPath(
-            record.thumb ?? '',
-            width: MediaQuery.of(context).size.width.truncate(),
-          ),
+        record.thumb ?? '',
+        width: MediaQuery.of(context).size.width.truncate(),
+      ),
       backgroundHeaders: context.read<TautulliState>().headers,
-      onTap: () => TautulliRoutes.IP_DETAILS.go(params: {
-        'ip_address': record.ipAddress!,
-      }),
+      onTap: () => TautulliRoutes.IP_DETAILS.go(
+        params: {'ip_address': record.ipAddress!},
+      ),
     );
   }
 }

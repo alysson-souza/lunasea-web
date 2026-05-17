@@ -6,10 +6,7 @@ import 'package:lunasea/widgets/pages/invalid_route.dart';
 class MovieEditRoute extends StatefulWidget {
   final int movieId;
 
-  const MovieEditRoute({
-    Key? key,
-    required this.movieId,
-  }) : super(key: key);
+  const MovieEditRoute({super.key, required this.movieId});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -34,21 +31,22 @@ class _State extends State<MovieEditRoute>
       );
     }
     return ChangeNotifierProvider(
-        create: (_) => RadarrMoviesEditState(),
-        builder: (context, _) {
-          LunaLoadingState state =
-              context.select<RadarrMoviesEditState, LunaLoadingState>(
-                  (state) => state.state);
-          return LunaScaffold(
-            scaffoldKey: _scaffoldKey,
-            appBar: _appBar() as PreferredSizeWidget?,
-            body:
-                state == LunaLoadingState.ERROR ? _bodyError() : _body(context),
-            bottomNavigationBar: state == LunaLoadingState.ERROR
-                ? null
-                : const RadarrEditMovieActionBar(),
-          );
-        });
+      create: (_) => RadarrMoviesEditState(),
+      builder: (context, _) {
+        LunaLoadingState state = context
+            .select<RadarrMoviesEditState, LunaLoadingState>(
+              (state) => state.state,
+            );
+        return LunaScaffold(
+          scaffoldKey: _scaffoldKey,
+          appBar: _appBar() as PreferredSizeWidget?,
+          body: state == LunaLoadingState.ERROR ? _bodyError() : _body(context),
+          bottomNavigationBar: state == LunaLoadingState.ERROR
+              ? null
+              : const RadarrEditMovieActionBar(),
+        );
+      },
+    );
   }
 
   Widget _appBar() {
@@ -86,12 +84,7 @@ class _State extends State<MovieEditRoute>
           final tags = snapshot.data![2] as List<RadarrTag>;
           RadarrMovie movie = movies.firstWhere((m) => m.id == widget.movieId);
 
-          return _list(
-            context,
-            movie: movie,
-            profiles: profiles,
-            tags: tags,
-          );
+          return _list(context, movie: movie, profiles: profiles, tags: tags);
         }
         return const LunaLoader();
       },

@@ -6,10 +6,7 @@ class RadarrReleasesSearchBar extends StatefulWidget
     implements PreferredSizeWidget {
   final ScrollController scrollController;
 
-  const RadarrReleasesSearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const RadarrReleasesSearchBar({super.key, required this.scrollController});
 
   @override
   Size get preferredSize =>

@@ -1,4 +1,4 @@
-part of radarr_types;
+part of '../types.dart';
 
 enum RadarrQueueRecordStatus {
   COMPLETED,

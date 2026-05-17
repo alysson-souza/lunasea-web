@@ -1,4 +1,3 @@
-import 'package:lunasea/database/models/profile.dart';
 import 'package:lunasea/system/stores/backend_stores.dart';
 import 'package:lunasea/system/state.dart';
 import 'package:lunasea/router/router.dart';
@@ -39,10 +38,7 @@ class LunaProfileTools {
     return false;
   }
 
-  Future<bool> create(
-    String profile, {
-    bool showSnackbar = true,
-  }) async {
+  Future<bool> create(String profile, {bool showSnackbar = true}) async {
     try {
       await _create(profile);
       await _changeTo(profile);
@@ -64,10 +60,7 @@ class LunaProfileTools {
     return false;
   }
 
-  Future<bool> remove(
-    String profile, {
-    bool showSnackbar = true,
-  }) async {
+  Future<bool> remove(String profile, {bool showSnackbar = true}) async {
     try {
       await _remove(profile);
 

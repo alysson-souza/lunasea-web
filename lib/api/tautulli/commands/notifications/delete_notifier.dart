@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteNotifier(
   Dio client, {
@@ -6,10 +6,7 @@ Future<void> _commandDeleteNotifier(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'delete_notifier',
-      'notifier_id': notifierId,
-    },
+    queryParameters: {'cmd': 'delete_notifier', 'notifier_id': notifierId},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

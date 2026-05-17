@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliSingleLibrary> _commandGetLibrary(
   Dio client, {
@@ -6,10 +6,7 @@ Future<TautulliSingleLibrary> _commandGetLibrary(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_library',
-      'section_id': sectionId,
-    },
+    queryParameters: {'cmd': 'get_library', 'section_id': sectionId},
   );
   switch (response.data['response']['result']) {
     case 'success':

@@ -6,9 +6,7 @@ import 'package:lunasea/system/quick_actions/quick_actions.dart';
 import 'package:lunasea/utils/profile_tools.dart';
 
 class ConfigurationRoute extends StatefulWidget {
-  const ConfigurationRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRoute({super.key});
 
   @override
   State<ConfigurationRoute> createState() => _State();
@@ -96,16 +94,17 @@ class _State extends State<ConfigurationRoute> with LunaScrollControllerMixin {
   }
 
   List<Widget> _moduleList() {
-    return ([LunaModule.DASHBOARD, ...LunaModule.active])
-        .map(_tileFromModuleMap)
-        .toList();
+    return ([
+      LunaModule.DASHBOARD,
+      ...LunaModule.active,
+    ]).map(_tileFromModuleMap).toList();
   }
 
   Widget _tileFromModuleMap(LunaModule module) {
     return LunaBlock(
       title: module.title,
       body: [
-        TextSpan(text: 'settings.ConfigureModule'.tr(args: [module.title]))
+        TextSpan(text: 'settings.ConfigureModule'.tr(args: [module.title])),
       ],
       trailing: LunaIconButton(icon: module.icon),
       onTap: module.settingsRoute!.go,

@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliGraphData> _commandGetStreamTypeByTopTenUsers(
   Dio client, {

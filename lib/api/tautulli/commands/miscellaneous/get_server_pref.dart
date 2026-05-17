@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<dynamic> _commandGetServerPref(
   Dio client, {
@@ -6,10 +6,7 @@ Future<dynamic> _commandGetServerPref(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_server_pref',
-      'pref': preference,
-    },
+    queryParameters: {'cmd': 'get_server_pref', 'pref': preference},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

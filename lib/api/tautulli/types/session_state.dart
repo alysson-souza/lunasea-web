@@ -1,12 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all session states used in Tautulli.
-enum TautulliSessionState {
-  PLAYING,
-  PAUSED,
-  BUFFERING,
-  NULL,
-}
+enum TautulliSessionState { PLAYING, PAUSED, BUFFERING, NULL }
 
 /// Extension on [TautulliSessionState] to implement extended functionality.
 extension TautulliSessionStateExtension on TautulliSessionState {

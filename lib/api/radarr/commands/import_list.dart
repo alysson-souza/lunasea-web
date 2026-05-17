@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to import lists within Radarr.
 ///
@@ -31,6 +31,8 @@ class RadarrCommandHandlerImportList {
   /// Optional Parameters:
   /// - `includeRecommendations`: Include recommendations from Radarr
   Future<List<RadarrMovie>> getMovies({bool? includeRecommendations}) async =>
-      _commandGetImportListMovies(_client,
-          includeRecommendations: includeRecommendations);
+      _commandGetImportListMovies(
+        _client,
+        includeRecommendations: includeRecommendations,
+      );
 }

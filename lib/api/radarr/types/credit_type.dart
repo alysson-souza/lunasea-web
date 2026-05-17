@@ -1,9 +1,6 @@
-part of radarr_types;
+part of '../types.dart';
 
-enum RadarrCreditType {
-  CREW,
-  CAST,
-}
+enum RadarrCreditType { CREW, CAST }
 
 /// Extension on [RadarrCreditType] to implement extended functionality.
 extension RadarrCreditTypeExtension on RadarrCreditType {
@@ -25,8 +22,6 @@ extension RadarrCreditTypeExtension on RadarrCreditType {
         return 'crew';
       case RadarrCreditType.CAST:
         return 'cast';
-      default:
-        return null;
     }
   }
 
@@ -36,8 +31,6 @@ extension RadarrCreditTypeExtension on RadarrCreditType {
         return 'Crew';
       case RadarrCreditType.CAST:
         return 'Cast';
-      default:
-        return null;
     }
   }
 }

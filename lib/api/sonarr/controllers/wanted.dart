@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../controllers.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to wanted/missing episodes within Sonarr.
 ///
@@ -25,14 +25,13 @@ class SonarrControllerWanted {
     int? pageSize,
     bool? includeSeries,
     bool? includeImages,
-  }) async =>
-      _commandGetMissing(
-        _client,
-        sortDirection: sortDir,
-        sortKey: sortKey,
-        page: page,
-        pageSize: pageSize,
-        includeSeries: includeSeries,
-        includeImages: includeImages,
-      );
+  }) async => _commandGetMissing(
+    _client,
+    sortDirection: sortDir,
+    sortKey: sortKey,
+    page: page,
+    pageSize: pageSize,
+    includeSeries: includeSeries,
+    includeImages: includeImages,
+  );
 }

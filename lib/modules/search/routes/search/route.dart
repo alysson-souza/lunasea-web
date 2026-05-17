@@ -4,9 +4,7 @@ import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/widgets/sheets/download_client/button.dart';
 
 class SearchIndexerRoute extends StatefulWidget {
-  const SearchIndexerRoute({
-    Key? key,
-  }) : super(key: key);
+  const SearchIndexerRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -46,28 +44,30 @@ class _State extends State<SearchIndexerRoute> with LunaScrollControllerMixin {
     NewznabSubcategoryData? subcategory = state.activeSubcategory;
     await state.api
         .getResults(
-      categoryId: subcategory?.id ?? category?.id,
-      query: state.searchQuery,
-      offset: pageKey,
-    )
+          categoryId: subcategory?.id ?? category?.id,
+          query: state.searchQuery,
+          offset: pageKey,
+        )
         .then((data) {
-      if (data.isEmpty) return _pagingController.appendLastPage([]);
-      return _pagingController.appendPage(data, pageKey + 1);
-    }).catchError((error, stack) {
-      LunaLogger().error(
-        'Unable to fetch search results page: $pageKey',
-        error,
-        stack,
-      );
-      _pagingController.error = error;
-    });
+          if (data.isEmpty) return _pagingController.appendLastPage([]);
+          return _pagingController.appendPage(data, pageKey + 1);
+        })
+        .catchError((error, stack) {
+          LunaLogger().error(
+            'Unable to fetch search results page: $pageKey',
+            error,
+            stack,
+          );
+          _pagingController.error = error;
+        });
   }
 
   Widget _appBar() {
     String title = context.read<SearchState>().indexer.displayName;
     NewznabCategoryData? category = context.read<SearchState>().activeCategory;
-    NewznabSubcategoryData? subcategory =
-        context.read<SearchState>().activeSubcategory;
+    NewznabSubcategoryData? subcategory = context
+        .read<SearchState>()
+        .activeSubcategory;
     if (category != null) title = category.name!;
     if (category != null && subcategory != null) {
       title = '$title > ${subcategory.name ?? 'lunasea.Unknown'.tr()}';
@@ -79,9 +79,7 @@ class _State extends State<SearchIndexerRoute> with LunaScrollControllerMixin {
         submitCallback: _searchCallback,
         scrollController: scrollController,
       ),
-      actions: const [
-        DownloadClientButton(),
-      ],
+      actions: const [DownloadClientButton()],
     );
   }
 

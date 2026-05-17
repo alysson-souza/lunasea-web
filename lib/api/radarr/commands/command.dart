@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to commands within Radarr.
 ///
@@ -20,9 +20,7 @@ class RadarrCommandHandlerCommand {
   ///
   /// Required Parameters:
   /// - `path`: Full/absolute path of the host's filesystem.
-  Future<RadarrCommand> downloadedMoviesScan({
-    required String path,
-  }) async =>
+  Future<RadarrCommand> downloadedMoviesScan({required String path}) async =>
       _commandDownloadedMoviesScan(_client, path: path);
 
   /// Handler for [command (ManualImport)](https://radarr.video/docs/api/#/Command/post-command).
@@ -50,9 +48,7 @@ class RadarrCommandHandlerCommand {
   ///
   /// Required Parameters:
   /// - `movieIds`: List of movie IDs to search for.
-  Future<RadarrCommand> moviesSearch({
-    required List<int> movieIds,
-  }) async =>
+  Future<RadarrCommand> moviesSearch({required List<int> movieIds}) async =>
       _commandMoviesSearch(_client, movieIds: movieIds);
 
   /// Handler for [command (RefreshMonitoredDownloads)](https://radarr.video/docs/api/#/Command/post-command).
@@ -68,9 +64,7 @@ class RadarrCommandHandlerCommand {
   ///
   /// Optional Parameters:
   /// - `movieIds`: List of movie IDs for the movies in specific to refresh
-  Future<RadarrCommand> refreshMovie({
-    List<int>? movieIds,
-  }) async =>
+  Future<RadarrCommand> refreshMovie({List<int>? movieIds}) async =>
       _commandRefreshMovie(_client, movieIds: movieIds);
 
   /// Handler for [command (RssSync)](https://radarr.video/docs/api/#/Command/post-command).

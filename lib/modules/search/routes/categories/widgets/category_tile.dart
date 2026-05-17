@@ -7,11 +7,7 @@ class SearchCategoryTile extends StatelessWidget {
   final NewznabCategoryData category;
   final int index;
 
-  const SearchCategoryTile({
-    Key? key,
-    required this.category,
-    this.index = 0,
-  }) : super(key: key);
+  const SearchCategoryTile({super.key, required this.category, this.index = 0});
 
   @override
   Widget build(BuildContext context) {

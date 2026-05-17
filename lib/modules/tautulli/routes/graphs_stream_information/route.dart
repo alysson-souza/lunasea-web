@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliGraphsStreamInformationRoute extends StatefulWidget {
-  const TautulliGraphsStreamInformationRoute({
-    Key? key,
-  }) : super(key: key);
+  const TautulliGraphsStreamInformationRoute({super.key});
 
   @override
   State<TautulliGraphsStreamInformationRoute> createState() => _State();
@@ -35,10 +33,7 @@ class _State extends State<TautulliGraphsStreamInformationRoute>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {

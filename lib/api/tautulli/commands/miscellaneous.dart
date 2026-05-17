@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls for any miscellaneous calls within Tautulli.
 ///
@@ -70,8 +70,7 @@ class TautulliCommandHandlerMiscellaneous {
   /// - `ipAddress`: The IP address to lookup
   Future<TautulliGeolocationInfo> getGeoIPLookup({
     required String ipAddress,
-  }) async =>
-      _commandGetGeoIPLookup(_client, ipAddress: ipAddress);
+  }) async => _commandGetGeoIPLookup(_client, ipAddress: ipAddress);
 
   /// Handler for [get_logs](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_logs).
   ///
@@ -91,16 +90,15 @@ class TautulliCommandHandlerMiscellaneous {
     String? regex,
     int? start,
     int? end,
-  }) async =>
-      _commandGetLogs(
-        _client,
-        search: search,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        regex: regex,
-        start: start,
-        end: end,
-      );
+  }) async => _commandGetLogs(
+    _client,
+    search: search,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    regex: regex,
+    start: start,
+    end: end,
+  );
 
   /// Handler for [get_plex_log](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plex_log).
   ///
@@ -112,8 +110,7 @@ class TautulliCommandHandlerMiscellaneous {
   Future<List<TautulliPlexLog>> getPlexLog({
     int? window,
     TautulliPlexLogType? logType,
-  }) async =>
-      _commandGetPlexLog(_client, window: window, logType: logType);
+  }) async => _commandGetPlexLog(_client, window: window, logType: logType);
 
   /// Handler for [get_server_friendly_name](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_server_friendly_name).
   ///
@@ -137,9 +134,13 @@ class TautulliCommandHandlerMiscellaneous {
     required int port,
     bool? ssl,
     bool? remote,
-  }) async =>
-      _commandGetServerID(_client,
-          hostname: hostname, port: port, ssl: ssl, remote: remote);
+  }) async => _commandGetServerID(
+    _client,
+    hostname: hostname,
+    port: port,
+    ssl: ssl,
+    remote: remote,
+  );
 
   /// Handler for [get_server_identity](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_server_identity).
   ///
@@ -159,9 +160,7 @@ class TautulliCommandHandlerMiscellaneous {
   ///
   /// Required Parameters:
   /// - `preference`: Name of preference
-  Future<dynamic> getServerPref({
-    required String preference,
-  }) async =>
+  Future<dynamic> getServerPref({required String preference}) async =>
       _commandGetServerPref(_client, preference: preference);
 
   /// Handler for [get_servers_info](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_servers_info).
@@ -176,9 +175,7 @@ class TautulliCommandHandlerMiscellaneous {
   ///
   /// Required Parameters:
   /// - `ipAddress`: The IP address to lookup.
-  Future<TautulliWHOISInfo> getWHOISLookup({
-    required String ipAddress,
-  }) async =>
+  Future<TautulliWHOISInfo> getWHOISLookup({required String ipAddress}) async =>
       _commandGetWHOISLookup(_client, ipAddress: ipAddress);
 
   /// Handler for [pms_image_proxy](https://github.com/Tautulli/Tautulli/blob/master/API.md#pms_image_proxy).
@@ -209,20 +206,19 @@ class TautulliCommandHandlerMiscellaneous {
     String? imageFormat,
     TautulliFallbackImage? fallbackImage,
     bool? refresh,
-  }) async =>
-      _commandPMSImageProxy(
-        _client,
-        image: image,
-        ratingKey: ratingKey,
-        width: width,
-        height: height,
-        opacity: opacity,
-        background: background,
-        blur: blur,
-        imageFormat: imageFormat,
-        fallbackImage: fallbackImage,
-        refresh: refresh,
-      );
+  }) async => _commandPMSImageProxy(
+    _client,
+    image: image,
+    ratingKey: ratingKey,
+    width: width,
+    height: height,
+    opacity: opacity,
+    background: background,
+    blur: blur,
+    imageFormat: imageFormat,
+    fallbackImage: fallbackImage,
+    refresh: refresh,
+  );
 
   /// Handler for [sql](https://github.com/Tautulli/Tautulli/blob/master/API.md#sql).
   ///
@@ -233,8 +229,6 @@ class TautulliCommandHandlerMiscellaneous {
   ///
   /// Required Parameters:
   /// - `query`: The SQL query to run.
-  Future<void> sql({
-    required String query,
-  }) async =>
+  Future<void> sql({required String query}) async =>
       _commandSql(_client, query: query);
 }

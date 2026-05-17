@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliNewsletterConfig> _commandGetNewsletterConfig(
   Dio client, {
@@ -14,7 +14,8 @@ Future<TautulliNewsletterConfig> _commandGetNewsletterConfig(
   switch ((response.data['response']['result'] as String?)) {
     case 'success':
       return TautulliNewsletterConfig.fromJson(
-          response.data['response']['data']);
+        response.data['response']['data'],
+      );
     case 'error':
     default:
       throw Exception(response.data['response']['message']);

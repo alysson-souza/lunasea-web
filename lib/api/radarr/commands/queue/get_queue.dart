@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrQueue> _commandGetQueue(
   Dio client, {
@@ -8,12 +8,15 @@ Future<RadarrQueue> _commandGetQueue(
   RadarrQueueSortKey sortKey = RadarrQueueSortKey.PROGRESS,
   bool includeUnknownMovieItems = false,
 }) async {
-  Response response = await client.get('queue', queryParameters: {
-    'page': page,
-    'pageSize': pageSize,
-    'sortDirection': sortDirection.value,
-    'sortKey': sortKey.value,
-    'includeUnknownMovieItems': includeUnknownMovieItems,
-  });
+  Response response = await client.get(
+    'queue',
+    queryParameters: {
+      'page': page,
+      'pageSize': pageSize,
+      'sortDirection': sortDirection.value,
+      'sortKey': sortKey.value,
+      'includeUnknownMovieItems': includeUnknownMovieItems,
+    },
+  );
   return RadarrQueue.fromJson(response.data);
 }

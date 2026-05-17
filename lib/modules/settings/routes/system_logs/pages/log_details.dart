@@ -7,10 +7,7 @@ import 'package:lunasea/types/log_type.dart';
 class SystemLogsDetailsRoute extends StatefulWidget {
   final LunaLogType? type;
 
-  const SystemLogsDetailsRoute({
-    Key? key,
-    required this.type,
-  }) : super(key: key);
+  const SystemLogsDetailsRoute({super.key, required this.type});
 
   @override
   State<SystemLogsDetailsRoute> createState() => _State();
@@ -37,22 +34,23 @@ class _State extends State<SystemLogsDetailsRoute>
   }
 
   Widget _body() {
-    return Consumer<LogsStore>(builder: (context, logsStore, _) {
-      List<LunaLog> logs = filter(logsStore);
-      if (logs.isEmpty) {
-        return LunaMessage.goBack(
-          context: context,
-          text: 'settings.NoLogsFound'.tr(),
+    return Consumer<LogsStore>(
+      builder: (context, logsStore, _) {
+        List<LunaLog> logs = filter(logsStore);
+        if (logs.isEmpty) {
+          return LunaMessage.goBack(
+            context: context,
+            text: 'settings.NoLogsFound'.tr(),
+          );
+        }
+        return LunaListViewBuilder(
+          controller: scrollController,
+          itemCount: logs.length,
+          itemBuilder: (context, index) =>
+              SettingsSystemLogTile(log: logs[index]),
         );
-      }
-      return LunaListViewBuilder(
-        controller: scrollController,
-        itemCount: logs.length,
-        itemBuilder: (context, index) => SettingsSystemLogTile(
-          log: logs[index],
-        ),
-      );
-    });
+      },
+    );
   }
 
   List<LunaLog> filter(LogsStore store) {
@@ -60,12 +58,14 @@ class _State extends State<SystemLogsDetailsRoute>
 
     switch (widget.type) {
       case LunaLogType.WARNING:
-        logs =
-            store.logs.where((log) => log.type == LunaLogType.WARNING).toList();
+        logs = store.logs
+            .where((log) => log.type == LunaLogType.WARNING)
+            .toList();
         break;
       case LunaLogType.ERROR:
-        logs =
-            store.logs.where((log) => log.type == LunaLogType.ERROR).toList();
+        logs = store.logs
+            .where((log) => log.type == LunaLogType.ERROR)
+            .toList();
         break;
       case LunaLogType.CRITICAL:
         logs = store.logs
@@ -73,8 +73,9 @@ class _State extends State<SystemLogsDetailsRoute>
             .toList();
         break;
       case LunaLogType.DEBUG:
-        logs =
-            store.logs.where((log) => log.type == LunaLogType.DEBUG).toList();
+        logs = store.logs
+            .where((log) => log.type == LunaLogType.DEBUG)
+            .toList();
         break;
       default:
         logs = store.logs.where((log) => log.type.enabled).toList();

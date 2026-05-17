@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class RadarrAddMovieDetailsRootFolderTile extends StatelessWidget {
-  const RadarrAddMovieDetailsRootFolderTile({
-    Key? key,
-  }) : super(key: key);
+  const RadarrAddMovieDetailsRootFolderTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +14,11 @@ class RadarrAddMovieDetailsRootFolderTile extends StatelessWidget {
         body: [TextSpan(text: folder.path ?? LunaUI.TEXT_EMDASH)],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          List<RadarrRootFolder> folders =
-              await context.read<RadarrState>().rootFolders!;
-          Tuple2<bool, RadarrRootFolder?> values =
-              await RadarrDialogs().editRootFolder(context, folders);
+          List<RadarrRootFolder> folders = await context
+              .read<RadarrState>()
+              .rootFolders!;
+          Tuple2<bool, RadarrRootFolder?> values = await RadarrDialogs()
+              .editRootFolder(context, folders);
           if (values.item1)
             context.read<RadarrAddMovieDetailsState>().rootFolder =
                 values.item2!;

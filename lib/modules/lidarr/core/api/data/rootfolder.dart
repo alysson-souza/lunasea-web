@@ -1,15 +1,10 @@
-import 'package:lunasea/core.dart';
-
 class LidarrRootFolder {
   int? id;
   String? path;
   int? freeSpace;
 
-  factory LidarrRootFolder.empty() => LidarrRootFolder(
-        id: -1,
-        path: '',
-        freeSpace: 0,
-      );
+  factory LidarrRootFolder.empty() =>
+      LidarrRootFolder(id: -1, path: '', freeSpace: 0);
 
   LidarrRootFolder({
     required this.id,

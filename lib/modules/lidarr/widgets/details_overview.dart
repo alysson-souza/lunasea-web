@@ -5,7 +5,7 @@ import 'package:lunasea/modules/lidarr.dart';
 class LidarrDetailsOverview extends StatefulWidget {
   final LidarrCatalogueData data;
 
-  const LidarrDetailsOverview({Key? key, required this.data}) : super(key: key);
+  const LidarrDetailsOverview({super.key, required this.data});
 
   @override
   State<LidarrDetailsOverview> createState() => _State();

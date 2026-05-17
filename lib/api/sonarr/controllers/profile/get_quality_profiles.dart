@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../../controllers.dart';
 
 Future<List<SonarrQualityProfile>> _commandGetQualityProfiles(
   Dio client,

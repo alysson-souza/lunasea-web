@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<Uint8List?> _commandPMSImageProxy(
   Dio client, {
@@ -33,9 +33,7 @@ Future<Uint8List?> _commandPMSImageProxy(
         'fallback': fallbackImage,
       if (refresh != null) 'refresh': refresh,
     },
-    options: Options(
-      responseType: ResponseType.bytes,
-    ),
+    options: Options(responseType: ResponseType.bytes),
   );
   return (response.data as Uint8List?);
 }

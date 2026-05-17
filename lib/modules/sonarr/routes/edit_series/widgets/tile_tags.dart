@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesEditTagsTile extends StatelessWidget {
-  const SonarrSeriesEditTagsTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesEditTagsTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +14,11 @@ class SonarrSeriesEditTagsTile extends StatelessWidget {
           text: (context.watch<SonarrSeriesEditState>().tags?.isEmpty ?? true)
               ? 'lunasea.NotSet'.tr()
               : context
-                  .watch<SonarrSeriesEditState>()
-                  .tags
-                  ?.map((e) => e.label)
-                  .join(', '),
-        )
+                    .watch<SonarrSeriesEditState>()
+                    .tags
+                    ?.map((e) => e.label)
+                    .join(', '),
+        ),
       ],
       trailing: const LunaIconButton.arrow(),
       onTap: () async => await SonarrDialogs().setEditTags(context),

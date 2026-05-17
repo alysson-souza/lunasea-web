@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliUserIPs> _commandGetUserIPs(
   Dio client, {

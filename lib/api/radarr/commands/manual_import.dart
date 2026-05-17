@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to manual import within Radarr.
 ///
@@ -21,9 +21,11 @@ class RadarrCommandHandlerManualImport {
   Future<List<RadarrManualImport>> get({
     required String folder,
     bool? filterExistingFiles,
-  }) async =>
-      _commandGetManualImport(_client,
-          folder: folder, filterExistingFiles: filterExistingFiles);
+  }) async => _commandGetManualImport(
+    _client,
+    folder: folder,
+    filterExistingFiles: filterExistingFiles,
+  );
 
   /// Handler for `manualimport`.
   ///
@@ -33,6 +35,5 @@ class RadarrCommandHandlerManualImport {
   /// - `data`: Array of [RadarrManualImportUpdateData] objects that each contain a single manual import to update.
   Future<List<RadarrManualImportUpdate>> update({
     required List<RadarrManualImportUpdateData> data,
-  }) async =>
-      _commandUpdateManualImport(_client, data: data);
+  }) async => _commandUpdateManualImport(_client, data: data);
 }

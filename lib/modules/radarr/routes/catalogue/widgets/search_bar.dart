@@ -6,10 +6,7 @@ class RadarrCatalogueSearchBar extends StatefulWidget
     implements PreferredSizeWidget {
   final ScrollController scrollController;
 
-  const RadarrCatalogueSearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const RadarrCatalogueSearchBar({super.key, required this.scrollController});
 
   @override
   Size get preferredSize =>
@@ -64,7 +61,7 @@ class _State extends State<RadarrCatalogueSearchBar> {
           width: _hasFocus
               ? 0.0
               : (LunaTextInputBar.defaultHeight * 3 +
-                  LunaUI.DEFAULT_MARGIN_SIZE * 3),
+                    LunaUI.DEFAULT_MARGIN_SIZE * 3),
           child: Row(
             children: [
               Flexible(

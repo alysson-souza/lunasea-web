@@ -16,16 +16,13 @@ class RadarrNavigationBar extends StatelessWidget {
   ];
 
   static List<String> get titles => [
-        'radarr.Movies'.tr(),
-        'radarr.Upcoming'.tr(),
-        'radarr.Missing'.tr(),
-        'radarr.More'.tr(),
-      ];
+    'radarr.Movies'.tr(),
+    'radarr.Upcoming'.tr(),
+    'radarr.Missing'.tr(),
+    'radarr.More'.tr(),
+  ];
 
-  const RadarrNavigationBar({
-    Key? key,
-    required this.pageController,
-  }) : super(key: key);
+  const RadarrNavigationBar({super.key, required this.pageController});
 
   @override
   Widget build(BuildContext context) {

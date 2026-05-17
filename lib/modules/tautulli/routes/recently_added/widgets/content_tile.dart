@@ -9,9 +9,9 @@ class TautulliRecentlyAddedContentTile extends StatefulWidget {
   final TautulliRecentlyAdded recentlyAdded;
 
   const TautulliRecentlyAddedContentTile({
-    Key? key,
+    super.key,
     required this.recentlyAdded,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -24,12 +24,13 @@ class _State extends State<TautulliRecentlyAddedContentTile> {
       title: _title,
       body: _body,
       posterHeaders: context.watch<TautulliState>().headers,
-      posterUrl:
-          context.watch<TautulliState>().getImageURLFromPath(_posterLink),
+      posterUrl: context.watch<TautulliState>().getImageURLFromPath(
+        _posterLink,
+      ),
       backgroundHeaders: context.watch<TautulliState>().headers,
-      backgroundUrl: context
-          .watch<TautulliState>()
-          .getImageURLFromPath(widget.recentlyAdded.art),
+      backgroundUrl: context.watch<TautulliState>().getImageURLFromPath(
+        widget.recentlyAdded.art,
+      ),
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       onTap: _onTap,
     );
@@ -79,9 +80,7 @@ class _State extends State<TautulliRecentlyAddedContentTile> {
             TextSpan(text: 'E${widget.recentlyAdded.mediaIndex}: '),
             TextSpan(
               text: widget.recentlyAdded.title,
-              style: const TextStyle(
-                fontStyle: FontStyle.italic,
-              ),
+              style: const TextStyle(fontStyle: FontStyle.italic),
             ),
           ],
         ),
@@ -118,9 +117,11 @@ class _State extends State<TautulliRecentlyAddedContentTile> {
   }
 
   void _onTap() {
-    TautulliRoutes.MEDIA_DETAILS.go(params: {
-      'rating_key': widget.recentlyAdded.ratingKey.toString(),
-      'media_type': widget.recentlyAdded.mediaType!.value,
-    });
+    TautulliRoutes.MEDIA_DETAILS.go(
+      params: {
+        'rating_key': widget.recentlyAdded.ratingKey.toString(),
+        'media_type': widget.recentlyAdded.mediaType!.value,
+      },
+    );
   }
 }

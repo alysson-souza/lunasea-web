@@ -8,10 +8,10 @@ class LidarrCatalogue extends StatefulWidget {
   final Function refreshAllPages;
 
   const LidarrCatalogue({
-    Key? key,
+    super.key,
     required this.refreshIndicatorKey,
     required this.refreshAllPages,
-  }) : super(key: key);
+  });
 
   @override
   State<LidarrCatalogue> createState() => _State();
@@ -82,7 +82,6 @@ class _State extends State<LidarrCatalogue>
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-            default:
               return const LunaLoader();
           }
         },

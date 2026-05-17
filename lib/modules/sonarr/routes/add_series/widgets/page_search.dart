@@ -6,10 +6,7 @@ import 'package:lunasea/modules/sonarr.dart';
 class SonarrAddSeriesSearchPage extends StatefulWidget {
   final ScrollController scrollController;
 
-  const SonarrAddSeriesSearchPage({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const SonarrAddSeriesSearchPage({super.key, required this.scrollController});
 
   @override
   State<SonarrAddSeriesSearchPage> createState() => _State();
@@ -31,18 +28,21 @@ class _State extends State<SonarrAddSeriesSearchPage>
   @override
   Widget build(BuildContext context) {
     return Consumer<SonarrState>(
-      builder: (context, state, _) => Selector<SonarrAddSeriesState,
-          Tuple2<Future<List<SonarrSeries>>?, Future<List<SonarrExclusion>>?>>(
-        selector: (_, state) => Tuple2(state.lookup, state.exclusions),
-        builder: (context, tuple, _) {
-          if (tuple.item1 == null) return Container();
-          return _builder(
-            lookup: tuple.item1,
-            exclusions: tuple.item2,
-            series: state.series,
-          );
-        },
-      ),
+      builder: (context, state, _) =>
+          Selector<
+            SonarrAddSeriesState,
+            Tuple2<Future<List<SonarrSeries>>?, Future<List<SonarrExclusion>>?>
+          >(
+            selector: (_, state) => Tuple2(state.lookup, state.exclusions),
+            builder: (context, tuple, _) {
+              if (tuple.item1 == null) return Container();
+              return _builder(
+                lookup: tuple.item1,
+                exclusions: tuple.item2,
+                series: state.series,
+              );
+            },
+          ),
     );
   }
 
@@ -87,9 +87,7 @@ class _State extends State<SonarrAddSeriesSearchPage>
     if (results.isEmpty)
       return LunaListView(
         controller: widget.scrollController,
-        children: [
-          LunaMessage.inList(text: 'sonarr.NoResultsFound'.tr()),
-        ],
+        children: [LunaMessage.inList(text: 'sonarr.NoResultsFound'.tr())],
       );
     return LunaListViewBuilder(
       controller: widget.scrollController,

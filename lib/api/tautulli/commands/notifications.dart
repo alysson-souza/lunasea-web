@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to notifications within Tautulli.
 ///
@@ -15,9 +15,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Required Parameters:
   /// - `agentId`: The ID of the agent
-  Future<void> addNewsletterConfig({
-    required int agentId,
-  }) async =>
+  Future<void> addNewsletterConfig({required int agentId}) async =>
       _commandAddNewsletterConfig(_client, agentId: agentId);
 
   /// Handler for [add_notifier_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#add_notifier_config).
@@ -26,9 +24,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Required Parameters:
   /// - `agentId`: The ID of the agent
-  Future<void> addNotifierConfig({
-    required int agentId,
-  }) async =>
+  Future<void> addNotifierConfig({required int agentId}) async =>
       _commandAddNotifierConfig(_client, agentId: agentId);
 
   /// Handler for [delete_mobile_device](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_mobile_device).
@@ -37,9 +33,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Required Parameters:
   /// - `mobileDeviceId`: The mobile device identifier to delete
-  Future<void> deleteMobileDevice({
-    required int mobileDeviceId,
-  }) async =>
+  Future<void> deleteMobileDevice({required int mobileDeviceId}) async =>
       _commandDeleteMobileDevice(_client, mobileDeviceId: mobileDeviceId);
 
   /// Handler for [delete_newsletter](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_newsletter).
@@ -48,9 +42,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Required Parameters:
   /// - `newsletterId`: The newsletter identifier to delete
-  Future<void> deleteNewsletter({
-    required int newsletterId,
-  }) async =>
+  Future<void> deleteNewsletter({required int newsletterId}) async =>
       _commandDeleteNewsletter(_client, newsletterId: newsletterId);
 
   /// Handler for [delete_notifier](https://github.com/Tautulli/Tautulli/blob/master/API.md#delete_notifier).
@@ -59,9 +51,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Required Parameters:
   /// - `notifierId`: The notifier identifier to delete
-  Future<void> deleteNotifier({
-    required int notifierId,
-  }) async =>
+  Future<void> deleteNotifier({required int notifierId}) async =>
       _commandDeleteNotifier(_client, notifierId: notifierId);
 
   /// Handler for [get_newsletter_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_newsletter_config).
@@ -72,8 +62,7 @@ class TautulliCommandHandlerNotifications {
   /// - `newsletterId`: The newsletter ID to fetch the configuration for
   Future<TautulliNewsletterConfig> getNewsletterConfig({
     required int newsletterId,
-  }) async =>
-      _commandGetNewsletterConfig(_client, newsletterId: newsletterId);
+  }) async => _commandGetNewsletterConfig(_client, newsletterId: newsletterId);
 
   /// Handler for [get_newsletter_log](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_newsletter_log).
   ///
@@ -91,15 +80,14 @@ class TautulliCommandHandlerNotifications {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetNewsletterLog(
-        _client,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetNewsletterLog(
+    _client,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_newsletters](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_newsletters).
   ///
@@ -123,15 +111,14 @@ class TautulliCommandHandlerNotifications {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetNotificationLog(
-        _client,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetNotificationLog(
+    _client,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_notifier_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_notifier_config).
   ///
@@ -141,8 +128,7 @@ class TautulliCommandHandlerNotifications {
   /// - `notifierId`: The notifier ID to fetch the configuration for
   Future<TautulliNotifierConfig> getNotifierConfig({
     required int notifierId,
-  }) async =>
-      _commandGetNotifierConfig(_client, notifierId: notifierId);
+  }) async => _commandGetNotifierConfig(_client, notifierId: notifierId);
 
   /// Handler for [get_notifier_parameters](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_notifier_parameters).
   ///
@@ -156,9 +142,7 @@ class TautulliCommandHandlerNotifications {
   ///
   /// Optional Parameters:
   /// - `notifyAction`: The notification action to filter out
-  Future<List<TautulliNotifier>> getNotifiers({
-    String? notifyAction,
-  }) async =>
+  Future<List<TautulliNotifier>> getNotifiers({String? notifyAction}) async =>
       _commandGetNotifiers(_client, notifyAction: notifyAction);
 
   /// Handler for [notify](https://github.com/Tautulli/Tautulli/blob/master/API.md#notify).
@@ -179,13 +163,14 @@ class TautulliCommandHandlerNotifications {
     required String body,
     String? headers,
     String? scriptArgs,
-  }) async =>
-      _commandNotify(_client,
-          notifierId: notifierId,
-          subject: subject,
-          body: body,
-          headers: headers,
-          scriptArgs: scriptArgs);
+  }) async => _commandNotify(
+    _client,
+    notifierId: notifierId,
+    subject: subject,
+    body: body,
+    headers: headers,
+    scriptArgs: scriptArgs,
+  );
 
   /// Handler for [notify_newsletter](https://github.com/Tautulli/Tautulli/blob/master/API.md#notify_newsletter).
   ///
@@ -203,12 +188,13 @@ class TautulliCommandHandlerNotifications {
     String? subject,
     String? body,
     String? message,
-  }) async =>
-      _commandNotifyNewsletter(_client,
-          newsletterId: newsletterId,
-          subject: subject,
-          body: body,
-          message: message);
+  }) async => _commandNotifyNewsletter(
+    _client,
+    newsletterId: newsletterId,
+    subject: subject,
+    body: body,
+    message: message,
+  );
 
   /// Handler for [notify_recently_added](https://github.com/Tautulli/Tautulli/blob/master/API.md#notify_recently_added).
   ///
@@ -222,9 +208,11 @@ class TautulliCommandHandlerNotifications {
   Future<void> notifyRecentlyAdded({
     required int ratingKey,
     int? notifierId,
-  }) async =>
-      _commandNotifyRecentlyAdded(_client,
-          ratingKey: ratingKey, notifierId: notifierId);
+  }) async => _commandNotifyRecentlyAdded(
+    _client,
+    ratingKey: ratingKey,
+    notifierId: notifierId,
+  );
 
   /// Handler for [register_device](https://github.com/Tautulli/Tautulli/blob/master/API.md#register_device).
   ///
@@ -240,11 +228,12 @@ class TautulliCommandHandlerNotifications {
     required String deviceName,
     required String deviceId,
     String? friendlyName,
-  }) async =>
-      _commandRegisterDevice(_client,
-          deviceId: deviceId,
-          deviceName: deviceName,
-          friendlyName: friendlyName);
+  }) async => _commandRegisterDevice(
+    _client,
+    deviceId: deviceId,
+    deviceName: deviceName,
+    friendlyName: friendlyName,
+  );
 
   /// Handler for [set_mobile_device_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#set_mobile_device_config).
   ///
@@ -258,9 +247,11 @@ class TautulliCommandHandlerNotifications {
   Future<void> setMobileDeviceConfig({
     required int mobileDeviceId,
     String? friendlyName,
-  }) async =>
-      _commandSetMobileDeviceConfig(_client,
-          mobileDeviceId: mobileDeviceId, friendlyName: friendlyName);
+  }) async => _commandSetMobileDeviceConfig(
+    _client,
+    mobileDeviceId: mobileDeviceId,
+    friendlyName: friendlyName,
+  );
 
   /// Handler for [set_newsletter_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#set_newsletter_config).
   ///
@@ -274,11 +265,12 @@ class TautulliCommandHandlerNotifications {
     required int newsletterId,
     required int agentId,
     required Map<String, dynamic> newsletterOptions,
-  }) async =>
-      _commandSetNewsletterConfig(_client,
-          newsletterId: newsletterId,
-          agentId: agentId,
-          newsletterOptions: newsletterOptions);
+  }) async => _commandSetNewsletterConfig(
+    _client,
+    newsletterId: newsletterId,
+    agentId: agentId,
+    newsletterOptions: newsletterOptions,
+  );
 
   /// Handler for [set_notifier_config](https://github.com/Tautulli/Tautulli/blob/master/API.md#set_notifier_config).
   ///
@@ -292,9 +284,10 @@ class TautulliCommandHandlerNotifications {
     required int agentId,
     required int notifierId,
     required Map<String, dynamic> notifierOptions,
-  }) async =>
-      _commandSetNotifierConfig(_client,
-          agentId: agentId,
-          notifierId: notifierId,
-          notifierOptions: notifierOptions);
+  }) async => _commandSetNotifierConfig(
+    _client,
+    agentId: agentId,
+    notifierId: notifierId,
+    notifierOptions: notifierOptions,
+  );
 }

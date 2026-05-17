@@ -12,12 +12,12 @@ class RadarrAddMovieSearchResultTile extends StatefulWidget {
   final bool isExcluded;
 
   const RadarrAddMovieSearchResultTile({
-    Key? key,
+    super.key,
     required this.movie,
     required this.exists,
     required this.isExcluded,
     this.onTapShowOverview = false,
-  }) : super(key: key);
+  });
 
   @override
   State<RadarrAddMovieSearchResultTile> createState() => _State();
@@ -70,9 +70,7 @@ class _State extends State<RadarrAddMovieSearchResultTile> {
             fontSize: LunaUI.FONT_SIZE_H3,
             color: LunaColours.grey,
           ),
-          children: [
-            LunaTextSpan.extended(text: summary),
-          ],
+          children: [LunaTextSpan.extended(text: summary)],
         ),
         overflow: TextOverflow.ellipsis,
         maxLines: 2,
@@ -82,16 +80,18 @@ class _State extends State<RadarrAddMovieSearchResultTile> {
 
   Future<void> _onTap() async {
     if (widget.onTapShowOverview) {
-      LunaDialogs().textPreview(context, widget.movie.title,
-          widget.movie.overview ?? 'radarr.NoSummaryIsAvailable'.tr());
+      LunaDialogs().textPreview(
+        context,
+        widget.movie.title,
+        widget.movie.overview ?? 'radarr.NoSummaryIsAvailable'.tr(),
+      );
     } else if (widget.exists) {
-      RadarrRoutes.MOVIE.go(params: {
-        'movie': widget.movie.id!.toString(),
-      });
+      RadarrRoutes.MOVIE.go(params: {'movie': widget.movie.id!.toString()});
     } else {
-      RadarrRoutes.ADD_MOVIE_DETAILS.go(extra: widget.movie, queryParams: {
-        'isDiscovery': 'false',
-      });
+      RadarrRoutes.ADD_MOVIE_DETAILS.go(
+        extra: widget.movie,
+        queryParams: {'isDiscovery': 'false'},
+      );
     }
   }
 

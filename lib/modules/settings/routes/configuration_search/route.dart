@@ -4,9 +4,7 @@ import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSearchRoute extends StatefulWidget {
-  const ConfigurationSearchRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSearchRoute({super.key});
 
   @override
   State<ConfigurationSearchRoute> createState() => _State();
@@ -67,8 +65,10 @@ class _State extends State<ConfigurationSearchRoute>
 
   List<Widget> _indexers(IndexersStore store) {
     List<LunaIndexer> indexers = store.indexers;
-    indexers.sort((a, b) =>
-        a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()));
+    indexers.sort(
+      (a, b) =>
+          a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()),
+    );
     List<LunaBlock> list = List.generate(
       indexers.length,
       (index) =>
@@ -83,19 +83,13 @@ class _State extends State<ConfigurationSearchRoute>
       body: [TextSpan(text: indexer.host)],
       trailing: const LunaIconButton.arrow(),
       onTap: () => SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER.go(
-        params: {
-          'id': index.toString(),
-        },
+        params: {'id': index.toString()},
       ),
     );
   }
 
   List<Widget> _customization() {
-    return [
-      LunaDivider(),
-      _hideAdultCategories(),
-      _showLinks(),
-    ];
+    return [LunaDivider(), _hideAdultCategories(), _showLinks()];
   }
 
   Widget _hideAdultCategories() {

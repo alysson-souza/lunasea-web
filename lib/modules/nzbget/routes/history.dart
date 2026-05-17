@@ -6,8 +6,7 @@ class NZBGetHistory extends StatefulWidget {
   static const ROUTE_NAME = '/nzbget/history';
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const NZBGetHistory({Key? key, required this.refreshIndicatorKey})
-    : super(key: key);
+  const NZBGetHistory({super.key, required this.refreshIndicatorKey});
 
   @override
   State<NZBGetHistory> createState() => _State();
@@ -73,7 +72,6 @@ class _State extends State<NZBGetHistory>
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-            default:
               return const LunaLoader();
           }
         },

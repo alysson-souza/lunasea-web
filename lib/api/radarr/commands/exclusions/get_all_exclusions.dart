@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<List<RadarrExclusion>> _commandGetAllExclusions(Dio client) async {
   Response response = await client.get('exclusions');

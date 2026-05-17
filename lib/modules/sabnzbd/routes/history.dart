@@ -5,8 +5,7 @@ import 'package:lunasea/modules/sabnzbd.dart';
 class SABnzbdHistory extends StatefulWidget {
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
 
-  const SABnzbdHistory({Key? key, required this.refreshIndicatorKey})
-    : super(key: key);
+  const SABnzbdHistory({super.key, required this.refreshIndicatorKey});
 
   @override
   State<SABnzbdHistory> createState() => _State();
@@ -72,7 +71,6 @@ class _State extends State<SABnzbdHistory>
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-            default:
               return const LunaLoader();
           }
         },

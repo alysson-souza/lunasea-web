@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class GraphsRoute extends StatefulWidget {
-  const GraphsRoute({
-    Key? key,
-  }) : super(key: key);
+  const GraphsRoute({super.key});
 
   @override
   State<GraphsRoute> createState() => _State();
@@ -19,7 +17,8 @@ class _State extends State<GraphsRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-        initialPage: TautulliPreferences.NAVIGATION_INDEX_GRAPHS.read());
+      initialPage: TautulliPreferences.NAVIGATION_INDEX_GRAPHS.read(),
+    );
   }
 
   @override
@@ -37,9 +36,7 @@ class _State extends State<GraphsRoute> {
       pageController: _pageController,
       scrollControllers: TautulliGraphsNavigationBar.scrollControllers,
       title: 'Graphs',
-      actions: const [
-        TautulliGraphsTypeButton(),
-      ],
+      actions: const [TautulliGraphsTypeButton()],
     );
   }
 

@@ -1,10 +1,6 @@
-part of sonarr_types;
+part of '../types.dart';
 
-enum SonarrTrackedDownloadStatus {
-  OK,
-  WARNING,
-  ERROR,
-}
+enum SonarrTrackedDownloadStatus { OK, WARNING, ERROR }
 
 extension SonarrTrackedDownloadStatusExtension on SonarrTrackedDownloadStatus {
   SonarrTrackedDownloadStatus? from(String? type) {
@@ -28,8 +24,6 @@ extension SonarrTrackedDownloadStatusExtension on SonarrTrackedDownloadStatus {
         return 'warning';
       case SonarrTrackedDownloadStatus.ERROR:
         return 'error';
-      default:
-        return null;
     }
   }
 }

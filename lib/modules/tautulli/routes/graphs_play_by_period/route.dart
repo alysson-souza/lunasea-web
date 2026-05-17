@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliGraphsPlayByPeriodRoute extends StatefulWidget {
-  const TautulliGraphsPlayByPeriodRoute({
-    Key? key,
-  }) : super(key: key);
+  const TautulliGraphsPlayByPeriodRoute({super.key});
 
   @override
   State<TautulliGraphsPlayByPeriodRoute> createState() => _State();
@@ -35,10 +33,7 @@ class _State extends State<TautulliGraphsPlayByPeriodRoute>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {
@@ -54,7 +49,7 @@ class _State extends State<TautulliGraphsPlayByPeriodRoute>
             subtitle: [
               'Last ${TautulliPreferences.GRAPHS_LINECHART_DAYS.read()} Days',
               '\n\n',
-              'The total play count or duration of television, movies, and music played per day.'
+              'The total play count or duration of television, movies, and music played per day.',
             ].join(),
           ),
           const TautulliGraphsDailyPlayCountGraph(),

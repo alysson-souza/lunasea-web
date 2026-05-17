@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandBackupDB(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'backup_db',
-    },
+    queryParameters: {'cmd': 'backup_db'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

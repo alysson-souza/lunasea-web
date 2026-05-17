@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sabnzbd.dart';
 
 class ConfigurationSABnzbdDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationSABnzbdDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSABnzbdDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationSABnzbdDefaultPagesRoute> createState() => _State();
@@ -32,12 +30,7 @@ class _State extends State<ConfigurationSABnzbdDefaultPagesRoute>
   }
 
   Widget _body() {
-    return LunaListView(
-      controller: scrollController,
-      children: [
-        _homePage(),
-      ],
-    );
+    return LunaListView(controller: scrollController, children: [_homePage()]);
   }
 
   Widget _homePage() {
@@ -47,7 +40,7 @@ class _State extends State<ConfigurationSABnzbdDefaultPagesRoute>
         body: [
           TextSpan(
             text: SABnzbdNavigationBar.titles[settings.sabnzbdDefaultPage],
-          )
+          ),
         ],
         trailing: LunaIconButton(
           icon: SABnzbdNavigationBar.icons[settings.sabnzbdDefaultPage],

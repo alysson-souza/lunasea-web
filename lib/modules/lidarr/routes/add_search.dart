@@ -3,7 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/lidarr.dart';
 
 class AddArtistRoute extends StatefulWidget {
-  const AddArtistRoute({Key? key}) : super(key: key);
+  const AddArtistRoute({super.key});
 
   @override
   State<AddArtistRoute> createState() => _State();

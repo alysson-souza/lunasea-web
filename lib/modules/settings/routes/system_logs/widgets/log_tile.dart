@@ -6,15 +6,13 @@ import 'package:lunasea/extensions/datetime.dart';
 class SettingsSystemLogTile extends StatelessWidget {
   final LunaLog log;
 
-  const SettingsSystemLogTile({
-    Key? key,
-    required this.log,
-  }) : super(key: key);
+  const SettingsSystemLogTile({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
-    String dateTime =
-        DateTime.fromMillisecondsSinceEpoch(log.timestamp).asDateTime();
+    String dateTime = DateTime.fromMillisecondsSinceEpoch(
+      log.timestamp,
+    ).asDateTime();
     return LunaExpandableListTile(
       title: log.message,
       collapsedSubtitles: [
@@ -40,13 +38,19 @@ class SettingsSystemLogTile extends StatelessWidget {
       expandedTableContent: [
         if (log.className != null && log.className!.isNotEmpty)
           BackendPreferenceGroupContent(
-              title: 'settings.Class'.tr(), body: log.className),
+            title: 'settings.Class'.tr(),
+            body: log.className,
+          ),
         if (log.methodName != null && log.methodName!.isNotEmpty)
           BackendPreferenceGroupContent(
-              title: 'settings.Method'.tr(), body: log.methodName),
+            title: 'settings.Method'.tr(),
+            body: log.methodName,
+          ),
         if (log.error != null && log.error!.isNotEmpty)
           BackendPreferenceGroupContent(
-              title: 'settings.Exception'.tr(), body: log.error),
+            title: 'settings.Exception'.tr(),
+            body: log.error,
+          ),
       ],
     );
   }

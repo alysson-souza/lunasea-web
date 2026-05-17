@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../controllers.dart';
 
 class SonarrControllerCommand {
   final Dio _client;
@@ -7,9 +7,7 @@ class SonarrControllerCommand {
 
   Future<SonarrCommand> backup() async => _commandBackup(_client);
 
-  Future<SonarrCommand> episodeSearch({
-    required List<int> episodeIds,
-  }) async =>
+  Future<SonarrCommand> episodeSearch({required List<int> episodeIds}) async =>
       _commandEpisodeSearch(_client, episodeIds: episodeIds);
 
   Future<List<SonarrCommand>> queue() async => _commandCommandQueue(_client);
@@ -20,14 +18,10 @@ class SonarrControllerCommand {
   Future<SonarrCommand> refreshMonitoredDownloads() async =>
       _commandRefreshMonitoredDownloads(_client);
 
-  Future<SonarrCommand> refreshSeries({
-    int? seriesId,
-  }) async =>
+  Future<SonarrCommand> refreshSeries({int? seriesId}) async =>
       _commandRefreshSeries(_client, seriesId: seriesId);
 
-  Future<SonarrCommand> rescanSeries({
-    int? seriesId,
-  }) async =>
+  Future<SonarrCommand> rescanSeries({int? seriesId}) async =>
       _commandRescanSeries(_client, seriesId: seriesId);
 
   Future<SonarrCommand> rssSync() async => _commandRSSSync(_client);
@@ -35,12 +29,12 @@ class SonarrControllerCommand {
   Future<SonarrCommand> seasonSearch({
     required int seriesId,
     required int seasonNumber,
-  }) async =>
-      _commandSeasonSearch(_client,
-          seriesId: seriesId, seasonNumber: seasonNumber);
+  }) async => _commandSeasonSearch(
+    _client,
+    seriesId: seriesId,
+    seasonNumber: seasonNumber,
+  );
 
-  Future<SonarrCommand> seriesSearch({
-    required int seriesId,
-  }) async =>
+  Future<SonarrCommand> seriesSearch({required int seriesId}) async =>
       _commandSeriesSearch(_client, seriesId: seriesId);
 }

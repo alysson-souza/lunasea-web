@@ -8,8 +8,7 @@ import 'package:lunasea/modules/sabnzbd.dart';
 class SABnzbdQueueFAB extends StatefulWidget {
   final ScrollController scrollController;
 
-  const SABnzbdQueueFAB({Key? key, required this.scrollController})
-    : super(key: key);
+  const SABnzbdQueueFAB({super.key, required this.scrollController});
 
   @override
   State<StatefulWidget> createState() => _State();

@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to the queue within Radarr.
 ///
@@ -23,13 +23,12 @@ class RadarrCommandHandlerQueue {
     required int id,
     bool removeFromClient = false,
     bool blacklist = false,
-  }) async =>
-      _commandDeleteQueue(
-        _client,
-        id: id,
-        removeFromClient: removeFromClient,
-        blacklist: blacklist,
-      );
+  }) async => _commandDeleteQueue(
+    _client,
+    id: id,
+    removeFromClient: removeFromClient,
+    blacklist: blacklist,
+  );
 
   /// Handler for [queue](https://radarr.video/docs/api/#/Queue/get-queue).
   ///
@@ -47,15 +46,14 @@ class RadarrCommandHandlerQueue {
     RadarrSortDirection sortDirection = RadarrSortDirection.DESCENDING,
     RadarrQueueSortKey sortKey = RadarrQueueSortKey.PROGRESS,
     bool includeUnknownMovieItems = false,
-  }) async =>
-      _commandGetQueue(
-        _client,
-        page: page,
-        pageSize: pageSize,
-        sortDirection: sortDirection,
-        sortKey: sortKey,
-        includeUnknownMovieItems: includeUnknownMovieItems,
-      );
+  }) async => _commandGetQueue(
+    _client,
+    page: page,
+    pageSize: pageSize,
+    sortDirection: sortDirection,
+    sortKey: sortKey,
+    includeUnknownMovieItems: includeUnknownMovieItems,
+  );
 
   /// Handler for [queue/status](https://radarr.video/docs/api/#/Queue/get-queue-status).
   ///

@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to activity within Tautulli.
 ///
@@ -25,9 +25,11 @@ class TautulliCommandHandlerActivity {
   Future<TautulliActivity?> getActivity({
     int? sessionKey,
     String? sessionId,
-  }) async =>
-      _commandGetActivity(_client,
-          sessionKey: sessionKey, sessionId: sessionId);
+  }) async => _commandGetActivity(
+    _client,
+    sessionKey: sessionKey,
+    sessionId: sessionId,
+  );
 
   /// Handler for [terminate_session](https://github.com/Tautulli/Tautulli/blob/master/API.md#terminate_session).
   ///
@@ -43,7 +45,10 @@ class TautulliCommandHandlerActivity {
     int? sessionKey,
     String? sessionId,
     String? message,
-  }) async =>
-      _commandTerminateSession(_client,
-          sessionKey: sessionKey, sessionId: sessionId, message: message);
+  }) async => _commandTerminateSession(
+    _client,
+    sessionKey: sessionKey,
+    sessionId: sessionId,
+    message: message,
+  );
 }

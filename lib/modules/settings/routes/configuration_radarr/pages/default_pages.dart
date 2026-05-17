@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 
 class ConfigurationRadarrDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationRadarrDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRadarrDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationRadarrDefaultPagesRoute> createState() => _State();
@@ -48,7 +46,9 @@ class _State extends State<ConfigurationRadarrDefaultPagesRoute>
       builder: (context, settings, _) => LunaBlock(
         title: 'settings.Home'.tr(),
         body: [
-          TextSpan(text: RadarrNavigationBar.titles[settings.radarrDefaultPage])
+          TextSpan(
+            text: RadarrNavigationBar.titles[settings.radarrDefaultPage],
+          ),
         ],
         trailing: LunaIconButton(
           icon: RadarrNavigationBar.icons[settings.radarrDefaultPage],
@@ -101,7 +101,7 @@ class _State extends State<ConfigurationRadarrDefaultPagesRoute>
           TextSpan(
             text: RadarrAddMovieNavigationBar
                 .titles[settings.radarrAddMovieDefaultPage],
-          )
+          ),
         ],
         trailing: LunaIconButton(
           icon: RadarrAddMovieNavigationBar

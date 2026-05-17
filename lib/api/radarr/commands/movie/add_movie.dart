@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrMovie> _commandAddMovie(
   Dio client, {
@@ -20,7 +20,7 @@ Future<RadarrMovie> _commandAddMovie(
   Map<String, dynamic> _json = movie.toJson();
   _json['rootFolderPath'] = rootFolder.path;
   _json['addOptions'] = <String, dynamic>{
-    'searchForMovie': searchForMovie ?? false
+    'searchForMovie': searchForMovie ?? false,
   };
   // Add the movie
   Response response = await client.post('movie', data: _json);

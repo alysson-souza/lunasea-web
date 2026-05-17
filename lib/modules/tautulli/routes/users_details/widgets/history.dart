@@ -5,10 +5,7 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliUserDetailsHistory extends StatefulWidget {
   final TautulliTableUser user;
 
-  const TautulliUserDetailsHistory({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+  const TautulliUserDetailsHistory({super.key, required this.user});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -26,12 +23,12 @@ class _State extends State<TautulliUserDetailsHistory>
   @override
   Future<void> loadCallback() async {
     context.read<TautulliState>().setUserHistory(
-          widget.user.userId!,
-          context.read<TautulliState>().api!.history.getHistory(
-                userId: widget.user.userId,
-                length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
-              ),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.history.getHistory(
+        userId: widget.user.userId,
+        length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
+      ),
+    );
     await context.read<TautulliState>().userHistory[widget.user.userId!];
   }
 
@@ -46,27 +43,26 @@ class _State extends State<TautulliUserDetailsHistory>
   }
 
   Widget _body() => LunaRefreshIndicator(
-        context: context,
-        key: _refreshKey,
-        onRefresh: loadCallback,
-        child: FutureBuilder(
-          future:
-              context.watch<TautulliState>().userHistory[widget.user.userId!],
-          builder: (context, AsyncSnapshot<TautulliHistory> snapshot) {
-            if (snapshot.hasError) {
-              if (snapshot.connectionState != ConnectionState.waiting)
-                LunaLogger().error(
-                  'Unable to fetch Tautulli user history: ${widget.user.userId}',
-                  snapshot.error,
-                  snapshot.stackTrace,
-                );
-              return LunaMessage.error(onTap: _refreshKey.currentState!.show);
-            }
-            if (snapshot.hasData) return _history(snapshot.data);
-            return const LunaLoader();
-          },
-        ),
-      );
+    context: context,
+    key: _refreshKey,
+    onRefresh: loadCallback,
+    child: FutureBuilder(
+      future: context.watch<TautulliState>().userHistory[widget.user.userId!],
+      builder: (context, AsyncSnapshot<TautulliHistory> snapshot) {
+        if (snapshot.hasError) {
+          if (snapshot.connectionState != ConnectionState.waiting)
+            LunaLogger().error(
+              'Unable to fetch Tautulli user history: ${widget.user.userId}',
+              snapshot.error,
+              snapshot.stackTrace,
+            );
+          return LunaMessage.error(onTap: _refreshKey.currentState!.show);
+        }
+        if (snapshot.hasData) return _history(snapshot.data);
+        return const LunaLoader();
+      },
+    ),
+  );
 
   Widget _history(TautulliHistory? history) {
     if ((history?.records ?? 0) == 0)
@@ -78,9 +74,8 @@ class _State extends State<TautulliUserDetailsHistory>
     return LunaListViewBuilder(
       controller: TautulliUserDetailsNavigationBar.scrollControllers[1],
       itemCount: history!.records!.length,
-      itemBuilder: (context, index) => TautulliHistoryTile(
-        history: history.records![index],
-      ),
+      itemBuilder: (context, index) =>
+          TautulliHistoryTile(history: history.records![index]),
     );
   }
 }

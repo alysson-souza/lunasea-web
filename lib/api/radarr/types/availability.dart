@@ -1,12 +1,6 @@
-part of radarr_types;
+part of '../types.dart';
 
-enum RadarrAvailability {
-  ANNOUNCED,
-  IN_CINEMAS,
-  RELEASED,
-  PREDB,
-  TBA,
-}
+enum RadarrAvailability { ANNOUNCED, IN_CINEMAS, RELEASED, PREDB, TBA }
 
 extension RadarrAvailabilityExtension on RadarrAvailability {
   RadarrAvailability? from(String? type) {

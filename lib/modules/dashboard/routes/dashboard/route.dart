@@ -11,9 +11,7 @@ import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/switch_view_a
 import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/navigation_bar.dart';
 
 class DashboardRoute extends StatefulWidget {
-  const DashboardRoute({
-    Key? key,
-  }) : super(key: key);
+  const DashboardRoute({super.key});
 
   @override
   State<DashboardRoute> createState() => _State();

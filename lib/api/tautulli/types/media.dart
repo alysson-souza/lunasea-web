@@ -1,4 +1,4 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all media types used in Tautulli.
 enum TautulliMediaType {

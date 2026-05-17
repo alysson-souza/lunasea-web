@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<List<TautulliServer>> _commandGetServerList(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_server_list',
-    },
+    queryParameters: {'cmd': 'get_server_list'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

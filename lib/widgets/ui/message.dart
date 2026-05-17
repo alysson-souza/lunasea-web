@@ -13,13 +13,13 @@ class LunaMessage extends StatelessWidget {
   final bool useSafeArea;
 
   const LunaMessage({
-    Key? key,
+    super.key,
     required this.text,
     this.textColor = Colors.white,
     this.buttonText,
     this.onTap,
     this.useSafeArea = true,
-  }) : super(key: key);
+  });
 
   /// Return a message that is meant to be shown within a [ListView].
   factory LunaMessage.inList({
@@ -27,11 +27,7 @@ class LunaMessage extends StatelessWidget {
     required String text,
     bool useSafeArea = false,
   }) {
-    return LunaMessage(
-      key: key,
-      text: text,
-      useSafeArea: useSafeArea,
-    );
+    return LunaMessage(key: key, text: text, useSafeArea: useSafeArea);
   }
 
   /// Returns a centered message with a simple message, with a button to pop out of the route.
@@ -71,7 +67,7 @@ class LunaMessage extends StatelessWidget {
     );
   }
 
-  /// Return a pre-structured "<module> Is Not Enabled" message, with a "Return to Dashboard" button shown.
+  /// Return a pre-structured module disabled message, with a "Return to Dashboard" button shown.
   factory LunaMessage.moduleNotEnabled({
     Key? key,
     required BuildContext context,
@@ -116,7 +112,9 @@ class LunaMessage extends StatelessWidget {
                       ),
                     ),
                     margin: const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 12.0),
+                      vertical: 24.0,
+                      horizontal: 12.0,
+                    ),
                   ),
                 ),
               ],

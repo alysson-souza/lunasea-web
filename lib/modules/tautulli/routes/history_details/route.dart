@@ -9,11 +9,11 @@ class HistoryDetailsRoute extends StatefulWidget {
   final int? referenceId;
 
   const HistoryDetailsRoute({
-    Key? key,
+    super.key,
     required this.ratingKey,
     this.sessionKey,
     this.referenceId,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -28,12 +28,12 @@ class _State extends State<HistoryDetailsRoute>
   @override
   Future<void> loadCallback() async {
     context.read<TautulliState>().setIndividualHistory(
-          widget.ratingKey,
-          context.read<TautulliState>().api!.history.getHistory(
-                length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
-                ratingKey: widget.ratingKey,
-              ),
-        );
+      widget.ratingKey,
+      context.read<TautulliState>().api!.history.getHistory(
+        length: TautulliPreferences.CONTENT_LOAD_LENGTH.read(),
+        ratingKey: widget.ratingKey,
+      ),
+    );
     await context.read<TautulliState>().individualHistory[widget.ratingKey];
   }
 
@@ -52,13 +52,15 @@ class _State extends State<HistoryDetailsRoute>
       scrollControllers: [scrollController],
       actions: [
         TautulliHistoryDetailsUser(
-            ratingKey: widget.ratingKey,
-            sessionKey: widget.sessionKey,
-            referenceId: widget.referenceId),
+          ratingKey: widget.ratingKey,
+          sessionKey: widget.sessionKey,
+          referenceId: widget.referenceId,
+        ),
         TautulliHistoryDetailsMetadata(
-            ratingKey: widget.ratingKey,
-            sessionKey: widget.sessionKey,
-            referenceId: widget.referenceId),
+          ratingKey: widget.ratingKey,
+          sessionKey: widget.sessionKey,
+          referenceId: widget.referenceId,
+        ),
       ],
     );
   }
@@ -69,8 +71,9 @@ class _State extends State<HistoryDetailsRoute>
       key: _refreshKey,
       onRefresh: loadCallback,
       child: FutureBuilder(
-        future:
-            context.watch<TautulliState>().individualHistory[widget.ratingKey],
+        future: context
+            .watch<TautulliState>()
+            .individualHistory[widget.ratingKey],
         builder: (context, AsyncSnapshot<TautulliHistory> snapshot) {
           if (snapshot.hasError) {
             if (snapshot.connectionState != ConnectionState.waiting)
@@ -82,12 +85,13 @@ class _State extends State<HistoryDetailsRoute>
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.hasData) {
-            TautulliHistoryRecord? _record =
-                snapshot.data!.records!.firstWhereOrNull((record) {
-              if (record.referenceId == (widget.referenceId ?? -1) ||
-                  record.sessionKey == (widget.sessionKey ?? -1)) return true;
-              return false;
-            });
+            TautulliHistoryRecord? _record = snapshot.data!.records!
+                .firstWhereOrNull((record) {
+                  if (record.referenceId == (widget.referenceId ?? -1) ||
+                      record.sessionKey == (widget.sessionKey ?? -1))
+                    return true;
+                  return false;
+                });
             if (_record != null)
               return TautulliHistoryDetailsInformation(
                 scrollController: scrollController,
@@ -102,9 +106,6 @@ class _State extends State<HistoryDetailsRoute>
   }
 
   Widget _unknown() {
-    return LunaMessage.goBack(
-      context: context,
-      text: 'History Not Found',
-    );
+    return LunaMessage.goBack(context: context, text: 'History Not Found');
   }
 }

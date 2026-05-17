@@ -40,6 +40,7 @@ class LunaScaffold extends StatelessWidget {
   }
 
   Widget get android {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         if (!LunaSeaPreferences.ANDROID_BACK_OPENS_DRAWER.read()) return true;

@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to history within Tautulli.
 ///
@@ -15,9 +15,7 @@ class TautulliCommandHandlerHistory {
   ///
   /// Required Parameters:
   /// - `rowIds`: List of row IDs to delete
-  Future<void> deleteHistory({
-    required List<int> rowIds,
-  }) async =>
+  Future<void> deleteHistory({required List<int> rowIds}) async =>
       _commandDeleteHistory(_client, rowIds: rowIds);
 
   /// Handler for [get_history](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_history).
@@ -58,26 +56,25 @@ class TautulliCommandHandlerHistory {
     int? start,
     int? length,
     String? search,
-  }) async =>
-      _commandGetHistory(
-        _client,
-        grouping: grouping,
-        user: user,
-        userId: userId,
-        ratingKey: ratingKey,
-        parentRatingKey: parentRatingKey,
-        grandparentRatingKey: grandparentRatingKey,
-        startDate: startDate,
-        sectionId: sectionId,
-        mediaType: mediaType,
-        transcodeDecision: transcodeDecision,
-        guid: guid,
-        orderColumn: orderColumn,
-        orderDirection: orderDirection,
-        start: start,
-        length: length,
-        search: search,
-      );
+  }) async => _commandGetHistory(
+    _client,
+    grouping: grouping,
+    user: user,
+    userId: userId,
+    ratingKey: ratingKey,
+    parentRatingKey: parentRatingKey,
+    grandparentRatingKey: grandparentRatingKey,
+    startDate: startDate,
+    sectionId: sectionId,
+    mediaType: mediaType,
+    transcodeDecision: transcodeDecision,
+    guid: guid,
+    orderColumn: orderColumn,
+    orderDirection: orderDirection,
+    start: start,
+    length: length,
+    search: search,
+  );
 
   /// Handler for [get_home_stats](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_home_stats).
   ///
@@ -93,12 +90,13 @@ class TautulliCommandHandlerHistory {
     int? timeRange,
     TautulliStatsType? statsType,
     int? statsCount,
-  }) async =>
-      _commandGetHomeStats(_client,
-          grouping: grouping,
-          timeRange: timeRange,
-          statsType: statsType,
-          statsCount: statsCount);
+  }) async => _commandGetHomeStats(
+    _client,
+    grouping: grouping,
+    timeRange: timeRange,
+    statsType: statsType,
+    statsCount: statsCount,
+  );
 
   /// Handler for [get_plays_by_date](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_date).
   ///
@@ -114,12 +112,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByDate(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByDate(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_dayofweek](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_dayofweek).
   ///
@@ -135,12 +134,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByDayOfWeek(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByDayOfWeek(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_hourofday](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_hourofday).
   ///
@@ -156,12 +156,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByHourOfDay(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByHourOfDay(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_source_resolution](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_source_resolution).
   ///
@@ -177,12 +178,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysBySourceResolution(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysBySourceResolution(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_stream_resolution](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_stream_resolution).
   ///
@@ -198,12 +200,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByStreamResolution(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByStreamResolution(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_stream_type](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_stream_type).
   ///
@@ -219,12 +222,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByStreamType(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByStreamType(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_top_10_platforms](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_top_10_platforms).
   ///
@@ -240,12 +244,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByTopTenPlatforms(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByTopTenPlatforms(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_by_top_10_users](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_by_top_10_users).
   ///
@@ -261,12 +266,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysByTopTenUsers(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysByTopTenUsers(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_plays_per_month](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_plays_per_month).
   ///
@@ -282,12 +288,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetPlaysPerMonth(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetPlaysPerMonth(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_stream_data](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_stream_data).
   ///
@@ -316,12 +323,13 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetStreamTypeByTopTenUsers(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetStreamTypeByTopTenUsers(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 
   /// Handler for [get_stream_type_by_top_10_platforms](https://github.com/Tautulli/Tautulli/blob/master/API.md#get_stream_type_by_top_10_platforms).
   ///
@@ -337,10 +345,11 @@ class TautulliCommandHandlerHistory {
     int? userId,
     bool? grouping,
     TautulliGraphYAxis? yAxis,
-  }) async =>
-      _commandGetStreamTypeByTopTenPlatforms(_client,
-          timeRange: timeRange,
-          userId: userId,
-          grouping: grouping,
-          yAxis: yAxis);
+  }) async => _commandGetStreamTypeByTopTenPlatforms(
+    _client,
+    timeRange: timeRange,
+    userId: userId,
+    grouping: grouping,
+    yAxis: yAxis,
+  );
 }

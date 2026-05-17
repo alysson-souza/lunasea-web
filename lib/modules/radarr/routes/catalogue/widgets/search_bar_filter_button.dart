@@ -7,9 +7,9 @@ class RadarrCatalogueSearchBarFilterButton extends StatefulWidget {
   final ScrollController controller;
 
   const RadarrCatalogueSearchBarFilterButton({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<RadarrCatalogueSearchBarFilterButton> createState() => _State();
@@ -30,21 +30,22 @@ class _State extends State<RadarrCatalogueSearchBarFilterButton> {
           },
           itemBuilder: (context) =>
               List<PopupMenuEntry<RadarrMoviesFilter>>.generate(
-            RadarrMoviesFilter.values.length,
-            (index) => PopupMenuItem<RadarrMoviesFilter>(
-              value: RadarrMoviesFilter.values[index],
-              child: Text(
-                RadarrMoviesFilter.values[index].readable,
-                style: TextStyle(
-                  fontSize: LunaUI.FONT_SIZE_H3,
-                  color:
-                      state.moviesFilterType == RadarrMoviesFilter.values[index]
+                RadarrMoviesFilter.values.length,
+                (index) => PopupMenuItem<RadarrMoviesFilter>(
+                  value: RadarrMoviesFilter.values[index],
+                  child: Text(
+                    RadarrMoviesFilter.values[index].readable,
+                    style: TextStyle(
+                      fontSize: LunaUI.FONT_SIZE_H3,
+                      color:
+                          state.moviesFilterType ==
+                              RadarrMoviesFilter.values[index]
                           ? LunaColours.accent
                           : Colors.white,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
         ),
       ),
       height: LunaTextInputBar.defaultHeight,

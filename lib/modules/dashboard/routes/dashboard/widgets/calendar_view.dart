@@ -18,10 +18,7 @@ import 'package:lunasea/widgets/ui.dart';
 class CalendarView extends StatefulWidget {
   final Map<DateTime, List<CalendarData>> events;
 
-  const CalendarView({
-    Key? key,
-    required this.events,
-  }) : super(key: key);
+  const CalendarView({super.key, required this.events});
 
   @override
   State<CalendarView> createState() => _State();
@@ -50,13 +47,7 @@ class _State extends State<CalendarView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      child: Column(
-        children: [
-          _calendar(),
-          LunaDivider(),
-          _calendarList(),
-        ],
-      ),
+      child: Column(children: [_calendar(), LunaDivider(), _calendarList()]),
       padding: EdgeInsets.only(top: LunaUI.MARGIN_H_DEFAULT_V_HALF.top),
     );
   }
@@ -93,10 +84,7 @@ class _State extends State<CalendarView> {
       child: Container(
         width: _calendarBulletSize,
         height: _calendarBulletSize,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );
   }
@@ -106,11 +94,11 @@ class _State extends State<CalendarView> {
       builder: (context, settings, _) {
         settings.dashboardCalendarLayoutVersion;
         DateTime firstDay = context.watch<DashboardState>().today.subtract(
-              Duration(days: DashboardPreferences.CALENDAR_DAYS_PAST.read()),
-            );
+          Duration(days: DashboardPreferences.CALENDAR_DAYS_PAST.read()),
+        );
         DateTime lastDay = context.watch<DashboardState>().today.add(
-              Duration(days: DashboardPreferences.CALENDAR_DAYS_FUTURE.read()),
-            );
+          Duration(days: DashboardPreferences.CALENDAR_DAYS_FUTURE.read()),
+        );
         return SafeArea(
           child: LunaCard(
             context: context,
@@ -127,17 +115,19 @@ class _State extends State<CalendarView> {
                 //events: widget.events,
                 headerVisible: true,
                 headerStyle: const HeaderStyle(
-                    titleCentered: true,
-                    leftChevronVisible: false,
-                    rightChevronVisible: false,
-                    formatButtonVisible: false,
-                    headerPadding: LunaUI.MARGIN_DEFAULT_VERTICAL,
-                    titleTextStyle: TextStyle(
-                      fontSize: LunaUI.FONT_SIZE_H2,
-                      fontWeight: LunaUI.FONT_WEIGHT_BOLD,
-                    )),
-                startingDayOfWeek:
-                    DashboardPreferences.CALENDAR_STARTING_DAY.read().data,
+                  titleCentered: true,
+                  leftChevronVisible: false,
+                  rightChevronVisible: false,
+                  formatButtonVisible: false,
+                  headerPadding: LunaUI.MARGIN_DEFAULT_VERTICAL,
+                  titleTextStyle: TextStyle(
+                    fontSize: LunaUI.FONT_SIZE_H2,
+                    fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+                  ),
+                ),
+                startingDayOfWeek: DashboardPreferences.CALENDAR_STARTING_DAY
+                    .read()
+                    .data,
                 selectedDayPredicate: (date) {
                   return date.floor() ==
                       context.read<DashboardState>().selected;
@@ -147,13 +137,15 @@ class _State extends State<CalendarView> {
                   isTodayHighlighted: true,
                   outsideDaysVisible: false,
                   selectedDecoration: BoxDecoration(
-                    color:
-                        LunaColours.accent.withOpacity(LunaUI.OPACITY_SPLASH),
+                    color: LunaColours.accent.withValues(
+                      alpha: LunaUI.OPACITY_SPLASH,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   todayDecoration: BoxDecoration(
-                    color: LunaColours.primary
-                        .withOpacity(LunaUI.OPACITY_DISABLED),
+                    color: LunaColours.primary.withValues(
+                      alpha: LunaUI.OPACITY_DISABLED,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   weekendTextStyle: dayStyle,
@@ -208,13 +200,13 @@ class _State extends State<CalendarView> {
     int counter = 0;
     for (dynamic event in events) {
       switch (event.runtimeType) {
-        case CalendarLidarrData:
+        case const (CalendarLidarrData):
           if (!(event as CalendarLidarrData).hasAllFiles) counter++;
           break;
-        case CalendarRadarrData:
+        case const (CalendarRadarrData):
           if (!(event as CalendarRadarrData).hasFile) counter++;
           break;
-        case CalendarSonarrData:
+        case const (CalendarSonarrData):
           CalendarSonarrData _event = event;
           DateTime? _airTime = _event.airTimeObject?.toLocal();
           bool _isAired = _airTime?.isBefore(DateTime.now()) ?? false;
@@ -232,11 +224,10 @@ class _State extends State<CalendarView> {
       return Expanded(
         child: LunaListView(
           controller: HomeNavigationBar.scrollControllers[1],
-          children: [
-            LunaMessage.inList(text: 'dashboard.NoNewContent'.tr()),
-          ],
-          padding:
-              MediaQuery.of(context).padding.copyWith(top: 0.0, bottom: 8.0),
+          children: [LunaMessage.inList(text: 'dashboard.NoNewContent'.tr())],
+          padding: MediaQuery.of(
+            context,
+          ).padding.copyWith(top: 0.0, bottom: 8.0),
         ),
       );
     }

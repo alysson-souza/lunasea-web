@@ -7,44 +7,32 @@ import 'package:lunasea/router/routes/tautulli.dart';
 class TautulliHistoryTile extends StatelessWidget {
   final TautulliHistoryRecord history;
 
-  const TautulliHistoryTile({
-    Key? key,
-    required this.history,
-  }) : super(key: key);
+  const TautulliHistoryTile({super.key, required this.history});
 
   @override
   Widget build(BuildContext context) {
     return LunaBlock(
       title: history.lsTitle,
-      body: [
-        _subtitle1(),
-        _subtitle2(),
-        _subtitle3(),
-      ],
-      bodyLeadingIcons: [
-        null,
-        null,
-        history.lunaWatchStatusIcon,
-      ],
-      posterUrl:
-          context.watch<TautulliState>().getImageURLFromPath(history.thumb),
+      body: [_subtitle1(), _subtitle2(), _subtitle3()],
+      bodyLeadingIcons: [null, null, history.lunaWatchStatusIcon],
+      posterUrl: context.watch<TautulliState>().getImageURLFromPath(
+        history.thumb,
+      ),
       posterHeaders: context.watch<TautulliState>().headers,
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       backgroundHeaders: context.watch<TautulliState>().headers,
       backgroundUrl: context.watch<TautulliState>().getImageURLFromRatingKey(
-            history.grandparentRatingKey ??
-                history.parentRatingKey ??
-                history.ratingKey ??
-                '' as int?,
-          ),
+        history.grandparentRatingKey ??
+            history.parentRatingKey ??
+            history.ratingKey ??
+            '' as int?,
+      ),
       onTap: () => TautulliRoutes.HISTORY_DETAILS.go(
         queryParams: {
           'reference_id': history.referenceId.toString(),
           'session_key': history.sessionKey.toString(),
         },
-        params: {
-          'rating_key': history.ratingKey!.toString(),
-        },
+        params: {'rating_key': history.ratingKey!.toString()},
       ),
     );
   }

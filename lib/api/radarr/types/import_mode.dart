@@ -1,9 +1,6 @@
-part of radarr_types;
+part of '../types.dart';
 
-enum RadarrImportMode {
-  COPY,
-  MOVE,
-}
+enum RadarrImportMode { COPY, MOVE }
 
 /// Extension on [RadarrImportMode] to implement extended functionality.
 extension RadarrImportModeExtension on RadarrImportMode {

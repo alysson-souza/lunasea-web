@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<String?> _commandGetServerFriendlyName(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_server_friendly_name',
-    },
+    queryParameters: {'cmd': 'get_server_friendly_name'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

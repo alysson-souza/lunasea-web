@@ -19,10 +19,7 @@ class HomeNavigationBar extends StatelessWidget {
     Icons.calendar_today_rounded,
   ];
 
-  const HomeNavigationBar({
-    Key? key,
-    required this.pageController,
-  }) : super(key: key);
+  const HomeNavigationBar({super.key, required this.pageController});
 
   @override
   Widget build(BuildContext context) {

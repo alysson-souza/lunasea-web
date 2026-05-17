@@ -8,9 +8,9 @@ class TautulliMediaDetailsMetadataMetadata extends StatelessWidget {
   final TautulliMetadata? metadata;
 
   const TautulliMediaDetailsMetadataMetadata({
-    Key? key,
+    super.key,
     required this.metadata,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,9 @@ class TautulliMediaDetailsMetadataMetadata extends StatelessWidget {
           ),
         if (metadata!.rating != null)
           BackendPreferenceGroupContent(
-              title: 'rating',
-              body: '${(((metadata?.rating ?? 0) * 10).truncate())}%'),
+            title: 'rating',
+            body: '${(((metadata?.rating ?? 0) * 10).truncate())}%',
+          ),
         if (metadata!.studio != null && metadata!.studio!.isNotEmpty)
           BackendPreferenceGroupContent(
             title: 'studio',

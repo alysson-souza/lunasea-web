@@ -3,19 +3,13 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesEditSeriesPathTile extends StatelessWidget {
-  const SonarrSeriesEditSeriesPathTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesEditSeriesPathTile({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LunaBlock(
       title: 'sonarr.SeriesPath'.tr(),
-      body: [
-        TextSpan(
-          text: context.watch<SonarrSeriesEditState>().seriesPath,
-        ),
-      ],
+      body: [TextSpan(text: context.watch<SonarrSeriesEditState>().seriesPath)],
       trailing: const LunaIconButton.arrow(),
       onTap: () async => _onTap(context),
     );

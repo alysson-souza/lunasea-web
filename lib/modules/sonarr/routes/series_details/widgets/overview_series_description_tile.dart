@@ -6,9 +6,9 @@ class SonarrSeriesDetailsOverviewDescriptionTile extends StatelessWidget {
   final SonarrSeries? series;
 
   const SonarrSeriesDetailsOverviewDescriptionTile({
-    Key? key,
+    super.key,
     required this.series,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +26,8 @@ class SonarrSeriesDetailsOverviewDescriptionTile extends StatelessWidget {
         ),
       ],
       customBodyMaxLines: 3,
-      onTap: () async => LunaDialogs().textPreview(
-        context,
-        series!.title,
-        series!.overview!,
-      ),
+      onTap: () async =>
+          LunaDialogs().textPreview(context, series!.title, series!.overview!),
     );
   }
 }

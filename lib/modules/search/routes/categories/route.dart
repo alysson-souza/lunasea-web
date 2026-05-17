@@ -4,9 +4,7 @@ import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/router/routes/search.dart';
 
 class CategoriesRoute extends StatefulWidget {
-  const CategoriesRoute({
-    Key? key,
-  }) : super(key: key);
+  const CategoriesRoute({super.key});
 
   @override
   State<CategoriesRoute> createState() => _State();
@@ -38,10 +36,7 @@ class _State extends State<CategoriesRoute>
       title: context.read<SearchState>().indexer.displayName,
       scrollControllers: [scrollController],
       actions: <Widget>[
-        LunaIconButton(
-          icon: Icons.search_rounded,
-          onPressed: _enterSearch,
-        ),
+        LunaIconButton(icon: Icons.search_rounded, onPressed: _enterSearch),
       ],
     );
   }
@@ -63,7 +58,8 @@ class _State extends State<CategoriesRoute>
             return LunaMessage.error(onTap: _refreshKey.currentState!.show);
           }
           if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) return _list(snapshot.data!);
+              snapshot.hasData)
+            return _list(snapshot.data!);
           return const LunaLoader();
         },
       ),
@@ -81,10 +77,8 @@ class _State extends State<CategoriesRoute>
     return LunaListViewBuilder(
       controller: scrollController,
       itemCount: filtered.length,
-      itemBuilder: (context, index) => SearchCategoryTile(
-        category: filtered[index],
-        index: index,
-      ),
+      itemBuilder: (context, index) =>
+          SearchCategoryTile(category: filtered[index], index: index),
     );
   }
 

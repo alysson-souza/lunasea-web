@@ -5,19 +5,13 @@ class ErrorRoutePage extends StatelessWidget {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final Exception? exception;
 
-  ErrorRoutePage({
-    Key? key,
-    this.exception,
-  }) : super(key: key);
+  ErrorRoutePage({super.key, this.exception});
 
   @override
   Widget build(BuildContext context) {
     return LunaScaffold(
       scaffoldKey: _scaffoldKey,
-      appBar: LunaAppBar(
-        title: 'LunaSea',
-        scrollControllers: const [],
-      ),
+      appBar: LunaAppBar(title: 'LunaSea', scrollControllers: const []),
       body: LunaMessage.goBack(
         context: context,
         text: exception?.toString() ?? '404: Not Found',

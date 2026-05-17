@@ -5,10 +5,7 @@ import 'package:lunasea/modules/sonarr.dart';
 class SonarrSeriesSearchBar extends StatefulWidget {
   final ScrollController scrollController;
 
-  const SonarrSeriesSearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const SonarrSeriesSearchBar({super.key, required this.scrollController});
 
   @override
   State<SonarrSeriesSearchBar> createState() => _State();
@@ -59,18 +56,14 @@ class _State extends State<SonarrSeriesSearchBar> {
           width: _hasFocus
               ? 0.0
               : (LunaTextInputBar.defaultHeight * 3 +
-                  LunaUI.DEFAULT_MARGIN_SIZE * 3),
+                    LunaUI.DEFAULT_MARGIN_SIZE * 3),
           child: Row(
             children: [
               Flexible(
                 child: SonarrSeriesSearchBarFilterButton(controller: _sc),
               ),
-              Flexible(
-                child: SonarrSeriesSearchBarSortButton(controller: _sc),
-              ),
-              Flexible(
-                child: SonarrSeriesSearchBarViewButton(controller: _sc),
-              ),
+              Flexible(child: SonarrSeriesSearchBarSortButton(controller: _sc)),
+              Flexible(child: SonarrSeriesSearchBarViewButton(controller: _sc)),
             ],
           ),
         ),

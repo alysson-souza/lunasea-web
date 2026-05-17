@@ -1,13 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all section types used in Tautulli.
-enum TautulliSectionType {
-  MOVIE,
-  SHOW,
-  ARTIST,
-  PHOTO,
-  NULL,
-}
+enum TautulliSectionType { MOVIE, SHOW, ARTIST, PHOTO, NULL }
 
 /// Extension on [TautulliSectionType] to implement extended functionality.
 extension TautulliSectionTypeExtension on TautulliSectionType {

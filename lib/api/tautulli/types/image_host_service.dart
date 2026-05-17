@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all image hosting services available in Tautulli.
-enum TautulliImageHostService {
-  IMGUR,
-  CLOUDINARY,
-  NULL,
-}
+enum TautulliImageHostService { IMGUR, CLOUDINARY, NULL }
 
 /// Extension on [TautulliImageHostService] to implement extended functionality.
 extension TautulliImageHostServiceExtension on TautulliImageHostService {

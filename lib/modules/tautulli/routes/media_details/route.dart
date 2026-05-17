@@ -7,10 +7,10 @@ class MediaDetailsRoute extends StatefulWidget {
   final TautulliMediaType mediaType;
 
   const MediaDetailsRoute({
-    Key? key,
+    super.key,
     required this.ratingKey,
     required this.mediaType,
-  }) : super(key: key);
+  });
 
   @override
   State<MediaDetailsRoute> createState() => _State();
@@ -24,7 +24,8 @@ class _State extends State<MediaDetailsRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-        initialPage: TautulliPreferences.NAVIGATION_INDEX_MEDIA_DETAILS.read());
+      initialPage: TautulliPreferences.NAVIGATION_INDEX_MEDIA_DETAILS.read(),
+    );
   }
 
   @override

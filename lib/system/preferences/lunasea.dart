@@ -1,13 +1,6 @@
-import 'package:lunasea/database/models/external_module.dart';
-import 'package:lunasea/database/models/indexer.dart';
-import 'package:lunasea/database/models/log.dart';
 import 'package:lunasea/database/models/profile.dart';
-import 'package:lunasea/types/indexer_icon.dart';
-import 'package:lunasea/types/list_view_option.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/system/preferences/preference.dart';
-import 'package:lunasea/types/log_type.dart';
-import 'package:lunasea/vendor.dart';
 import 'package:lunasea/widgets/ui.dart';
 
 enum LunaSeaPreferences<T> with BackendPreference<T> {

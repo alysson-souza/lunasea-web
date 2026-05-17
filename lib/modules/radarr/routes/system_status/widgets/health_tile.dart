@@ -6,19 +6,13 @@ import 'package:lunasea/modules/radarr.dart';
 class RadarrHealthCheckTile extends StatelessWidget {
   final RadarrHealthCheck healthCheck;
 
-  const RadarrHealthCheckTile({
-    Key? key,
-    required this.healthCheck,
-  }) : super(key: key);
+  const RadarrHealthCheckTile({super.key, required this.healthCheck});
 
   @override
   Widget build(BuildContext context) {
     return LunaExpandableListTile(
       title: healthCheck.message!,
-      collapsedSubtitles: [
-        subtitle1(),
-        subtitle2(),
-      ],
+      collapsedSubtitles: [subtitle1(), subtitle2()],
       expandedTableContent: expandedTable(),
       expandedHighlightedNodes: highlightedNodes(),
       onLongPress: healthCheck.wikiUrl!.openLink,

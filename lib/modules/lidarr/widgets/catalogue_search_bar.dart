@@ -6,10 +6,7 @@ class LidarrCatalogueSearchBar extends StatefulWidget
     implements PreferredSizeWidget {
   final ScrollController scrollController;
 
-  const LidarrCatalogueSearchBar({
-    Key? key,
-    required this.scrollController,
-  }) : super(key: key);
+  const LidarrCatalogueSearchBar({super.key, required this.scrollController});
 
   @override
   Size get preferredSize =>

@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteQueue(
   Dio client, {
@@ -6,9 +6,12 @@ Future<void> _commandDeleteQueue(
   bool removeFromClient = false,
   bool blacklist = false,
 }) async {
-  await client.delete('queue/$id', queryParameters: {
-    'removeFromClient': removeFromClient,
-    'blacklist': blacklist,
-  });
+  await client.delete(
+    'queue/$id',
+    queryParameters: {
+      'removeFromClient': removeFromClient,
+      'blacklist': blacklist,
+    },
+  );
   return;
 }

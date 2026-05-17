@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteHistory(
   Dio client, {
@@ -7,10 +7,7 @@ Future<void> _commandDeleteHistory(
   assert(rowIds.isNotEmpty, 'rowIds cannot be empty.');
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'delete_history',
-      'row_ids': rowIds.join(","),
-    },
+    queryParameters: {'cmd': 'delete_history', 'row_ids': rowIds.join(",")},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

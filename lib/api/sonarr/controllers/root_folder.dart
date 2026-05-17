@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../controllers.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to root folders within Sonarr.
 ///

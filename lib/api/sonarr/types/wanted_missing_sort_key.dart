@@ -1,9 +1,6 @@
-part of sonarr_types;
+part of '../types.dart';
 
-enum SonarrWantedMissingSortKey {
-  AIRDATE_UTC,
-  SERIES_TITLE,
-}
+enum SonarrWantedMissingSortKey { AIRDATE_UTC, SERIES_TITLE }
 
 /// Extension on [SonarrWantedMissingSortKey] to implement extended functionality.
 extension SonarrWantedMissingSortKeyExtension on SonarrWantedMissingSortKey {
@@ -26,8 +23,6 @@ extension SonarrWantedMissingSortKeyExtension on SonarrWantedMissingSortKey {
         return 'airDateUtc';
       case SonarrWantedMissingSortKey.SERIES_TITLE:
         return 'series.title';
-      default:
-        return null;
     }
   }
 }

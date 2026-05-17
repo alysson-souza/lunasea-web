@@ -2,7 +2,6 @@ import 'package:lunasea/system/preferences/preference.dart';
 import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_day.dart';
 import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_size.dart';
 import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_type.dart';
-import 'package:lunasea/vendor.dart';
 
 enum DashboardPreferences<T> with BackendPreference<T> {
   NAVIGATION_INDEX<int>(0),

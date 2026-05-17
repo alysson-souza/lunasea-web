@@ -7,9 +7,7 @@ import 'package:lunasea/system/filesystem/filesystem.dart';
 import 'package:lunasea/types/log_type.dart';
 
 class SystemLogsRoute extends StatefulWidget {
-  const SystemLogsRoute({
-    Key? key,
-  }) : super(key: key);
+  const SystemLogsRoute({super.key});
 
   @override
   State<SystemLogsRoute> createState() => _State();
@@ -36,12 +34,7 @@ class _State extends State<SystemLogsRoute> with LunaScrollControllerMixin {
   }
 
   Widget _bottomActionBar() {
-    return LunaBottomActionBar(
-      actions: [
-        _exportLogs(),
-        _clearLogs(),
-      ],
-    );
+    return LunaBottomActionBar(actions: [_exportLogs(), _clearLogs()]);
   }
 
   Widget _body() {
@@ -54,27 +47,22 @@ class _State extends State<SystemLogsRoute> with LunaScrollControllerMixin {
           trailing: const LunaIconButton(icon: Icons.developer_mode_rounded),
           onTap: () async => _viewLogs(null),
         ),
-        ...List.generate(
-          LunaLogType.values.length,
-          (index) {
-            if (LunaLogType.values[index].enabled)
-              return LunaBlock(
-                title: LunaLogType.values[index].title,
-                body: [TextSpan(text: LunaLogType.values[index].description)],
-                trailing: LunaIconButton(icon: LunaLogType.values[index].icon),
-                onTap: () async => _viewLogs(LunaLogType.values[index]),
-              );
-            return Container(height: 0.0);
-          },
-        ),
+        ...List.generate(LunaLogType.values.length, (index) {
+          if (LunaLogType.values[index].enabled)
+            return LunaBlock(
+              title: LunaLogType.values[index].title,
+              body: [TextSpan(text: LunaLogType.values[index].description)],
+              trailing: LunaIconButton(icon: LunaLogType.values[index].icon),
+              onTap: () async => _viewLogs(LunaLogType.values[index]),
+            );
+          return Container(height: 0.0);
+        }),
       ],
     );
   }
 
   Future<void> _viewLogs(LunaLogType? type) async {
-    SettingsRoutes.SYSTEM_LOGS_DETAILS.go(params: {
-      'type': type?.key ?? 'all',
-    });
+    SettingsRoutes.SYSTEM_LOGS_DETAILS.go(params: {'type': type?.key ?? 'all'});
   }
 
   Widget _clearLogs() {
@@ -102,12 +90,16 @@ class _State extends State<SystemLogsRoute> with LunaScrollControllerMixin {
         icon: LunaIcons.DOWNLOAD,
         onTap: () async {
           String data = await LunaLogger().export();
-          bool result = await LunaFileSystem()
-              .save(context, 'logs.json', utf8.encode(data));
+          bool result = await LunaFileSystem().save(
+            context,
+            'logs.json',
+            utf8.encode(data),
+          );
           if (result)
             showLunaSuccessSnackBar(
-                title: 'settings.ExportedLogs'.tr(),
-                message: 'settings.ExportedLogsMessage'.tr());
+              title: 'settings.ExportedLogs'.tr(),
+              message: 'settings.ExportedLogsMessage'.tr(),
+            );
         },
       ),
     );

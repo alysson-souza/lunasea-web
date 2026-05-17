@@ -4,9 +4,7 @@ import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSearchAddIndexerRoute extends StatefulWidget {
-  const ConfigurationSearchAddIndexerRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSearchAddIndexerRoute({super.key});
 
   @override
   State<ConfigurationSearchAddIndexerRoute> createState() => _State();
@@ -65,12 +63,7 @@ class _State extends State<ConfigurationSearchAddIndexerRoute>
   Widget _body() {
     return LunaListView(
       controller: scrollController,
-      children: [
-        _displayName(),
-        _apiURL(),
-        _apiKey(),
-        _headers(),
-      ],
+      children: [_displayName(), _apiURL(), _apiKey(), _headers()],
     );
   }
 

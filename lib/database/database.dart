@@ -1,5 +1,4 @@
 import 'package:lunasea/database/models/profile.dart';
-import 'package:lunasea/system/preferences/preference.dart';
 import 'package:lunasea/system/preferences/lunasea.dart';
 import 'package:lunasea/system/backend_state.dart';
 import 'package:lunasea/system/filesystem/filesystem.dart';

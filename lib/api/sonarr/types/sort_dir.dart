@@ -1,9 +1,6 @@
-part of sonarr_types;
+part of '../types.dart';
 
-enum SonarrSortDirection {
-  ASCENDING,
-  DESCENDING,
-}
+enum SonarrSortDirection { ASCENDING, DESCENDING }
 
 /// Extension on [SonarrSortDirection] to implement extended functionality.
 extension SonarrSortDirectionExtension on SonarrSortDirection {
@@ -14,8 +11,6 @@ extension SonarrSortDirectionExtension on SonarrSortDirection {
         return 'ascending';
       case SonarrSortDirection.DESCENDING:
         return 'descending';
-      default:
-        return null;
     }
   }
 }

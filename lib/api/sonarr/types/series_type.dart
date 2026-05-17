@@ -1,10 +1,6 @@
-part of sonarr_types;
+part of '../types.dart';
 
-enum SonarrSeriesType {
-  STANDARD,
-  DAILY,
-  ANIME,
-}
+enum SonarrSeriesType { STANDARD, DAILY, ANIME }
 
 extension SonarrSeriesTypeExtension on SonarrSeriesType {
   SonarrSeriesType? from(String? type) {
@@ -28,8 +24,6 @@ extension SonarrSeriesTypeExtension on SonarrSeriesType {
         return 'daily';
       case SonarrSeriesType.ANIME:
         return 'anime';
-      default:
-        return null;
     }
   }
 }

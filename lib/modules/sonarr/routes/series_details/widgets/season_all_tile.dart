@@ -7,26 +7,19 @@ import 'package:lunasea/router/routes/sonarr.dart';
 class SonarrSeriesDetailsSeasonAllTile extends StatelessWidget {
   final SonarrSeries? series;
 
-  const SonarrSeriesDetailsSeasonAllTile({
-    Key? key,
-    required this.series,
-  }) : super(key: key);
+  const SonarrSeriesDetailsSeasonAllTile({super.key, required this.series});
 
   @override
   Widget build(BuildContext context) {
     return LunaBlock(
       title: 'sonarr.AllSeasons'.tr(),
       disabled: !series!.monitored!,
-      body: [
-        _subtitle1(),
-        _subtitle2(),
-      ],
+      body: [_subtitle1(), _subtitle2()],
       trailing: const LunaIconButton.arrow(),
       onTap: () async {
-        SonarrRoutes.SERIES_SEASON.go(params: {
-          'series': (series?.id ?? -1).toString(),
-          'season': '-1',
-        });
+        SonarrRoutes.SERIES_SEASON.go(
+          params: {'series': (series?.id ?? -1).toString(), 'season': '-1'},
+        );
       },
     );
   }

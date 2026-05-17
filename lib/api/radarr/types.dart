@@ -1,5 +1,5 @@
 /// Library containing all type definitions for Radarr data.
-library radarr_types;
+library;
 
 part 'types/availability.dart';
 part 'types/credit_type.dart';

@@ -4,10 +4,7 @@ import 'package:lunasea/core.dart';
 class LunaDrawerHeader extends StatelessWidget {
   final String page;
 
-  const LunaDrawerHeader({
-    Key? key,
-    required this.page,
-  }) : super(key: key);
+  const LunaDrawerHeader({super.key, required this.page});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class LunaDrawerHeader extends StatelessWidget {
               onPressed: page == LunaModule.SETTINGS.key
                   ? Navigator.of(context).pop
                   : LunaModule.SETTINGS.launch,
-            )
+            ),
           ],
         ),
         decoration: BoxDecoration(
@@ -33,7 +30,7 @@ class LunaDrawerHeader extends StatelessWidget {
           image: DecorationImage(
             image: const AssetImage(LunaAssets.brandingLogo),
             colorFilter: ColorFilter.mode(
-              LunaColours.primary.withOpacity(0.15),
+              LunaColours.primary.withValues(alpha: 0.15),
               BlendMode.dstATop,
             ),
             fit: BoxFit.cover,

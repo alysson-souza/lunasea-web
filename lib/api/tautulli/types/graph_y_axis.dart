@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all graph Y-axis values available in Tautulli.
-enum TautulliGraphYAxis {
-  PLAYS,
-  DURATION,
-  NULL,
-}
+enum TautulliGraphYAxis { PLAYS, DURATION, NULL }
 
 /// Extension on [TautulliGraphYAxis] to implement extended functionality.
 extension TautulliGraphYAxisExtension on TautulliGraphYAxis {

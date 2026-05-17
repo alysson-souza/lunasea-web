@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandRestart(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'restart',
-    },
+    queryParameters: {'cmd': 'restart'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

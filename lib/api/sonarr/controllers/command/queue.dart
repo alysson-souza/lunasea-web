@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../../controllers.dart';
 
 Future<List<SonarrCommand>> _commandCommandQueue(Dio client) async {
   Response response = await client.get('command');

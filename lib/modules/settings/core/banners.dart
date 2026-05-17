@@ -46,7 +46,6 @@ extension SettingsBannersExtension on SettingsBanners {
       case SettingsBanners.NOTIFICATIONS_MODULE_SUPPORT:
       case SettingsBanners.QUICK_ACTIONS_SUPPORT:
       case SettingsBanners.PROFILES_SUPPORT:
-      default:
         return LunaColours.accent;
     }
   }

@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliNotificationLogs> _commandGetNotificationLog(
   Dio client, {
@@ -26,7 +26,8 @@ Future<TautulliNotificationLogs> _commandGetNotificationLog(
   switch ((response.data['response']['result'] as String?)) {
     case 'success':
       return TautulliNotificationLogs.fromJson(
-          response.data['response']['data']);
+        response.data['response']['data'],
+      );
     case 'error':
     default:
       throw Exception(response.data['response']['message']);

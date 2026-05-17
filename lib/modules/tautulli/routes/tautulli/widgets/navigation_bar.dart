@@ -4,8 +4,10 @@ import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliNavigationBar extends StatefulWidget {
   final PageController? pageController;
-  static List<ScrollController> scrollControllers =
-      List.generate(icons.length, (_) => ScrollController());
+  static List<ScrollController> scrollControllers = List.generate(
+    icons.length,
+    (_) => ScrollController(),
+  );
 
   static const List<IconData> icons = [
     Icons.timelapse_rounded,
@@ -15,16 +17,13 @@ class TautulliNavigationBar extends StatefulWidget {
   ];
 
   static List<String> get titles => [
-        'tautulli.Activity'.tr(),
-        'tautulli.Users'.tr(),
-        'tautulli.History'.tr(),
-        'tautulli.More'.tr(),
-      ];
+    'tautulli.Activity'.tr(),
+    'tautulli.Users'.tr(),
+    'tautulli.History'.tr(),
+    'tautulli.More'.tr(),
+  ];
 
-  const TautulliNavigationBar({
-    Key? key,
-    required this.pageController,
-  }) : super(key: key);
+  const TautulliNavigationBar({super.key, required this.pageController});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -61,18 +60,22 @@ class _State extends State<TautulliNavigationBar> {
       leadingOnTab: [
         FutureBuilder(
           future: context.watch<TautulliState>().activity,
-          builder: (BuildContext context,
-                  AsyncSnapshot<TautulliActivity?> snapshot) =>
-              LunaNavigationBarBadge(
-            text:
-                snapshot.hasData ? snapshot.data!.streamCount.toString() : '?',
-            icon: TautulliNavigationBar.icons[0],
-            isActive: _index == 0,
-            showBadge: context.read<TautulliState>().enabled &&
-                _index != 0 &&
-                snapshot.hasData &&
-                snapshot.data!.streamCount! > 0,
-          ),
+          builder:
+              (
+                BuildContext context,
+                AsyncSnapshot<TautulliActivity?> snapshot,
+              ) => LunaNavigationBarBadge(
+                text: snapshot.hasData
+                    ? snapshot.data!.streamCount.toString()
+                    : '?',
+                icon: TautulliNavigationBar.icons[0],
+                isActive: _index == 0,
+                showBadge:
+                    context.read<TautulliState>().enabled &&
+                    _index != 0 &&
+                    snapshot.hasData &&
+                    snapshot.data!.streamCount! > 0,
+              ),
         ),
         null,
         null,

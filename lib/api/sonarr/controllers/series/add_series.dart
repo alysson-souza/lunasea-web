@@ -1,4 +1,4 @@
-part of sonarr_commands;
+part of '../../controllers.dart';
 
 Future<SonarrSeries> _commandAddSeries(
   Dio client, {

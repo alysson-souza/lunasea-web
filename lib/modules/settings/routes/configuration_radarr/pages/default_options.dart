@@ -5,9 +5,7 @@ import 'package:lunasea/modules/settings.dart';
 import 'package:lunasea/types/list_view_option.dart';
 
 class ConfigurationRadarrDefaultOptionsRoute extends StatefulWidget {
-  const ConfigurationRadarrDefaultOptionsRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRadarrDefaultOptionsRoute({super.key});
 
   @override
   State<ConfigurationRadarrDefaultOptionsRoute> createState() => _State();
@@ -75,9 +73,9 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
 
             if (values.item1) {
               LunaListViewOption _opt = LunaListViewOption.values[values.item2];
-              await context
-                  .read<SettingsStore>()
-                  .setRadarrMoviesDefaultView(_opt);
+              await context.read<SettingsStore>().setRadarrMoviesDefaultView(
+                _opt,
+              );
               context.read<RadarrState>().moviesViewType = _opt;
             }
           },
@@ -107,9 +105,9 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
 
           if (values.item1) {
             final sorting = RadarrMoviesSorting.values[values.item2];
-            await context
-                .read<SettingsStore>()
-                .setRadarrMoviesDefaultSorting(sorting);
+            await context.read<SettingsStore>().setRadarrMoviesDefaultSorting(
+              sorting,
+            );
             context.read<RadarrState>().moviesSortType = sorting;
             context.read<RadarrState>().moviesSortAscending = context
                 .read<SettingsStore>()
@@ -137,8 +135,9 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
             await context
                 .read<SettingsStore>()
                 .setRadarrMoviesDefaultSortingAscending(value);
-            context.read<RadarrState>().moviesSortType =
-                context.read<SettingsStore>().radarrMoviesDefaultSorting;
+            context.read<RadarrState>().moviesSortType = context
+                .read<SettingsStore>()
+                .radarrMoviesDefaultSorting;
             context.read<RadarrState>().moviesSortAscending = value;
           },
         ),
@@ -167,9 +166,9 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
 
           if (values.item1) {
             final filter = RadarrMoviesFilter.values[values.item2];
-            await context
-                .read<SettingsStore>()
-                .setRadarrMoviesDefaultFilter(filter);
+            await context.read<SettingsStore>().setRadarrMoviesDefaultFilter(
+              filter,
+            );
             context.read<RadarrState>().moviesFilterType = filter;
           }
         },
@@ -198,8 +197,8 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
 
           if (values.item1) {
             await context.read<SettingsStore>().setRadarrReleasesDefaultSorting(
-                  RadarrReleasesSorting.values[values.item2],
-                );
+              RadarrReleasesSorting.values[values.item2],
+            );
           }
         },
       ),
@@ -248,8 +247,8 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
 
           if (values.item1) {
             await context.read<SettingsStore>().setRadarrReleasesDefaultFilter(
-                  RadarrReleasesFilter.values[values.item2],
-                );
+              RadarrReleasesFilter.values[values.item2],
+            );
           }
         },
       ),

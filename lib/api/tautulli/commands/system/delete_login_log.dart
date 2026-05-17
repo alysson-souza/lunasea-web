@@ -1,11 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<void> _commandDeleteLoginLog(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'delete_login_log',
-    },
+    queryParameters: {'cmd': 'delete_login_log'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

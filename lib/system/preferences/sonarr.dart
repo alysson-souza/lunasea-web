@@ -1,11 +1,9 @@
 import 'package:lunasea/system/preferences/preference.dart';
 import 'package:lunasea/modules/sonarr/core/types/filter_releases.dart';
 import 'package:lunasea/modules/sonarr/core/types/filter_series.dart';
-import 'package:lunasea/modules/sonarr/core/types/monitor_status.dart';
 import 'package:lunasea/modules/sonarr/core/types/sorting_releases.dart';
 import 'package:lunasea/modules/sonarr/core/types/sorting_series.dart';
 import 'package:lunasea/types/list_view_option.dart';
-import 'package:lunasea/vendor.dart';
 
 enum SonarrPreferences<T> with BackendPreference<T> {
   NAVIGATION_INDEX<int>(0),

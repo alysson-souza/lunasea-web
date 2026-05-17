@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to a movie's extra files within Radarr.
 ///
@@ -23,12 +23,13 @@ class RadarrCommandHandlerHistory {
     int? pageSize,
     RadarrSortDirection? sortDirection,
     RadarrHistorySortKey? sortKey,
-  }) async =>
-      _commandGetHistory(_client,
-          page: page,
-          pageSize: pageSize,
-          sortDirection: sortDirection,
-          sortKey: sortKey);
+  }) async => _commandGetHistory(
+    _client,
+    page: page,
+    pageSize: pageSize,
+    sortDirection: sortDirection,
+    sortKey: sortKey,
+  );
 
   /// Handler for `history/movie/{id}`.
   ///

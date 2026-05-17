@@ -8,14 +8,9 @@ import 'package:lunasea/system/gateway/gateway.dart';
 import 'package:lunasea/system/logger.dart';
 import 'package:lunasea/system/network/network.dart';
 import 'package:lunasea/system/window_manager/window_manager.dart';
-import 'package:lunasea/system/platform.dart';
 import 'package:lunasea/widgets/ui/theme.dart';
 
-enum AppBootstrapStatus {
-  loading,
-  ready,
-  error,
-}
+enum AppBootstrapStatus { loading, ready, error }
 
 class AppBootstrapController extends ChangeNotifier {
   AppBootstrapStatus _status = AppBootstrapStatus.loading;

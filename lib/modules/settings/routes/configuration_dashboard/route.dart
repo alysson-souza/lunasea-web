@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationDashboardRoute extends StatefulWidget {
-  const ConfigurationDashboardRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationDashboardRoute({super.key});
 
   @override
   State<ConfigurationDashboardRoute> createState() => _State();
@@ -34,10 +32,7 @@ class _State extends State<ConfigurationDashboardRoute>
   Widget _body() {
     return LunaListView(
       controller: scrollController,
-      children: [
-        _calendarSettingsPage(),
-        _defaultPagesPage(),
-      ],
+      children: [_calendarSettingsPage(), _defaultPagesPage()],
     );
   }
 

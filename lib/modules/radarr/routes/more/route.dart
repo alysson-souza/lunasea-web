@@ -4,9 +4,7 @@ import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/router/routes/radarr.dart';
 
 class RadarrMoreRoute extends StatefulWidget {
-  const RadarrMoreRoute({
-    Key? key,
-  }) : super(key: key);
+  const RadarrMoreRoute({super.key});
 
   @override
   State<RadarrMoreRoute> createState() => _State();
@@ -21,10 +19,7 @@ class _State extends State<RadarrMoreRoute> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {

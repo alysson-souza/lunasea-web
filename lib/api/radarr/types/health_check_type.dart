@@ -1,11 +1,7 @@
-part of radarr_types;
+part of '../types.dart';
 
 /// Enumerator to handle all health check types used in Radarr.
-enum RadarrHealthCheckType {
-  NOTICE,
-  WARNING,
-  ERROR,
-}
+enum RadarrHealthCheckType { NOTICE, WARNING, ERROR }
 
 /// Extension on [RadarrHealthCheckType] to implement extended functionality.
 extension RadarrHealthCheckTypeExtension on RadarrHealthCheckType {
@@ -31,8 +27,6 @@ extension RadarrHealthCheckTypeExtension on RadarrHealthCheckType {
         return 'warning';
       case RadarrHealthCheckType.ERROR:
         return 'error';
-      default:
-        return null;
     }
   }
 
@@ -44,8 +38,6 @@ extension RadarrHealthCheckTypeExtension on RadarrHealthCheckType {
         return 'Warning';
       case RadarrHealthCheckType.ERROR:
         return 'Error';
-      default:
-        return null;
     }
   }
 }

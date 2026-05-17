@@ -8,10 +8,10 @@ class LidarrDetailsTrackTile extends StatefulWidget {
   final bool monitored;
 
   const LidarrDetailsTrackTile({
-    Key? key,
+    super.key,
     required this.data,
     required this.monitored,
-  }) : super(key: key);
+  });
 
   @override
   State<LidarrDetailsTrackTile> createState() => _State();
@@ -20,15 +20,15 @@ class LidarrDetailsTrackTile extends StatefulWidget {
 class _State extends State<LidarrDetailsTrackTile> {
   @override
   Widget build(BuildContext context) => LunaBlock(
-        title: widget.data.title,
-        body: [
-          TextSpan(text: widget.data.duration.asTrackDuration(divisor: 1000)),
-          widget.data.file(widget.monitored),
-        ],
-        disabled: !widget.monitored,
-        leading: LunaIconButton(
-          text: widget.data.trackNumber,
-          textSize: LunaUI.FONT_SIZE_H4,
-        ),
-      );
+    title: widget.data.title,
+    body: [
+      TextSpan(text: widget.data.duration.asTrackDuration(divisor: 1000)),
+      widget.data.file(widget.monitored),
+    ],
+    disabled: !widget.monitored,
+    leading: LunaIconButton(
+      text: widget.data.trackNumber,
+      textSize: LunaUI.FONT_SIZE_H4,
+    ),
+  );
 }

@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeriesEditMonitoredTile extends StatelessWidget {
-  const SonarrSeriesEditMonitoredTile({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeriesEditMonitoredTile({super.key});
 
   @override
   Widget build(BuildContext context) {

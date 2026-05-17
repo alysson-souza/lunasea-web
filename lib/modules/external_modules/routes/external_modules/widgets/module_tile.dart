@@ -6,10 +6,7 @@ import 'package:lunasea/extensions/string/links.dart';
 class ExternalModulesModuleTile extends StatelessWidget {
   final LunaExternalModule? module;
 
-  const ExternalModulesModuleTile({
-    Key? key,
-    required this.module,
-  }) : super(key: key);
+  const ExternalModulesModuleTile({super.key, required this.module});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../commands.dart';
 
 /// Facilitates, encapsulates, and manages individual calls related to tags within Radarr.
 ///
@@ -15,9 +15,7 @@ class RadarrCommandHandlerTag {
   ///
   /// Required Parameters:
   /// - `label`: Tag label
-  Future<RadarrTag> create({
-    required String label,
-  }) async =>
+  Future<RadarrTag> create({required String label}) async =>
       _commandAddTag(_client, label: label);
 
   /// Handler for [tag/{id}](https://radarr.video/docs/api/#/Tag/delete_tag__id_).
@@ -26,9 +24,7 @@ class RadarrCommandHandlerTag {
   ///
   /// Required Parameters:
   /// - `id`: Tag identifier
-  Future<void> delete({
-    required int id,
-  }) async =>
+  Future<void> delete({required int id}) async =>
       _commandDeleteTag(_client, id: id);
 
   /// Handler for [tag/{id}](https://radarr.video/docs/api/#/Tag/get_tag__id_).
@@ -37,10 +33,7 @@ class RadarrCommandHandlerTag {
   ///
   /// Required Parameters:
   /// - `id`: Tag identifier
-  Future<void> get({
-    required int id,
-  }) async =>
-      _commandGetTag(_client, id: id);
+  Future<void> get({required int id}) async => _commandGetTag(_client, id: id);
 
   /// Handler for [tag](https://radarr.video/docs/api/#/Tag/get_tag).
   ///
@@ -53,8 +46,6 @@ class RadarrCommandHandlerTag {
   ///
   /// Required Parameters:
   /// - `tag`: A modified [RadarrTag] object
-  Future<RadarrTag> update({
-    required RadarrTag tag,
-  }) async =>
+  Future<RadarrTag> update({required RadarrTag tag}) async =>
       _commandUpdateTag(_client, tag: tag);
 }

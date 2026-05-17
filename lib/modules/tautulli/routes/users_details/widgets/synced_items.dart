@@ -5,10 +5,7 @@ import 'package:lunasea/modules/tautulli.dart';
 class TautulliUserDetailsSyncedItems extends StatefulWidget {
   final TautulliTableUser user;
 
-  const TautulliUserDetailsSyncedItems({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+  const TautulliUserDetailsSyncedItems({super.key, required this.user});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -26,13 +23,11 @@ class _State extends State<TautulliUserDetailsSyncedItems>
   @override
   Future<void> loadCallback() async {
     context.read<TautulliState>().setUserSyncedItems(
-          widget.user.userId!,
-          context
-              .read<TautulliState>()
-              .api!
-              .libraries
-              .getSyncedItems(userId: widget.user.userId),
-        );
+      widget.user.userId!,
+      context.read<TautulliState>().api!.libraries.getSyncedItems(
+        userId: widget.user.userId,
+      ),
+    );
     await context.read<TautulliState>().userSyncedItems[widget.user.userId!];
   }
 
@@ -52,8 +47,9 @@ class _State extends State<TautulliUserDetailsSyncedItems>
       key: _refreshKey,
       onRefresh: loadCallback,
       child: FutureBuilder(
-        future:
-            context.watch<TautulliState>().userSyncedItems[widget.user.userId!],
+        future: context
+            .watch<TautulliState>()
+            .userSyncedItems[widget.user.userId!],
         builder: (context, AsyncSnapshot<List<TautulliSyncedItem>> snapshot) {
           if (snapshot.hasError) {
             if (snapshot.connectionState != ConnectionState.waiting)

@@ -1,12 +1,9 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<String?> _commandStatus(Dio client) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'status',
-      'check': 'database',
-    },
+    queryParameters: {'cmd': 'status', 'check': 'database'},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

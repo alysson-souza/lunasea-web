@@ -1,11 +1,7 @@
-part of tautulli_types;
+part of '../types.dart';
 
 /// Enumerator to handle all Plex log types available in Tautulli.
-enum TautulliPlexLogType {
-  SERVER,
-  SCANNER,
-  NULL,
-}
+enum TautulliPlexLogType { SERVER, SCANNER, NULL }
 
 /// Extension on [TautulliPlexLogType] to implement extended functionality.
 extension TautulliPlexLogTypeExtension on TautulliPlexLogType {

@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/tautulli.dart';
 
 class ConfigurationTautulliDefaultPagesRoute extends StatefulWidget {
-  const ConfigurationTautulliDefaultPagesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationTautulliDefaultPagesRoute({super.key});
 
   @override
   State<ConfigurationTautulliDefaultPagesRoute> createState() => _State();
@@ -51,7 +49,7 @@ class _State extends State<ConfigurationTautulliDefaultPagesRoute>
         body: [
           TextSpan(
             text: TautulliNavigationBar.titles[settings.tautulliDefaultPage],
-          )
+          ),
         ],
         trailing: LunaIconButton(
           icon: TautulliNavigationBar.icons[settings.tautulliDefaultPage],
@@ -76,7 +74,7 @@ class _State extends State<ConfigurationTautulliDefaultPagesRoute>
           TextSpan(
             text: TautulliGraphsNavigationBar
                 .titles[settings.tautulliGraphsDefaultPage],
-          )
+          ),
         ],
         trailing: LunaIconButton(
           icon: TautulliGraphsNavigationBar
@@ -102,7 +100,7 @@ class _State extends State<ConfigurationTautulliDefaultPagesRoute>
           TextSpan(
             text: TautulliLibrariesDetailsNavigationBar
                 .titles[settings.tautulliLibraryDetailsDefaultPage],
-          )
+          ),
         ],
         trailing: LunaIconButton(
           icon: TautulliLibrariesDetailsNavigationBar

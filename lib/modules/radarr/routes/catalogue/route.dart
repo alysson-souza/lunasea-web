@@ -6,9 +6,7 @@ import 'package:lunasea/router/routes/radarr.dart';
 import 'package:lunasea/types/list_view_option.dart';
 
 class RadarrCatalogueRoute extends StatefulWidget {
-  const RadarrCatalogueRoute({
-    Key? key,
-  }) : super(key: key);
+  const RadarrCatalogueRoute({super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -28,11 +26,7 @@ class _State extends State<RadarrCatalogueRoute>
     _state.fetchMovies();
     _state.fetchQualityProfiles();
     _state.fetchTags();
-    await Future.wait([
-      _state.movies!,
-      _state.qualityProfiles!,
-      _state.tags!,
-    ]);
+    await Future.wait([_state.movies!, _state.qualityProfiles!, _state.tags!]);
   }
 
   @override
@@ -59,49 +53,45 @@ class _State extends State<RadarrCatalogueRoute>
       context: context,
       key: _refreshKey,
       onRefresh: _refresh,
-      child: Selector<
-              RadarrState,
-              Tuple2<Future<List<RadarrMovie>>?,
-                  Future<List<RadarrQualityProfile>>?>>(
-          selector: (_, state) => Tuple2(
-                state.movies,
-                state.qualityProfiles,
-              ),
-          builder: (context, tuple, _) {
-            return FutureBuilder(
-              future: Future.wait([
-                tuple.item1!,
-                tuple.item2!,
-              ]),
-              builder: (context, AsyncSnapshot<List<Object>> snapshot) {
-                if (snapshot.hasError) {
-                  if (snapshot.connectionState != ConnectionState.waiting) {
-                    LunaLogger().error(
-                      'Unable to fetch Radarr movies',
-                      snapshot.error,
-                      snapshot.stackTrace,
+      child:
+          Selector<
+            RadarrState,
+            Tuple2<
+              Future<List<RadarrMovie>>?,
+              Future<List<RadarrQualityProfile>>?
+            >
+          >(
+            selector: (_, state) => Tuple2(state.movies, state.qualityProfiles),
+            builder: (context, tuple, _) {
+              return FutureBuilder(
+                future: Future.wait([tuple.item1!, tuple.item2!]),
+                builder: (context, AsyncSnapshot<List<Object>> snapshot) {
+                  if (snapshot.hasError) {
+                    if (snapshot.connectionState != ConnectionState.waiting) {
+                      LunaLogger().error(
+                        'Unable to fetch Radarr movies',
+                        snapshot.error,
+                        snapshot.stackTrace,
+                      );
+                    }
+                    return LunaMessage.error(
+                      onTap: _refreshKey.currentState!.show,
                     );
                   }
-                  return LunaMessage.error(
-                    onTap: _refreshKey.currentState!.show,
-                  );
-                }
-                if (snapshot.hasData)
-                  return _movieList(
-                    snapshot.data![0] as List<RadarrMovie>,
-                    snapshot.data![1] as List<RadarrQualityProfile>,
-                  );
-                return const LunaLoader();
-              },
-            );
-          }),
+                  if (snapshot.hasData)
+                    return _movieList(
+                      snapshot.data![0] as List<RadarrMovie>,
+                      snapshot.data![1] as List<RadarrQualityProfile>,
+                    );
+                  return const LunaLoader();
+                },
+              );
+            },
+          ),
     );
   }
 
-  List<RadarrMovie> _filterAndSort(
-    List<RadarrMovie> movies,
-    String query,
-  ) {
+  List<RadarrMovie> _filterAndSort(List<RadarrMovie> movies, String query) {
     if (movies.isEmpty) return movies;
     RadarrMoviesSorting sorting = context.watch<RadarrState>().moviesSortType;
     RadarrMoviesFilter filter = context.watch<RadarrState>().moviesFilterType;
@@ -143,14 +133,16 @@ class _State extends State<RadarrCatalogueRoute>
                     LunaButton.text(
                       icon: null,
                       text: query.length > 20
-                          ? 'radarr.SearchFor'.tr(args: [
-                              '"${query.substring(0, min(20, query.length))}${LunaUI.TEXT_ELLIPSIS}"'
-                            ])
+                          ? 'radarr.SearchFor'.tr(
+                              args: [
+                                '"${query.substring(0, min(20, query.length))}${LunaUI.TEXT_ELLIPSIS}"',
+                              ],
+                            )
                           : 'radarr.SearchFor'.tr(args: ['"$query"']),
                       backgroundColor: LunaColours.accent,
-                      onTap: () => RadarrRoutes.ADD_MOVIE.go(queryParams: {
-                        'query': query,
-                      }),
+                      onTap: () => RadarrRoutes.ADD_MOVIE.go(
+                        queryParams: {'query': query},
+                      ),
                     ),
                   ],
                 ),
@@ -161,8 +153,6 @@ class _State extends State<RadarrCatalogueRoute>
             return _blockView(_filtered, qualityProfiles);
           case LunaListViewOption.GRID_VIEW:
             return _gridView(_filtered, qualityProfiles);
-          default:
-            throw Exception('Invalid moviesViewType');
         }
       },
     );

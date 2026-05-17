@@ -1,4 +1,4 @@
-part of tautulli_commands;
+part of '../../commands.dart';
 
 Future<TautulliWHOISInfo> _commandGetWHOISLookup(
   Dio client, {
@@ -6,10 +6,7 @@ Future<TautulliWHOISInfo> _commandGetWHOISLookup(
 }) async {
   Response response = await client.get(
     '/',
-    queryParameters: {
-      'cmd': 'get_whois_lookup',
-      'ip_address': ipAddress,
-    },
+    queryParameters: {'cmd': 'get_whois_lookup', 'ip_address': ipAddress},
   );
   switch ((response.data['response']['result'] as String?)) {
     case 'success':

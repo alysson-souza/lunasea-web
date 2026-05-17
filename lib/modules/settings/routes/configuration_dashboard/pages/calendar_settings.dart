@@ -11,9 +11,7 @@ import 'package:lunasea/modules/dashboard/core/dialogs.dart';
 import 'package:lunasea/modules/settings/core/dialogs.dart';
 
 class ConfigurationDashboardCalendarRoute extends StatefulWidget {
-  const ConfigurationDashboardCalendarRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationDashboardCalendarRoute({super.key});
 
   @override
   State<ConfigurationDashboardCalendarRoute> createState() => _State();
@@ -72,12 +70,13 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
         ],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await DashboardDialogs().setPastDays(context);
+          Tuple2<bool, int> result = await DashboardDialogs().setPastDays(
+            context,
+          );
           if (result.item1) {
-            await context
-                .read<SettingsStore>()
-                .setDashboardCalendarPastDays(result.item2);
+            await context.read<SettingsStore>().setDashboardCalendarPastDays(
+              result.item2,
+            );
           }
         },
       ),
@@ -99,12 +98,13 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
         ],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await DashboardDialogs().setFutureDays(context);
+          Tuple2<bool, int> result = await DashboardDialogs().setFutureDays(
+            context,
+          );
           if (result.item1) {
-            await context
-                .read<SettingsStore>()
-                .setDashboardCalendarFutureDays(result.item2);
+            await context.read<SettingsStore>().setDashboardCalendarFutureDays(
+              result.item2,
+            );
           }
         },
       ),
@@ -120,12 +120,13 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
             text: 'settings.ShowCalendarEntries'.tr(
               args: [LunaModule.LIDARR.title],
             ),
-          )
+          ),
         ],
         trailing: LunaSwitch(
           value: settings.dashboardCalendarLidarrEnabled,
-          onChanged:
-              context.read<SettingsStore>().setDashboardCalendarLidarrEnabled,
+          onChanged: context
+              .read<SettingsStore>()
+              .setDashboardCalendarLidarrEnabled,
         ),
       ),
     );
@@ -140,12 +141,13 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
             text: 'settings.ShowCalendarEntries'.tr(
               args: [LunaModule.RADARR.title],
             ),
-          )
+          ),
         ],
         trailing: LunaSwitch(
           value: settings.dashboardCalendarRadarrEnabled,
-          onChanged:
-              context.read<SettingsStore>().setDashboardCalendarRadarrEnabled,
+          onChanged: context
+              .read<SettingsStore>()
+              .setDashboardCalendarRadarrEnabled,
         ),
       ),
     );
@@ -160,12 +162,13 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
             text: 'settings.ShowCalendarEntries'.tr(
               args: [LunaModule.SONARR.title],
             ),
-          )
+          ),
         ],
         trailing: LunaSwitch(
           value: settings.dashboardCalendarSonarrEnabled,
-          onChanged:
-              context.read<SettingsStore>().setDashboardCalendarSonarrEnabled,
+          onChanged: context
+              .read<SettingsStore>()
+              .setDashboardCalendarSonarrEnabled,
         ),
       ),
     );
@@ -175,13 +178,11 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
     return Consumer<SettingsStore>(
       builder: (context, settings, _) => LunaBlock(
         title: 'settings.StartingView'.tr(),
-        body: [
-          TextSpan(text: settings.dashboardCalendarStartingType.name),
-        ],
+        body: [TextSpan(text: settings.dashboardCalendarStartingType.name)],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          Tuple2<bool, CalendarStartingType?> _values =
-              await SettingsDialogs().editCalendarStartingView(context);
+          Tuple2<bool, CalendarStartingType?> _values = await SettingsDialogs()
+              .editCalendarStartingView(context);
           if (_values.item1) {
             await context
                 .read<SettingsStore>()
@@ -196,17 +197,15 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
     return Consumer<SettingsStore>(
       builder: (context, settings, _) => LunaBlock(
         title: 'settings.StartingDay'.tr(),
-        body: [
-          TextSpan(text: settings.dashboardCalendarStartingDay.name),
-        ],
+        body: [TextSpan(text: settings.dashboardCalendarStartingDay.name)],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          Tuple2<bool, CalendarStartingDay?> results =
-              await SettingsDialogs().editCalendarStartingDay(context);
+          Tuple2<bool, CalendarStartingDay?> results = await SettingsDialogs()
+              .editCalendarStartingDay(context);
           if (results.item1) {
-            await context
-                .read<SettingsStore>()
-                .setDashboardCalendarStartingDay(results.item2!);
+            await context.read<SettingsStore>().setDashboardCalendarStartingDay(
+              results.item2!,
+            );
           }
         },
       ),
@@ -217,13 +216,11 @@ class _State extends State<ConfigurationDashboardCalendarRoute>
     return Consumer<SettingsStore>(
       builder: (context, settings, _) => LunaBlock(
         title: 'settings.StartingSize'.tr(),
-        body: [
-          TextSpan(text: settings.dashboardCalendarStartingSize.name),
-        ],
+        body: [TextSpan(text: settings.dashboardCalendarStartingSize.name)],
         trailing: const LunaIconButton.arrow(),
         onTap: () async {
-          Tuple2<bool, CalendarStartingSize?> _values =
-              await SettingsDialogs().editCalendarStartingSize(context);
+          Tuple2<bool, CalendarStartingSize?> _values = await SettingsDialogs()
+              .editCalendarStartingSize(context);
           if (_values.item1) {
             await context
                 .read<SettingsStore>()

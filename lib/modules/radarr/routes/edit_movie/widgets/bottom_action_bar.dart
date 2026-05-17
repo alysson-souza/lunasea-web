@@ -4,9 +4,7 @@ import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/router/router.dart';
 
 class RadarrEditMovieActionBar extends StatelessWidget {
-  const RadarrEditMovieActionBar({
-    Key? key,
-  }) : super(key: key);
+  const RadarrEditMovieActionBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +16,7 @@ class RadarrEditMovieActionBar extends StatelessWidget {
           icon: Icons.edit_rounded,
           loadingState: context.watch<RadarrMoviesEditState>().state,
           onTap: () async => _updateOnTap(context),
-        )
+        ),
       ],
     );
   }

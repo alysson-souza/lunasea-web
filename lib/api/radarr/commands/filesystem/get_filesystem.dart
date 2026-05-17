@@ -1,4 +1,4 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<RadarrFileSystem> _commandGetFileSystem(
   Dio client, {
@@ -6,11 +6,15 @@ Future<RadarrFileSystem> _commandGetFileSystem(
   bool? allowFoldersWithoutTrailingSlashes,
   bool? includeFiles,
 }) async {
-  Response response = await client.get('filesystem', queryParameters: {
-    if (path != null && path.isNotEmpty) 'path': path,
-    if (allowFoldersWithoutTrailingSlashes != null)
-      'allowFoldersWithoutTrailingSlashes': allowFoldersWithoutTrailingSlashes,
-    if (includeFiles != null) 'includeFiles': includeFiles,
-  });
+  Response response = await client.get(
+    'filesystem',
+    queryParameters: {
+      if (path != null && path.isNotEmpty) 'path': path,
+      if (allowFoldersWithoutTrailingSlashes != null)
+        'allowFoldersWithoutTrailingSlashes':
+            allowFoldersWithoutTrailingSlashes,
+      if (includeFiles != null) 'includeFiles': includeFiles,
+    },
+  );
   return RadarrFileSystem.fromJson(response.data);
 }

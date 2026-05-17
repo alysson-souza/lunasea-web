@@ -4,26 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/router/router.dart';
-import 'package:lunasea/system/recovery_mode/main.dart';
 import 'package:lunasea/system/platform.dart';
 
 /// LunaSea Entry Point: Bootstrap & Run Application
 ///
 /// Runs app in guarded zone to attempt to capture fatal (crashing) errors
 Future<void> main() async {
-  runZonedGuarded(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      runApp(const LunaApp());
-    },
-    (error, stack) => LunaLogger().critical(error, stack),
-  );
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    runApp(const LunaApp());
+  }, (error, stack) => LunaLogger().critical(error, stack));
 }
 
 class LunaApp extends StatefulWidget {
-  const LunaApp({
-    super.key,
-  });
+  const LunaApp({super.key});
 
   @override
   State<LunaApp> createState() => _LunaAppState();
@@ -66,9 +60,7 @@ class _LunaAppState extends State<LunaApp> {
 }
 
 class LunaBootstrapLoading extends StatelessWidget {
-  const LunaBootstrapLoading({
-    super.key,
-  });
+  const LunaBootstrapLoading({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +68,7 @@ class LunaBootstrapLoading extends StatelessWidget {
       title: 'LunaSea',
       home: Scaffold(
         backgroundColor: Color(0xFF32323E),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -139,9 +129,7 @@ class LunaBootstrapFailure extends StatelessWidget {
 }
 
 class LunaBIOS extends StatelessWidget {
-  const LunaBIOS({
-    super.key,
-  });
+  const LunaBIOS({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -158,10 +146,8 @@ class LunaBIOS extends StatelessWidget {
           startLocale: Locale('en'),
           useFallbackTranslations: true,
           child: Selector<SettingsStore, int>(
-            selector: (_, settings) => Object.hash(
-              settings.amoledTheme,
-              settings.amoledThemeBorder,
-            ),
+            selector: (_, settings) =>
+                Object.hash(settings.amoledTheme, settings.amoledThemeBorder),
             builder: (context, _, __) {
               return MaterialApp.router(
                 localizationsDelegates: context.localizationDelegates,

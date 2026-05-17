@@ -4,9 +4,7 @@ import 'package:lunasea/modules/settings.dart';
 import 'package:lunasea/utils/profile_tools.dart';
 
 class ProfilesRoute extends StatefulWidget {
-  const ProfilesRoute({
-    Key? key,
-  }) : super(key: key);
+  const ProfilesRoute({super.key});
 
   @override
   State<ProfilesRoute> createState() => _State();
@@ -87,28 +85,29 @@ class _State extends State<ProfilesRoute> with LunaScrollControllerMixin {
 
   Widget _deleteProfile(ProfilesStore store) {
     return LunaBlock(
-        title: 'settings.DeleteProfile'.tr(),
-        body: [TextSpan(text: 'settings.DeleteProfileDescription'.tr())],
-        trailing: const LunaIconButton(icon: LunaIcons.DELETE),
-        onTap: () async {
-          final dialogs = SettingsDialogs();
-          final context = LunaState.context;
-          final profiles = store.profiles;
-          profiles.removeWhere((p) => p == store.activeProfile);
+      title: 'settings.DeleteProfile'.tr(),
+      body: [TextSpan(text: 'settings.DeleteProfileDescription'.tr())],
+      trailing: const LunaIconButton(icon: LunaIcons.DELETE),
+      onTap: () async {
+        final dialogs = SettingsDialogs();
+        final context = LunaState.context;
+        final profiles = store.profiles;
+        profiles.removeWhere((p) => p == store.activeProfile);
 
-          if (profiles.isEmpty) {
-            showLunaInfoSnackBar(
-              title: 'settings.NoProfilesFound'.tr(),
-              message: 'settings.NoAdditionalProfilesAdded'.tr(),
-            );
-            return;
-          }
+        if (profiles.isEmpty) {
+          showLunaInfoSnackBar(
+            title: 'settings.NoProfilesFound'.tr(),
+            message: 'settings.NoAdditionalProfilesAdded'.tr(),
+          );
+          return;
+        }
 
-          final selected = await dialogs.deleteProfile(context, profiles);
-          if (selected.item1) {
-            await LunaProfileTools(store).remove(selected.item2);
-          }
-        });
+        final selected = await dialogs.deleteProfile(context, profiles);
+        if (selected.item1) {
+          await LunaProfileTools(store).remove(selected.item2);
+        }
+      },
+    );
   }
 
   Widget _enabledProfile(ProfilesStore store) {

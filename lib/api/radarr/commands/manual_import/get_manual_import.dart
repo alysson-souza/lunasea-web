@@ -1,14 +1,18 @@
-part of radarr_commands;
+part of '../../commands.dart';
 
 Future<List<RadarrManualImport>> _commandGetManualImport(
   Dio client, {
   required String folder,
   bool? filterExistingFiles,
 }) async {
-  Response response = await client.get('manualimport', queryParameters: {
-    'folder': folder,
-    if (filterExistingFiles != null) 'filterExistingFiles': filterExistingFiles,
-  });
+  Response response = await client.get(
+    'manualimport',
+    queryParameters: {
+      'folder': folder,
+      if (filterExistingFiles != null)
+        'filterExistingFiles': filterExistingFiles,
+    },
+  );
   return (response.data as List)
       .map((import) => RadarrManualImport.fromJson(import))
       .toList();
