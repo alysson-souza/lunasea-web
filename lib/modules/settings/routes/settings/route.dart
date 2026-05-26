@@ -50,6 +50,16 @@ class _State extends State<SettingsRoute> with LunaScrollControllerMixin {
           onTap: SettingsRoutes.PROFILES.go,
         ),
         LunaBlock(
+          title: 'settings.ImportExportConfiguration'.tr(),
+          body: [
+            TextSpan(
+              text: 'settings.ImportExportConfigurationDescription'.tr(),
+            ),
+          ],
+          trailing: const LunaIconButton(icon: Icons.import_export_rounded),
+          onTap: SettingsRoutes.IMPORT_EXPORT.go,
+        ),
+        LunaBlock(
           title: 'settings.System'.tr(),
           body: [TextSpan(text: 'settings.SystemDescription'.tr())],
           trailing: const LunaIconButton(icon: Icons.settings_rounded),

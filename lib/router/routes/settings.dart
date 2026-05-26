@@ -31,6 +31,7 @@ import 'package:lunasea/modules/settings/routes/configuration_sonarr/pages/defau
 import 'package:lunasea/modules/settings/routes/configuration_sonarr/route.dart';
 import 'package:lunasea/modules/settings/routes/configuration_tautulli/pages/default_pages.dart';
 import 'package:lunasea/modules/settings/routes/configuration_tautulli/route.dart';
+import 'package:lunasea/modules/settings/routes/config_import_export/route.dart';
 import 'package:lunasea/modules/settings/routes/profiles/route.dart';
 import 'package:lunasea/modules/settings/routes/service_instances/connection_details.dart';
 import 'package:lunasea/modules/settings/routes/service_instances/route.dart';
@@ -81,6 +82,7 @@ enum SettingsRoutes with LunaRoutesMixin {
   CONFIGURATION_SERVICE_INSTANCE_CONNECTION(
     'services/:service/:instanceId/connection',
   ),
+  IMPORT_EXPORT('import_export'),
   CONFIGURATION_SONARR('sonarr'),
   CONFIGURATION_SONARR_CONNECTION_DETAILS('connection_details'),
   CONFIGURATION_SONARR_CONNECTION_DETAILS_HEADERS('headers'),
@@ -234,6 +236,8 @@ enum SettingsRoutes with LunaRoutesMixin {
             );
           },
         );
+      case SettingsRoutes.IMPORT_EXPORT:
+        return route(widget: const ConfigImportExportRoute());
       case SettingsRoutes.CONFIGURATION_SONARR:
         return route(widget: const ConfigurationSonarrRoute());
       case SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS:
@@ -283,6 +287,7 @@ enum SettingsRoutes with LunaRoutesMixin {
         return [
           SettingsRoutes.CONFIGURATION.routes,
           SettingsRoutes.PROFILES.routes,
+          SettingsRoutes.IMPORT_EXPORT.routes,
           SettingsRoutes.SYSTEM.routes,
         ];
       case SettingsRoutes.CONFIGURATION:

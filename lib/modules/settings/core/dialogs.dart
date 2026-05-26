@@ -65,9 +65,7 @@ class SettingsDialogs {
           onPressed: () => _setValues(true),
         ),
       ],
-      content: [
-        LunaDialog.textContent(text: 'settings.SignOutHint1'.tr()),
-      ],
+      content: [LunaDialog.textContent(text: 'settings.SignOutHint1'.tr())],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
     return _flag;
@@ -630,9 +628,7 @@ class SettingsDialogs {
           textColor: LunaColours.red,
         ),
       ],
-      content: [
-        LunaDialog.textContent(text: 'settings.ClearLogsHint1'.tr()),
-      ],
+      content: [LunaDialog.textContent(text: 'settings.ClearLogsHint1'.tr())],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
     return _flag;
@@ -916,9 +912,10 @@ class SettingsDialogs {
       title: 'settings.RenameProfile'.tr(),
       buttons: [
         LunaDialog.button(
-            text: 'lunasea.Rename'.tr(),
-            onPressed: () => _setValues(true),
-            textColor: LunaColours.accent),
+          text: 'lunasea.Rename'.tr(),
+          onPressed: () => _setValues(true),
+          textColor: LunaColours.accent,
+        ),
       ],
       content: [
         Form(
@@ -1186,6 +1183,65 @@ class SettingsDialogs {
     return _flag;
   }
 
+  Future<bool> exportConfiguration(BuildContext context) async {
+    bool flag = false;
+
+    void setValues(bool value) {
+      flag = value;
+      Navigator.of(context).pop();
+    }
+
+    await LunaDialog.dialog(
+      context: context,
+      title: 'settings.ExportConfiguration'.tr(),
+      buttons: [
+        LunaDialog.button(
+          text: 'settings.Export'.tr(),
+          textColor: LunaColours.accent,
+          onPressed: () => setValues(true),
+        ),
+      ],
+      content: [
+        LunaDialog.textContent(text: 'settings.ExportConfigurationHint1'.tr()),
+      ],
+      contentPadding: LunaDialog.textDialogContentPadding(),
+    );
+    return flag;
+  }
+
+  Future<bool> importConfiguration(
+    BuildContext context,
+    String fileName,
+  ) async {
+    bool flag = false;
+
+    void setValues(bool value) {
+      flag = value;
+      Navigator.of(context).pop();
+    }
+
+    await LunaDialog.dialog(
+      context: context,
+      title: 'settings.ImportConfiguration'.tr(),
+      buttons: [
+        LunaDialog.button(
+          text: 'settings.Import'.tr(),
+          textColor: LunaColours.red,
+          onPressed: () => setValues(true),
+        ),
+      ],
+      content: [
+        LunaDialog.textContent(
+          text: 'settings.ImportConfigurationHint1'.tr(args: [fileName]),
+        ),
+        LunaDialog.textContent(text: ''),
+        LunaDialog.textContent(text: 'settings.ImportConfigurationHint2'.tr()),
+      ],
+      contentPadding: LunaDialog.textDialogContentPadding(),
+    );
+    return flag;
+  }
+
   Future<Tuple2<bool, String>> decryptBackup(BuildContext context) async {
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
@@ -1285,8 +1341,9 @@ class SettingsDialogs {
     int _opacity = 0;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController()
-      ..text =
-          LunaSeaPreferences.THEME_IMAGE_BACKGROUND_OPACITY.read().toString();
+      ..text = LunaSeaPreferences.THEME_IMAGE_BACKGROUND_OPACITY
+          .read()
+          .toString();
 
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
@@ -1323,10 +1380,9 @@ class SettingsDialogs {
             validator: (value) {
               int? _opacity = int.tryParse(value!);
               if (_opacity == null || _opacity < 0 || _opacity > 100)
-                return 'settings.MustBeValueBetween'.tr(args: [
-                  0.toString(),
-                  100.toString(),
-                ]);
+                return 'settings.MustBeValueBetween'.tr(
+                  args: [0.toString(), 100.toString()],
+                );
               return null;
             },
           ),

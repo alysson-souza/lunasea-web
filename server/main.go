@@ -58,6 +58,8 @@ func (a *app) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /_lunasea/api/capabilities", a.capabilities)
 	mux.HandleFunc("GET /_lunasea/api/state", a.state)
+	mux.HandleFunc("GET /_lunasea/api/config/export", a.exportConfig)
+	mux.HandleFunc("POST /_lunasea/api/config/import", a.importConfig)
 	mux.HandleFunc("POST /_lunasea/api/profiles", a.createProfile)
 	mux.HandleFunc("PATCH /_lunasea/api/profiles/{profile}", a.patchProfile)
 	mux.HandleFunc("DELETE /_lunasea/api/profiles/{profile}", a.deleteProfile)

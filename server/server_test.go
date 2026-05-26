@@ -283,6 +283,338 @@ func TestPatchServiceInstanceMissingReturnsNotFound(t *testing.T) {
 	}
 }
 
+func TestConfigExportIncludesUserConfigSecretsAndExcludesLogs(t *testing.T) {
+	app := newTestApp(t)
+	ctx := context.Background()
+
+	if _, err := app.store.createProfile(ctx, "movies", "Movies"); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.store.putService(ctx, serviceConfig{
+		Service:        serviceRadarr,
+		Profile:        "movies",
+		InstanceID:     "nas-films",
+		DisplayName:    "NAS Films",
+		Enabled:        true,
+		SortOrder:      2,
+		ConnectionMode: "gateway",
+		UpstreamURL:    "https://radarr.example",
+		APIKey:         "service-secret",
+		Username:       "service-user",
+		Password:       "service-password",
+		Headers:        map[string]string{"X-Service": "stored"},
+		Preferences:    map[string]any{"rootFolderId": 42},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := app.store.createIndexer(ctx, indexerRecord{
+		DisplayName: "Indexer",
+		Host:        "https://indexer.example",
+		APIKey:      "indexer-secret",
+		Headers:     map[string]string{"X-Indexer": "stored"},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := app.store.createExternalModule(ctx, externalModuleRecord{
+		DisplayName: "Requests",
+		Host:        "https://requests.example",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.store.dismissBanner(ctx, "profiles"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := app.store.createLog(ctx, logRecord{
+		Timestamp: 1,
+		Type:      "critical",
+		Message:   "runtime noise",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+	app.routes().ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/_lunasea/api/config/export", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	for _, value := range []string{"service-secret", "service-password", "indexer-secret", "X-Indexer"} {
+		if !strings.Contains(body, value) {
+			t.Fatalf("export missing %q: %s", value, body)
+		}
+	}
+	if strings.Contains(body, "runtime noise") || strings.Contains(body, `"logs"`) {
+		t.Fatalf("export included logs: %s", body)
+	}
+
+	var exported map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &exported); err != nil {
+		t.Fatal(err)
+	}
+	if exported["format"] != "lunasea-web-config" || exported["version"] != float64(1) {
+		t.Fatalf("export metadata = %#v", exported)
+	}
+	if exported["serviceInstances"] == nil || exported["preferences"] == nil || exported["modulePreferences"] == nil {
+		t.Fatalf("export missing user config collections: %#v", exported)
+	}
+}
+
+func TestConfigImportJSONReplacesConfigPreservesSecretsAndReturnsRedactedState(t *testing.T) {
+	app := newTestApp(t)
+	ctx := context.Background()
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v3/system/status" {
+			http.NotFound(w, r)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstream.Close()
+	if err := app.store.putService(ctx, serviceConfig{
+		Service:     serviceRadarr,
+		Profile:     "default",
+		InstanceID:  "old",
+		DisplayName: "Old",
+		Enabled:     true,
+		UpstreamURL: "https://old.example",
+		APIKey:      "old-secret",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	body := `{
+		"format":"lunasea-web-config",
+		"version":1,
+		"activeProfile":"default",
+		"profiles":[{"id":"default","displayName":"Default","sortOrder":0}],
+		"serviceInstances":[{
+			"service":"radarr",
+			"profile":"default",
+			"id":"nas-films",
+			"displayName":"NAS Films",
+			"enabled":true,
+			"sortOrder":0,
+			"connectionMode":"gateway",
+			"upstreamUrl":"$RADARR_URL",
+			"apiKey":"new-service-secret",
+			"username":"user",
+			"password":"pass",
+			"headers":{"X-Service":"stored"},
+			"preferences":{"rootFolderId":42}
+		}],
+		"preferences":{"activeProfile":"default"},
+		"modulePreferences":{},
+		"indexers":[{
+			"id":7,
+			"displayName":"Indexer",
+			"host":"https://indexer.example",
+			"apiKey":"indexer-secret",
+			"headers":{"X-Indexer":"stored"}
+		}],
+		"externalModules":[{"id":3,"displayName":"Requests","host":"https://requests.example"}],
+		"dismissedBanners":["profiles"]
+	}`
+	body = strings.ReplaceAll(body, "$RADARR_URL", upstream.URL)
+	rec := httptest.NewRecorder()
+	app.routes().ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/_lunasea/api/config/import", strings.NewReader(body)))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "new-service-secret") || strings.Contains(rec.Body.String(), "indexer-secret") {
+		t.Fatalf("import response leaked secrets: %s", rec.Body.String())
+	}
+	var state struct {
+		ServiceInstances []serviceResponse `json:"serviceInstances"`
+		Indexers         []indexerRecord   `json:"indexers"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &state); err != nil {
+		t.Fatal(err)
+	}
+	if len(state.ServiceInstances) != 1 || !state.ServiceInstances[0].HasAPIKey || !state.ServiceInstances[0].HasPassword {
+		t.Fatalf("redacted service state = %#v", state.ServiceInstances)
+	}
+	if len(state.Indexers) != 1 || state.Indexers[0].APIKey != "" || len(state.Indexers[0].Headers) != 0 {
+		t.Fatalf("redacted indexer state = %#v", state.Indexers)
+	}
+	if _, err := app.store.getService(ctx, serviceRadarr, "default", "old"); !errors.Is(err, errNotFound) {
+		t.Fatalf("old service err = %v", err)
+	}
+	cfg, err := app.store.getService(ctx, serviceRadarr, "default", "nas-films")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.APIKey != "new-service-secret" || cfg.Password != "pass" || cfg.Headers["X-Service"] != "stored" {
+		t.Fatalf("stored service secrets = %#v", cfg)
+	}
+	if !cfg.Enabled {
+		t.Fatalf("reachable imported service was disabled: %#v", cfg)
+	}
+	indexer, err := app.store.getIndexer(ctx, 7, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if indexer.APIKey != "indexer-secret" || indexer.Headers["X-Indexer"] != "stored" {
+		t.Fatalf("stored indexer secrets = %#v", indexer)
+	}
+}
+
+func TestConfigImportXMLReplacesServiceInstances(t *testing.T) {
+	app := newTestApp(t)
+	ctx := context.Background()
+	radarrUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v3/system/status" {
+			http.NotFound(w, r)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer radarrUpstream.Close()
+	sonarrUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer sonarrUpstream.Close()
+	if err := app.store.putService(ctx, serviceConfig{
+		Service:     serviceRadarr,
+		Profile:     "default",
+		InstanceID:  "old",
+		DisplayName: "Old",
+		Enabled:     true,
+		UpstreamURL: "https://old.example",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	body := `<instances generatedFrom="lunasea-web">
+		<instance>
+			<service>radarr</service>
+			<displayName>NAS Films</displayName>
+			<profile>default</profile>
+			<id>nas-films</id>
+			<enabled>true</enabled>
+			<url>$RADARR_URL</url>
+			<apiKey>radarr-secret</apiKey>
+		</instance>
+		<instance>
+			<service>sonarr</service>
+			<displayName>NAS TV</displayName>
+			<profile>default</profile>
+			<id>nas-tv</id>
+			<enabled>true</enabled>
+			<upstreamUrl>$SONARR_URL</upstreamUrl>
+			<apiKey>sonarr-secret</apiKey>
+		</instance>
+	</instances>`
+	body = strings.ReplaceAll(body, "$RADARR_URL", radarrUpstream.URL)
+	body = strings.ReplaceAll(body, "$SONARR_URL", sonarrUpstream.URL)
+	rec := httptest.NewRecorder()
+	app.routes().ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/_lunasea/api/config/import", strings.NewReader(body)))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "radarr-secret") || strings.Contains(rec.Body.String(), "sonarr-secret") {
+		t.Fatalf("import response leaked secrets: %s", rec.Body.String())
+	}
+	if _, err := app.store.getService(ctx, serviceRadarr, "default", "old"); !errors.Is(err, errNotFound) {
+		t.Fatalf("old service err = %v", err)
+	}
+	radarr, err := app.store.getService(ctx, serviceRadarr, "default", "nas-films")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sonarr, err := app.store.getService(ctx, serviceSonarr, "default", "nas-tv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if radarr.APIKey != "radarr-secret" || sonarr.APIKey != "sonarr-secret" {
+		t.Fatalf("imported secrets = %#v %#v", radarr, sonarr)
+	}
+	if radarr.UpstreamURL != radarrUpstream.URL || sonarr.UpstreamURL != sonarrUpstream.URL {
+		t.Fatalf("imported upstream URLs = %q %q", radarr.UpstreamURL, sonarr.UpstreamURL)
+	}
+	if !radarr.Enabled {
+		t.Fatalf("reachable imported service was disabled: %#v", radarr)
+	}
+	if sonarr.Enabled {
+		t.Fatalf("unreachable imported service was enabled: %#v", sonarr)
+	}
+}
+
+func TestConfigImportValidationFailuresDoNotMutateState(t *testing.T) {
+	cases := []struct {
+		name string
+		body string
+	}{
+		{"invalid json", `{`},
+		{"invalid xml", `<instances><instance></instances>`},
+		{"unsupported version", `{"format":"lunasea-web-config","version":99}`},
+		{"unsupported service", validImportBody(`"service":"overseerr","id":"bad","upstreamUrl":"https://overseerr.example"`)},
+		{"invalid upstream", validImportBody(`"service":"radarr","id":"bad","upstreamUrl":"ftp://radarr.example"`)},
+		{"duplicate ids", `{
+			"format":"lunasea-web-config",
+			"version":1,
+			"activeProfile":"default",
+			"profiles":[{"id":"default","displayName":"Default","sortOrder":0}],
+			"serviceInstances":[
+				{"service":"radarr","profile":"default","id":"duplicate","displayName":"One","enabled":true,"upstreamUrl":"https://one.example"},
+				{"service":"radarr","profile":"default","id":"duplicate","displayName":"Two","enabled":true,"upstreamUrl":"https://two.example"}
+			],
+			"preferences":{"activeProfile":"default"},
+			"modulePreferences":{},
+			"indexers":[],
+			"externalModules":[],
+			"dismissedBanners":[]
+		}`},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			app := newTestApp(t)
+			ctx := context.Background()
+			if err := app.store.putService(ctx, serviceConfig{
+				Service:     serviceRadarr,
+				Profile:     "default",
+				InstanceID:  "kept",
+				DisplayName: "Kept",
+				Enabled:     true,
+				UpstreamURL: "https://kept.example",
+			}); err != nil {
+				t.Fatal(err)
+			}
+
+			rec := httptest.NewRecorder()
+			app.routes().ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/_lunasea/api/config/import", strings.NewReader(tc.body)))
+			if rec.Code != http.StatusBadRequest {
+				t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+			}
+			if _, err := app.store.getService(ctx, serviceRadarr, "default", "kept"); err != nil {
+				t.Fatalf("existing service was mutated: %v", err)
+			}
+			services, err := app.store.listServiceInstances(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(services) != 1 || services[0].InstanceID != "kept" {
+				t.Fatalf("services after failed import = %#v", services)
+			}
+		})
+	}
+}
+
+func validImportBody(serviceFields string) string {
+	return `{
+		"format":"lunasea-web-config",
+		"version":1,
+		"activeProfile":"default",
+		"profiles":[{"id":"default","displayName":"Default","sortOrder":0}],
+		"serviceInstances":[{` + serviceFields + `,"profile":"default","displayName":"Imported","enabled":true}],
+		"preferences":{"activeProfile":"default"},
+		"modulePreferences":{},
+		"indexers":[],
+		"externalModules":[],
+		"dismissedBanners":[]
+	}`
+}
+
 func TestStoreMigratesLegacyServiceConnectionsToDefaultInstances(t *testing.T) {
 	path := t.TempDir() + "/state.db"
 	db, err := sql.Open("sqlite", path)

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:lunasea/database/models/external_module.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/database/models/log.dart';
@@ -27,6 +29,32 @@ class LunaBackendClient {
     return Map<String, dynamic>.from(response.data as Map);
   }
 
+  Future<List<int>> exportConfiguration() async {
+    final response = await dio.get(
+      'config/export',
+      options: Options(responseType: ResponseType.bytes),
+    );
+    final data = response.data;
+    if (data is List<int>) return data;
+    if (data is String) return utf8.encode(data);
+    return utf8.encode(jsonEncode(data));
+  }
+
+  Future<Map<String, dynamic>> importConfiguration(List<int> data) async {
+    final response = await dio.post(
+      'config/import',
+      data: data,
+      options: Options(
+        contentType: 'application/octet-stream',
+        responseType: ResponseType.json,
+      ),
+    );
+    final body = response.data;
+    if (body is Map) return Map<String, dynamic>.from(body);
+    if (body is String) return Map<String, dynamic>.from(jsonDecode(body));
+    return <String, dynamic>{};
+  }
+
   String indexerBasePath(int id) => '/_lunasea/api/indexers/$id/';
 }
 
@@ -50,6 +78,18 @@ class LunaGateway {
       _state = {};
       _available = false;
     }
+  }
+
+  static Future<List<int>> exportConfiguration() async {
+    return _client.exportConfiguration();
+  }
+
+  static Future<Map<String, dynamic>> importConfiguration(
+    List<int> data,
+  ) async {
+    _state = await _client.importConfiguration(data);
+    _available = _state['gateway'] == true;
+    return _state;
   }
 
   static Map<String, dynamic>? serviceInstance(LunaServiceInstanceRef ref) {
