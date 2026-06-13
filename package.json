@@ -1,7 +1,7 @@
 {
   "name": "lunasea",
   "description": "Self-Hosted Controller",
-  "version": "11.0.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "build:web": "fvm flutter clean && fvm flutter build web --release",

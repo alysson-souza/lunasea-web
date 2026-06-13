@@ -1,6 +1,8 @@
 {
+  "tagPrefix": "",
   "skip": {
-    "bump": true
+    "bump": true,
+    "changelog": true
   },
   "types": [
     {
@@ -24,5 +26,5 @@
       "section": "Tweaks"
     }
   ],
-  "releaseCommitMessageFormat": "release: v{{currentTag}}\n\n[skip ci]"
+  "releaseCommitMessageFormat": "release: {{currentTag}}\n\n[skip ci]"
 }
