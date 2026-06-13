@@ -73,6 +73,7 @@ class _State extends State<RadarrAddMovieDiscoveryResultTile> {
   }
 
   Future<void> _onTap() async {
+    final instanceId = context.read<RadarrState>().instance?.id;
     if (widget.onTapShowOverview) {
       LunaDialogs().textPreview(
         context,
@@ -80,10 +81,18 @@ class _State extends State<RadarrAddMovieDiscoveryResultTile> {
         widget.movie.overview ?? 'radarr.NoSummaryIsAvailable'.tr(),
       );
     } else {
-      RadarrRoutes.ADD_MOVIE_DETAILS.go(
-        extra: widget.movie,
-        queryParams: {'isDiscovery': 'true'},
-      );
+      if (instanceId != null) {
+        RadarrRoutes.ADD_MOVIE_DETAILS.goInstance(
+          instanceId: instanceId,
+          extra: widget.movie,
+          queryParams: {'isDiscovery': 'true'},
+        );
+      } else {
+        RadarrRoutes.ADD_MOVIE_DETAILS.go(
+          extra: widget.movie,
+          queryParams: {'isDiscovery': 'true'},
+        );
+      }
     }
   }
 

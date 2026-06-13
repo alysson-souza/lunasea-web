@@ -49,10 +49,16 @@ class RadarrAddMovieDetailsActionBar extends StatelessWidget {
                 .searchForMovie,
           )
           .then((movie) async {
+            final instanceId = context.read<RadarrState>().instance?.id;
             context.read<RadarrState>().fetchMovies();
             context.read<RadarrAddMovieDetailsState>().movie.id = movie!.id;
             LunaRouter.router.pop();
-            RadarrRoutes.MOVIE.go(params: {'movie': movie.id!.toString()});
+            final movieParam = {'movie': movie.id!.toString()};
+            if (instanceId != null) {
+              RadarrRoutes.MOVIE.goInstance(instanceId: instanceId, params: movieParam);
+            } else {
+              RadarrRoutes.MOVIE.go(params: movieParam);
+            }
           })
           .catchError((error, stack) {
             context.read<RadarrAddMovieDetailsState>().state =

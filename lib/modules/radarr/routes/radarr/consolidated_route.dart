@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/router/routes/radarr.dart';
+import 'package:lunasea/system/consolidated/instance_picker_sheet.dart';
 
 /// Module shell for the consolidated Radarr view (path: `/radarr`).
 ///
@@ -39,6 +40,16 @@ class _State extends State<RadarrConsolidatedRoute> {
     );
   }
 
+  void _onAddPressed() {
+    final instances = context.read<RadarrConsolidatedState>().instances;
+    if (instances.isEmpty) return;
+    LunaInstancePickerSheet()
+        .show(instances: instances)
+        .then((id) {
+      if (id != null) RadarrRoutes.ADD_MOVIE.goInstance(instanceId: id);
+    });
+  }
+
   Widget _drawer() {
     return LunaDrawer(page: LunaModule.RADARR.key);
   }
@@ -54,7 +65,7 @@ class _State extends State<RadarrConsolidatedRoute> {
 
     if (consolidated.instanceStates.any((s) => s.enabled)) {
       actions = [
-        const RadarrAppBarAddMoviesAction(),
+        RadarrAppBarAddMoviesAction(onPressed: _onAddPressed),
         const RadarrAppBarGlobalSettingsAction(),
       ];
     }

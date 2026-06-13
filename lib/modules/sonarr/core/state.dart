@@ -156,9 +156,13 @@ class SonarrState extends LunaModuleState {
   Future<Map<int, SonarrSeries>>? get series => _series;
   void fetchAllSeries() {
     if (_api != null) {
-      _series = _api!.series.getAll(includeSeasonImages: true).then((series) {
-        return {for (SonarrSeries s in series) s.id!: s};
-      });
+      _series = _api!.series
+          .getAll(includeSeasonImages: true)
+          .catchError((_) async {
+            await Future.delayed(const Duration(seconds: 3));
+            return _api!.series.getAll(includeSeasonImages: true);
+          })
+          .then((series) => {for (SonarrSeries s in series) s.id!: s});
     }
     notifyListeners();
   }

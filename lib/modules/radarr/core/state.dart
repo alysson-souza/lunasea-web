@@ -162,7 +162,10 @@ class RadarrState extends LunaModuleState {
   Future<List<RadarrMovie>>? get movies => _movies;
   void fetchMovies() {
     if (_api != null) {
-      _movies = _api!.movie.getAll();
+      _movies = _api!.movie.getAll().catchError((_) async {
+        await Future.delayed(const Duration(seconds: 3));
+        return _api!.movie.getAll();
+      });
       _fetchUpcoming();
       _fetchMissing();
     }

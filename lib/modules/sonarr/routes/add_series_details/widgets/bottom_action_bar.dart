@@ -48,11 +48,17 @@ class SonarrAddSeriesDetailsActionBar extends StatelessWidget {
             searchForCutoffUnmetEpisodes: _state.searchForCutoffUnmetEpisodes,
           )
           .then((series) async {
+            final instanceId = context.read<SonarrState>().instance?.id;
             context.read<SonarrState>().fetchAllSeries();
             context.read<SonarrSeriesAddDetailsState>().series.id = series!.id;
 
             LunaRouter.router.pop();
-            SonarrRoutes.SERIES.go(params: {'series': series.id!.toString()});
+            final seriesParam = {'series': series.id!.toString()};
+            if (instanceId != null) {
+              SonarrRoutes.SERIES.goInstance(instanceId: instanceId, params: seriesParam);
+            } else {
+              SonarrRoutes.SERIES.go(params: seriesParam);
+            }
           })
           .catchError((error, stack) {
             context.read<SonarrSeriesAddDetailsState>().state =

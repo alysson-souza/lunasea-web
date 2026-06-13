@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
+import 'package:lunasea/system/consolidated/instance_picker_sheet.dart';
 
 /// Module shell for the consolidated Sonarr view (path: `/sonarr`).
 ///
@@ -39,6 +40,16 @@ class _State extends State<SonarrConsolidatedRoute> {
     );
   }
 
+  void _onAddPressed() {
+    final instances = context.read<SonarrConsolidatedState>().instances;
+    if (instances.isEmpty) return;
+    LunaInstancePickerSheet()
+        .show(instances: instances)
+        .then((id) {
+      if (id != null) SonarrRoutes.ADD_SERIES.goInstance(instanceId: id);
+    });
+  }
+
   Widget _drawer() {
     return LunaDrawer(page: LunaModule.SONARR.key);
   }
@@ -54,7 +65,7 @@ class _State extends State<SonarrConsolidatedRoute> {
 
     if (consolidated.instanceStates.any((s) => s.enabled)) {
       actions = [
-        const SonarrAppBarAddSeriesAction(),
+        SonarrAppBarAddSeriesAction(onPressed: _onAddPressed),
         const SonarrAppBarGlobalSettingsAction(),
       ];
     }

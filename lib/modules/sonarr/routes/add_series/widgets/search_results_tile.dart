@@ -79,6 +79,7 @@ class _State extends State<SonarrSeriesAddSearchResultTile> {
   }
 
   Future<void> _onTap() async {
+    final instanceId = context.read<SonarrState>().instance?.id;
     if (widget.onTapShowOverview) {
       LunaDialogs().textPreview(
         context,
@@ -86,9 +87,21 @@ class _State extends State<SonarrSeriesAddSearchResultTile> {
         widget.series.overview ?? 'sonarr.NoSummaryAvailable'.tr(),
       );
     } else if (widget.exists) {
-      SonarrRoutes.SERIES.go(params: {'series': widget.series.id!.toString()});
+      final seriesParam = {'series': widget.series.id!.toString()};
+      if (instanceId != null) {
+        SonarrRoutes.SERIES.goInstance(instanceId: instanceId, params: seriesParam);
+      } else {
+        SonarrRoutes.SERIES.go(params: seriesParam);
+      }
     } else {
-      SonarrRoutes.ADD_SERIES_DETAILS.go(extra: widget.series);
+      if (instanceId != null) {
+        SonarrRoutes.ADD_SERIES_DETAILS.goInstance(
+          instanceId: instanceId,
+          extra: widget.series,
+        );
+      } else {
+        SonarrRoutes.ADD_SERIES_DETAILS.go(extra: widget.series);
+      }
     }
   }
 
