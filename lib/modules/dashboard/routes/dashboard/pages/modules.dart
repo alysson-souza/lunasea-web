@@ -82,6 +82,12 @@ class _State extends State<ModulesPage> with AutomaticKeepAliveClientMixin {
       return [_buildFromLunaModule(module, listIndex)];
     }
 
+    // Modules that support a consolidated view show a single entry that opens
+    // the consolidated route regardless of how many instances are enabled.
+    if (module.supportsConsolidatedView) {
+      return [_buildFromLunaModule(module, listIndex)];
+    }
+
     final instances = profiles.enabledInstances(profiles.activeProfile, module);
     return instances
         .map((instance) => _buildFromServiceInstance(module, instance))

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/api/sonarr/models.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
+import 'package:lunasea/modules/sonarr/core/consolidated_state.dart';
 import 'package:lunasea/modules/sonarr/core/state.dart';
 import 'package:lunasea/modules/sonarr/routes/add_series/route.dart';
 import 'package:lunasea/modules/sonarr/routes/add_series_details/route.dart';
@@ -11,14 +12,19 @@ import 'package:lunasea/modules/sonarr/routes/queue/route.dart';
 import 'package:lunasea/modules/sonarr/routes/releases/route.dart';
 import 'package:lunasea/modules/sonarr/routes/season_details/route.dart';
 import 'package:lunasea/modules/sonarr/routes/series_details/route.dart';
+import 'package:lunasea/modules/sonarr/routes/sonarr/consolidated_route.dart';
 import 'package:lunasea/modules/sonarr/routes/sonarr/route.dart';
 import 'package:lunasea/modules/sonarr/routes/tags/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/stores/backend_stores.dart';
 import 'package:lunasea/vendor.dart';
 
 enum SonarrRoutes with LunaRoutesMixin {
-  HOME('/sonarr/:instanceId'),
+  // Consolidated view — serves as the module root when multiple instances exist
+  CONSOLIDATED('/sonarr'),
+  // Per-instance view at /sonarr/:instanceId (sub-route of CONSOLIDATED)
+  HOME(':instanceId'),
   ADD_SERIES('add_series'),
   ADD_SERIES_DETAILS('details'),
   HISTORY('history'),
@@ -39,7 +45,10 @@ enum SonarrRoutes with LunaRoutesMixin {
 
   @override
   bool isModuleEnabled(BuildContext context) {
-    return context.read<SonarrState>().enabled;
+    // For the consolidated route (no instanceId in path), check if any instance
+    // is enabled.  Per-instance routes use the same check via the registry.
+    final profiles = context.read<ProfilesStore>();
+    return profiles.active.enabledInstances(LunaModule.SONARR).isNotEmpty;
   }
 
   @override
@@ -59,6 +68,34 @@ enum SonarrRoutes with LunaRoutesMixin {
   @override
   GoRoute get routes {
     switch (this) {
+      case SonarrRoutes.CONSOLIDATED:
+        return route(
+          builder: (context, state) {
+            final profiles = context.read<ProfilesStore>();
+            final instances =
+                profiles.active.enabledInstances(LunaModule.SONARR);
+            final registry =
+                context.read<LunaModuleStateRegistry<SonarrState>>();
+            final instanceStates =
+                instances.map((inst) => registry.get(inst)).toList();
+            // Provide first instance's SonarrState so existing search/sort/filter
+            // widgets that read SonarrState continue to work.
+            final sharedState =
+                instanceStates.isNotEmpty ? instanceStates.first : SonarrState();
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider<SonarrConsolidatedState>(
+                  create: (_) => SonarrConsolidatedState(
+                    instances: instances,
+                    instanceStates: instanceStates,
+                  ),
+                ),
+                ChangeNotifierProvider<SonarrState>.value(value: sharedState),
+              ],
+              child: const SonarrConsolidatedRoute(),
+            );
+          },
+        );
       case SonarrRoutes.HOME:
         return route(
           builder: (context, state) {
@@ -144,6 +181,9 @@ enum SonarrRoutes with LunaRoutesMixin {
   @override
   List<GoRoute> get subroutes {
     switch (this) {
+      case SonarrRoutes.CONSOLIDATED:
+        // HOME is a sub-route so /sonarr/:instanceId resolves correctly.
+        return [SonarrRoutes.HOME.routes];
       case SonarrRoutes.HOME:
         return [
           SonarrRoutes.ADD_SERIES.routes,

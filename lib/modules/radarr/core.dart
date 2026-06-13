@@ -1,6 +1,7 @@
 export 'package:lunasea/system/preferences/radarr.dart';
 export 'core/api_helper.dart';
 export 'core/bottom_modal_sheets.dart';
+export 'core/consolidated_state.dart';
 export 'core/dialogs.dart';
 export 'core/extensions.dart';
 export 'core/state.dart';

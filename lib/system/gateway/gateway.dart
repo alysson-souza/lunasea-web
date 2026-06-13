@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:lunasea/database/models/external_module.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/database/models/log.dart';

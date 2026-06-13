@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/extensions/scroll_controller.dart';
 import 'package:lunasea/router/router.dart';
 import 'package:lunasea/utils/profile_tools.dart';
 
-enum _AppBarType { DEFAULT, EMPTY, DROPDOWN }
+enum _AppBarType { DEFAULT, EMPTY, DROPDOWN, INSTANCE_FILTER }
 
 class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   static const APPBAR_HEIGHT = kToolbarHeight;
@@ -22,6 +23,8 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   final PageController? pageController;
   final List<ScrollController>? scrollControllers;
   final Color? backgroundColor;
+  final List<LunaServiceInstance>? instances;
+  final ValueChanged<String>? onInstanceSelected;
 
   @override
   Size get preferredSize {
@@ -43,6 +46,8 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.scrollControllers,
     this.hideLeading = false,
     this.backgroundColor,
+    this.instances,
+    this.onInstanceSelected,
   });
 
   /// Create a new [AppBar] widget pre-styled for LunaSea.
@@ -155,6 +160,51 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     );
   }
 
+  /// Create an [AppBar] with an instance-filter dropdown for consolidated modules.
+  factory LunaAppBar.instanceFilter({
+    required String title,
+    required List<LunaServiceInstance> instances,
+    required ValueChanged<String> onInstanceSelected,
+    bool useDrawer = true,
+    bool hideLeading = false,
+    List<Widget>? actions,
+    PageController? pageController,
+    List<ScrollController>? scrollControllers,
+    PreferredSizeWidget? bottom,
+    Color? backgroundColor,
+  }) {
+    if (pageController != null)
+      assert(
+        scrollControllers != null,
+        'if pageController is defined, scrollControllers should as well.',
+      );
+    if (instances.length < 2)
+      return LunaAppBar._internal(
+        title: title,
+        actions: actions,
+        useDrawer: useDrawer,
+        hideLeading: hideLeading,
+        bottom: bottom,
+        pageController: pageController,
+        scrollControllers: scrollControllers,
+        backgroundColor: backgroundColor,
+        type: _AppBarType.DEFAULT,
+      );
+    return LunaAppBar._internal(
+      title: title,
+      instances: instances,
+      onInstanceSelected: onInstanceSelected,
+      actions: actions,
+      bottom: bottom,
+      useDrawer: useDrawer,
+      hideLeading: hideLeading,
+      pageController: pageController,
+      scrollControllers: scrollControllers,
+      backgroundColor: backgroundColor,
+      type: _AppBarType.INSTANCE_FILTER,
+    );
+  }
+
   @override
   State<StatefulWidget> createState() => _State();
 }
@@ -207,6 +257,9 @@ class _State extends State<LunaAppBar> {
         break;
       case _AppBarType.DROPDOWN:
         child = _dropdown(context);
+        break;
+      case _AppBarType.INSTANCE_FILTER:
+        child = _instanceFilter(context);
         break;
     }
     return GestureDetector(child: child, onTap: _onTap);
@@ -311,6 +364,67 @@ class _State extends State<LunaAppBar> {
                     color: activeProfile == profile
                         ? LunaColours.accent
                         : Colors.white,
+                  ),
+                ),
+              ),
+          ];
+        },
+      ),
+      leading: _sharedLeading(context),
+      centerTitle: false,
+      elevation: 0,
+      actions: widget.actions,
+      bottom: widget.bottom,
+    );
+  }
+
+  Widget _instanceFilter(BuildContext context) {
+    return AppBar(
+      backgroundColor: widget.backgroundColor,
+      automaticallyImplyLeading: !(widget.hideLeading),
+      title: LunaPopupMenuButton<String?>(
+        tooltip: 'Switch Instance',
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  widget.title!,
+                  style: const TextStyle(fontSize: LunaUI.FONT_SIZE_H1),
+                ),
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down_rounded),
+          ],
+        ),
+        onSelected: (result) {
+          HapticFeedback.selectionClick();
+          if (result != null) widget.onInstanceSelected!(result);
+        },
+        itemBuilder: (context) {
+          return <PopupMenuEntry<String?>>[
+            PopupMenuItem<String?>(
+              value: null,
+              child: Text(
+                'lunasea.AllInstances'.tr(),
+                style: const TextStyle(
+                  fontSize: LunaUI.FONT_SIZE_H3,
+                  color: LunaColours.accent,
+                  fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+                ),
+              ),
+            ),
+            for (final instance in widget.instances!)
+              PopupMenuItem<String?>(
+                value: instance.id,
+                child: Text(
+                  instance.displayName,
+                  style: const TextStyle(
+                    fontSize: LunaUI.FONT_SIZE_H3,
+                    color: Colors.white,
                   ),
                 ),
               ),

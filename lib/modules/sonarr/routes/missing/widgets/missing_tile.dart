@@ -11,7 +11,21 @@ class SonarrMissingTile extends StatefulWidget {
   final SonarrMissingRecord record;
   final SonarrSeries? series;
 
-  const SonarrMissingTile({super.key, required this.record, this.series});
+  /// When set, navigation uses [goInstance] with this id instead of inheriting
+  /// the instanceId from the current URL. Used in consolidated views.
+  final String? instanceId;
+
+  /// Optional extra body line for the instance display name in consolidated views.
+  /// Callers must use [LunaBlock.calculateItemExtent(4)] as item height.
+  final TextSpan? instanceLabel;
+
+  const SonarrMissingTile({
+    super.key,
+    required this.record,
+    this.series,
+    this.instanceId,
+    this.instanceLabel,
+  });
 
   @override
   State<SonarrMissingTile> createState() => _State();
@@ -33,7 +47,12 @@ class _State extends State<SonarrMissingTile> {
           widget.record.series?.title ??
           widget.series?.title ??
           LunaUI.TEXT_EMDASH,
-      body: [_subtitle1(), _subtitle2(), _subtitle3()],
+      body: [
+        _subtitle1(),
+        _subtitle2(),
+        _subtitle3(),
+        if (widget.instanceLabel != null) widget.instanceLabel!,
+      ],
       disabled: !widget.record.monitored!,
       onTap: _onTap,
       onLongPress: _onLongPress,
@@ -88,18 +107,29 @@ class _State extends State<SonarrMissingTile> {
   }
 
   Future<void> _onTap() async {
-    SonarrRoutes.SERIES_SEASON.go(
-      params: {
-        'series': (widget.record.seriesId ?? -1).toString(),
-        'season': (widget.record.seasonNumber ?? -1).toString(),
-      },
-    );
+    final params = {
+      'series': (widget.record.seriesId ?? -1).toString(),
+      'season': (widget.record.seasonNumber ?? -1).toString(),
+    };
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.SERIES_SEASON.goInstance(
+        instanceId: instanceId,
+        params: params,
+      );
+    } else {
+      SonarrRoutes.SERIES_SEASON.go(params: params);
+    }
   }
 
   Future<void> _onLongPress() async {
-    SonarrRoutes.SERIES.go(
-      params: {'series': widget.record.seriesId!.toString()},
-    );
+    final params = {'series': widget.record.seriesId!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.SERIES.goInstance(instanceId: instanceId, params: params);
+    } else {
+      SonarrRoutes.SERIES.go(params: params);
+    }
   }
 
   Future<void> _trailingOnTap() async {
@@ -122,8 +152,14 @@ class _State extends State<SonarrMissingTile> {
   }
 
   Future<void> _trailingOnLongPress() async {
-    return SonarrRoutes.RELEASES.go(
-      queryParams: {'episode': widget.record.id!.toString()},
-    );
+    final queryParams = {'episode': widget.record.id!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      return SonarrRoutes.RELEASES.goInstance(
+        instanceId: instanceId,
+        queryParams: queryParams,
+      );
+    }
+    return SonarrRoutes.RELEASES.go(queryParams: queryParams);
   }
 }

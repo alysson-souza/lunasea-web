@@ -112,6 +112,18 @@ extension LunaModuleEnablementExtension on LunaModule {
     }
   }
 
+  /// Whether this module supports a consolidated view that aggregates data
+  /// across all enabled instances of the same kind.
+  bool get supportsConsolidatedView {
+    switch (this) {
+      case LunaModule.RADARR:
+      case LunaModule.SONARR:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   bool get featureFlag {
     switch (this) {
       case LunaModule.OVERSEERR:
@@ -389,6 +401,9 @@ extension LunaModuleRoutingExtension on LunaModule {
   }
 
   Future<void> launch() async {
+    if (supportsConsolidatedView) {
+      return launchConsolidated();
+    }
     if (supportsServiceInstances) {
       final profiles = LunaState.context.read<ProfilesStore>();
       final instances = profiles.enabledInstances(profiles.activeProfile, this);
@@ -400,6 +415,17 @@ extension LunaModuleRoutingExtension on LunaModule {
     }
   }
 
+  Future<void> launchConsolidated() async {
+    switch (this) {
+      case LunaModule.RADARR:
+        return RadarrRoutes.CONSOLIDATED.go(buildTree: true);
+      case LunaModule.SONARR:
+        return SonarrRoutes.CONSOLIDATED.go(buildTree: true);
+      default:
+        return;
+    }
+  }
+
   String? homeRouteFor(BuildContext context) {
     final route = homeRoute;
     if (route == null) return null;
@@ -408,6 +434,9 @@ extension LunaModuleRoutingExtension on LunaModule {
     final profiles = context.read<ProfilesStore>();
     final instances = profiles.enabledInstances(profiles.activeProfile, this);
     if (instances.isEmpty) return null;
+    if (this == LunaModule.RADARR || this == LunaModule.SONARR) {
+      return '$route/${instances.first.id}';
+    }
     return route.replaceFirst(':instanceId', instances.first.id);
   }
 

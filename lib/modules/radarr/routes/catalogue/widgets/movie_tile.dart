@@ -9,6 +9,15 @@ enum _RadarrCatalogueTileType { TILE, GRID }
 class RadarrCatalogueTile extends StatefulWidget {
   static final itemExtent = LunaBlock.calculateItemExtent(2, hasBottom: true);
 
+  /// When set, navigation on tap will use [goInstance] with this id instead of
+  /// inheriting the instanceId from the current URL. Used in consolidated views.
+  final String? instanceId;
+
+  /// Optional extra body line, e.g. to show the instance display name in a
+  /// consolidated view. When provided, the item height increases by one subtitle
+  /// line — callers are responsible for using the appropriate [itemExtent].
+  final TextSpan? instanceLabel;
+
   final RadarrMovie movie;
   final RadarrQualityProfile? profile;
   final _RadarrCatalogueTileType type;
@@ -18,6 +27,8 @@ class RadarrCatalogueTile extends StatefulWidget {
     required this.movie,
     required this.profile,
     this.type = _RadarrCatalogueTileType.TILE,
+    this.instanceId,
+    this.instanceLabel,
   });
 
   const RadarrCatalogueTile.grid({
@@ -25,6 +36,8 @@ class RadarrCatalogueTile extends StatefulWidget {
     required this.movie,
     required this.profile,
     this.type = _RadarrCatalogueTileType.GRID,
+    this.instanceId,
+    this.instanceLabel,
   });
 
   @override
@@ -57,7 +70,11 @@ class _State extends State<RadarrCatalogueTile> {
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       disabled: !widget.movie.monitored!,
       title: widget.movie.title,
-      body: [_subtitle1(), _subtitle2()],
+      body: [
+        _subtitle1(),
+        _subtitle2(),
+        if (widget.instanceLabel != null) widget.instanceLabel!,
+      ],
       posterIsSquare: false,
       bottom: _subtitle3(),
       onTap: _onTap,
@@ -205,7 +222,16 @@ class _State extends State<RadarrCatalogueTile> {
   }
 
   Future<void> _onTap() async {
-    RadarrRoutes.MOVIE.go(params: {'movie': widget.movie.id!.toString()});
+    final movieParam = {'movie': widget.movie.id!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      RadarrRoutes.MOVIE.goInstance(
+        instanceId: instanceId,
+        params: movieParam,
+      );
+    } else {
+      RadarrRoutes.MOVIE.go(params: movieParam);
+    }
   }
 
   Future<void> _onLongPress() async {

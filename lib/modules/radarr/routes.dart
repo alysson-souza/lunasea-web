@@ -14,3 +14,10 @@ export 'routes/releases.dart';
 export 'routes/system_status.dart';
 export 'routes/tags.dart';
 export 'routes/upcoming.dart';
+
+// Consolidated view exports
+export 'routes/catalogue/consolidated_route.dart';
+export 'routes/missing/consolidated_route.dart';
+export 'routes/more/consolidated_route.dart';
+export 'routes/radarr/consolidated_route.dart';
+export 'routes/upcoming/consolidated_route.dart';

@@ -11,10 +11,20 @@ class RadarrMissingTile extends StatefulWidget {
   final RadarrMovie movie;
   final RadarrQualityProfile? profile;
 
+  /// When set, navigation on tap uses [goInstance] with this id instead of
+  /// inheriting the instanceId from the current URL. Used in consolidated views.
+  final String? instanceId;
+
+  /// Optional extra body line for the instance display name in consolidated views.
+  /// Callers must use [LunaBlock.calculateItemExtent(4)] as item height.
+  final TextSpan? instanceLabel;
+
   const RadarrMissingTile({
     super.key,
     required this.movie,
     required this.profile,
+    this.instanceId,
+    this.instanceLabel,
   });
 
   @override
@@ -35,7 +45,12 @@ class _State extends State<RadarrMissingTile> {
         posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
         disabled: !widget.movie.monitored!,
         title: widget.movie.title,
-        body: [_subtitle1(), _subtitle2(), _subtitle3()],
+        body: [
+          _subtitle1(),
+          _subtitle2(),
+          _subtitle3(),
+          if (widget.instanceLabel != null) widget.instanceLabel!,
+        ],
         trailing: _trailing(),
         onTap: _onTap,
       ),
@@ -82,6 +97,8 @@ class _State extends State<RadarrMissingTile> {
   }
 
   LunaIconButton _trailing() {
+    final movieParam = {'movie': widget.movie.id!.toString()};
+    final instanceId = widget.instanceId;
     return LunaIconButton(
       icon: Icons.search_rounded,
       onPressed: () async => RadarrAPIHelper().automaticSearch(
@@ -89,13 +106,22 @@ class _State extends State<RadarrMissingTile> {
         movieId: widget.movie.id!,
         title: widget.movie.title!,
       ),
-      onLongPress: () => RadarrRoutes.MOVIE_RELEASES.go(
-        params: {'movie': widget.movie.id!.toString()},
-      ),
+      onLongPress: () => instanceId != null
+          ? RadarrRoutes.MOVIE_RELEASES.goInstance(
+              instanceId: instanceId,
+              params: movieParam,
+            )
+          : RadarrRoutes.MOVIE_RELEASES.go(params: movieParam),
     );
   }
 
   Future<void> _onTap() async {
-    RadarrRoutes.MOVIE.go(params: {'movie': widget.movie.id!.toString()});
+    final movieParam = {'movie': widget.movie.id!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      RadarrRoutes.MOVIE.goInstance(instanceId: instanceId, params: movieParam);
+    } else {
+      RadarrRoutes.MOVIE.go(params: movieParam);
+    }
   }
 }

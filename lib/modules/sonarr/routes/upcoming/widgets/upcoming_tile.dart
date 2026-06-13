@@ -8,7 +8,20 @@ class SonarrUpcomingTile extends StatefulWidget {
   final SonarrCalendar record;
   final SonarrSeries? series;
 
-  const SonarrUpcomingTile({super.key, required this.record, this.series});
+  /// When set, navigation on tap uses [goInstance] with this id instead of
+  /// inheriting the instanceId from the current URL. Used in consolidated views.
+  final String? instanceId;
+
+  /// Optional extra body line for the instance display name in consolidated views.
+  final TextSpan? instanceLabel;
+
+  const SonarrUpcomingTile({
+    super.key,
+    required this.record,
+    this.series,
+    this.instanceId,
+    this.instanceLabel,
+  });
 
   @override
   State<SonarrUpcomingTile> createState() => _State();
@@ -30,7 +43,12 @@ class _State extends State<SonarrUpcomingTile> {
           widget.record.series?.title ??
           widget.series?.title ??
           LunaUI.TEXT_EMDASH,
-      body: [_subtitle1(), _subtitle2(), _subtitle3()],
+      body: [
+        _subtitle1(),
+        _subtitle2(),
+        _subtitle3(),
+        if (widget.instanceLabel != null) widget.instanceLabel!,
+      ],
       disabled: !widget.record.monitored!,
       onTap: _onTap,
       onLongPress: _onLongPress,
@@ -86,18 +104,26 @@ class _State extends State<SonarrUpcomingTile> {
   }
 
   Future<void> _onTap() async {
-    SonarrRoutes.SERIES_SEASON.go(
-      params: {
-        'series': (widget.record.seriesId ?? -1).toString(),
-        'season': (widget.record.seasonNumber ?? -1).toString(),
-      },
-    );
+    final params = {
+      'series': (widget.record.seriesId ?? -1).toString(),
+      'season': (widget.record.seasonNumber ?? -1).toString(),
+    };
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.SERIES_SEASON.goInstance(instanceId: instanceId, params: params);
+    } else {
+      SonarrRoutes.SERIES_SEASON.go(params: params);
+    }
   }
 
   Future<void> _onLongPress() async {
-    SonarrRoutes.SERIES.go(
-      params: {'series': widget.record.seriesId!.toString()},
-    );
+    final params = {'series': widget.record.seriesId!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.SERIES.goInstance(instanceId: instanceId, params: params);
+    } else {
+      SonarrRoutes.SERIES.go(params: params);
+    }
   }
 
   Future<void> _trailingOnPressed() async {
@@ -120,8 +146,16 @@ class _State extends State<SonarrUpcomingTile> {
   }
 
   Future<void> _trailingOnLongPress() async {
-    SonarrRoutes.RELEASES.go(
-      queryParams: {'episode': widget.record.id.toString()},
-    );
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.RELEASES.goInstance(
+        instanceId: instanceId,
+        queryParams: {'episode': widget.record.id.toString()},
+      );
+    } else {
+      SonarrRoutes.RELEASES.go(
+        queryParams: {'episode': widget.record.id.toString()},
+      );
+    }
   }
 }

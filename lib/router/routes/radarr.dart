@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/api/radarr/models/movie/movie.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
+import 'package:lunasea/modules/radarr/core/consolidated_state.dart';
 import 'package:lunasea/modules/radarr/core/state.dart';
 import 'package:lunasea/modules/radarr/routes/add_movie/route.dart';
 import 'package:lunasea/modules/radarr/routes/add_movie_details/route.dart';
@@ -11,16 +12,21 @@ import 'package:lunasea/modules/radarr/routes/manual_import/route.dart';
 import 'package:lunasea/modules/radarr/routes/manual_import_details/route.dart';
 import 'package:lunasea/modules/radarr/routes/movie_details/route.dart';
 import 'package:lunasea/modules/radarr/routes/queue/route.dart';
+import 'package:lunasea/modules/radarr/routes/radarr/consolidated_route.dart';
 import 'package:lunasea/modules/radarr/routes/radarr/route.dart';
 import 'package:lunasea/modules/radarr/routes/releases/route.dart';
 import 'package:lunasea/modules/radarr/routes/system_status/route.dart';
 import 'package:lunasea/modules/radarr/routes/tags/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/stores/backend_stores.dart';
 import 'package:lunasea/vendor.dart';
 
 enum RadarrRoutes with LunaRoutesMixin {
-  HOME('/radarr/:instanceId'),
+  // Consolidated view — serves as the module root when multiple instances exist
+  CONSOLIDATED('/radarr'),
+  // Per-instance view at /radarr/:instanceId (sub-route of CONSOLIDATED)
+  HOME(':instanceId'),
   ADD_MOVIE('add_movie'),
   ADD_MOVIE_DETAILS('details'),
   HISTORY('history'),
@@ -43,7 +49,10 @@ enum RadarrRoutes with LunaRoutesMixin {
 
   @override
   bool isModuleEnabled(BuildContext context) {
-    return context.read<RadarrState>().enabled;
+    // For the consolidated route (no instanceId in path), check if any instance
+    // is enabled.  Per-instance routes use the same check via the registry.
+    final profiles = context.read<ProfilesStore>();
+    return profiles.active.enabledInstances(LunaModule.RADARR).isNotEmpty;
   }
 
   @override
@@ -63,6 +72,34 @@ enum RadarrRoutes with LunaRoutesMixin {
   @override
   GoRoute get routes {
     switch (this) {
+      case RadarrRoutes.CONSOLIDATED:
+        return route(
+          builder: (context, state) {
+            final profiles = context.read<ProfilesStore>();
+            final instances =
+                profiles.active.enabledInstances(LunaModule.RADARR);
+            final registry =
+                context.read<LunaModuleStateRegistry<RadarrState>>();
+            final instanceStates =
+                instances.map((inst) => registry.get(inst)).toList();
+            // Provide first instance's RadarrState so existing search/sort/filter
+            // widgets that read RadarrState continue to work.
+            final sharedState =
+                instanceStates.isNotEmpty ? instanceStates.first : RadarrState();
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider<RadarrConsolidatedState>(
+                  create: (_) => RadarrConsolidatedState(
+                    instances: instances,
+                    instanceStates: instanceStates,
+                  ),
+                ),
+                ChangeNotifierProvider<RadarrState>.value(value: sharedState),
+              ],
+              child: const RadarrConsolidatedRoute(),
+            );
+          },
+        );
       case RadarrRoutes.HOME:
         return route(
           builder: (context, state) {
@@ -140,6 +177,9 @@ enum RadarrRoutes with LunaRoutesMixin {
   @override
   List<GoRoute> get subroutes {
     switch (this) {
+      case RadarrRoutes.CONSOLIDATED:
+        // HOME is a sub-route so /radarr/:instanceId resolves correctly.
+        return [RadarrRoutes.HOME.routes];
       case RadarrRoutes.HOME:
         return [
           RadarrRoutes.ADD_MOVIE.routes,

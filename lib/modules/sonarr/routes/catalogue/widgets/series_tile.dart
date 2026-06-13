@@ -13,11 +13,21 @@ class SonarrSeriesTile extends StatefulWidget {
   final SonarrQualityProfile? profile;
   final _SonarrSeriesTileType type;
 
+  /// When set, navigation on tap uses [goInstance] with this id instead of
+  /// inheriting the instanceId from the current URL. Used in consolidated views.
+  final String? instanceId;
+
+  /// Optional extra body line for the instance display name in consolidated views.
+  /// Callers must use [LunaBlock.calculateItemExtent(4)] as item height.
+  final TextSpan? instanceLabel;
+
   const SonarrSeriesTile({
     super.key,
     required this.series,
     required this.profile,
     this.type = _SonarrSeriesTileType.TILE,
+    this.instanceId,
+    this.instanceLabel,
   });
 
   const SonarrSeriesTile.grid({
@@ -25,6 +35,8 @@ class SonarrSeriesTile extends StatefulWidget {
     required this.series,
     required this.profile,
     this.type = _SonarrSeriesTileType.GRID,
+    this.instanceId,
+    this.instanceLabel,
   });
 
   @override
@@ -56,7 +68,12 @@ class _State extends State<SonarrSeriesTile> {
       posterPlaceholderIcon: LunaIcons.VIDEO_CAM,
       disabled: !widget.series.monitored!,
       title: widget.series.title,
-      body: [_subtitle1(), _subtitle2(), _subtitle3()],
+      body: [
+        _subtitle1(),
+        _subtitle2(),
+        _subtitle3(),
+        if (widget.instanceLabel != null) widget.instanceLabel!,
+      ],
       onTap: _onTap,
       onLongPress: _onLongPress,
     );
@@ -155,7 +172,13 @@ class _State extends State<SonarrSeriesTile> {
   }
 
   Future<void> _onTap() async {
-    SonarrRoutes.SERIES.go(params: {'series': widget.series.id!.toString()});
+    final seriesParam = {'series': widget.series.id!.toString()};
+    final instanceId = widget.instanceId;
+    if (instanceId != null) {
+      SonarrRoutes.SERIES.goInstance(instanceId: instanceId, params: seriesParam);
+    } else {
+      SonarrRoutes.SERIES.go(params: seriesParam);
+    }
   }
 
   Future<void> _onLongPress() async {
