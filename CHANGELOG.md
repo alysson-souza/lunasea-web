@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## Unreleased
 
+### Features
+
+* Added consolidated Radarr and Sonarr views for multi-instance setups, including combined catalogue, missing, upcoming, and quality profile data across enabled instances.
+* Added grouped Radarr and Sonarr drawer navigation with a consolidated module entry above individual service instances.
+* Added Docker Compose examples for running the published image or building the image from this checkout.
+
 ### Changed
 
 * Reshaped the repository into a Flutter Web app at the repository root.
@@ -12,6 +18,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Removed native platform projects and packaging surfaces for Android, iOS, macOS, Windows, Linux, Debian, and Snap.
 * Removed the retired backend, hosted notification, Firebase cloud, and old documentation projects from the active repository.
 * Removed Wake-on-LAN from the active PWA surface, including the API client, settings route, package dependency, dashboard shortcut, and localization module.
+* Updated Radarr and Sonarr instance routes to show the selected instance name in the app bar.
 
 ### Notes
 
