@@ -1,0 +1,22 @@
+services:
+  lunasea:
+    image: ghcr.io/alysson-souza/lunasea-web:latest
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      LUNASEA_ADDR: ":8080"
+      LUNASEA_DATA_DIR: /data
+      LUNASEA_STATIC_DIR: /usr/share/lunasea/web
+    volumes:
+      - lunasea-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "65532:65532"
+
+volumes:
+  lunasea-data:

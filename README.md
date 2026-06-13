@@ -12,22 +12,31 @@ Run it only on trusted networks, or place it behind a protected reverse proxy, T
 
 ## Run with Docker
 
-Build the image:
+Start LunaSea with Docker Compose:
 
-```sh
-docker buildx build --load --tag lunasea-web:local .
-```
-
-Run the container:
-
-```sh
-docker run --rm \
-  -p 8080:8080 \
-  -v lunasea-data:/data \
-  lunasea-web:local
+```fish
+docker compose up
 ```
 
 Open `http://localhost:8080`.
+
+By default, the app is only exposed on `localhost`.
+
+To build and run the image from this checkout:
+
+```fish
+docker compose -f compose.example.yaml up --build
+```
+
+To build and run the image without Compose:
+
+```fish
+docker buildx build --load --tag lunasea-web:local .
+docker run --rm \
+  -p 127.0.0.1:8080:8080 \
+  -v lunasea-data:/data \
+  lunasea-web:local
+```
 
 ## Configure
 
