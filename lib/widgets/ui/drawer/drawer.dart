@@ -78,7 +78,7 @@ class LunaDrawer extends StatelessWidget {
     return <Widget>[
       ..._sharedHeader(context),
       ...modules.expand((module) {
-        if (!profiles.isEnabled(module)) return [const SizedBox(height: 0.0)];
+        if (!profiles.isEnabled(module)) return const <Widget>[];
         if (!module.supportsServiceInstances) {
           return [_buildEntry(context: context, module: module)];
         }
@@ -87,6 +87,20 @@ class LunaDrawer extends StatelessWidget {
           profiles.activeProfile,
           module,
         );
+        if (module.supportsConsolidatedView) {
+          return [
+            _buildConsolidatedEntry(context: context, module: module),
+            ...instances.map(
+              (instance) => _buildInstanceEntry(
+                context: context,
+                module: module,
+                instance: instance,
+                nested: true,
+              ),
+            ),
+          ];
+        }
+
         return instances.map(
           (instance) => _buildInstanceEntry(
             context: context,
@@ -102,18 +116,35 @@ class LunaDrawer extends StatelessWidget {
     required BuildContext context,
     required LunaModule module,
     required LunaServiceInstance instance,
+    bool nested = false,
   }) {
     return _buildEntry(
       context: context,
       module: module,
-      label: '${module.title} - ${instance.displayName}',
+      label: nested
+          ? instance.displayName
+          : '${module.title} - ${instance.displayName}',
       current:
           page == module.key.toLowerCase() &&
           currentInstanceId(module) == instance.id,
+      nested: nested,
+      icon: nested ? Icons.dns_rounded : null,
       onTap: () async {
         Navigator.of(context).pop();
         module.launchInstance(instance);
       },
+    );
+  }
+
+  Widget _buildConsolidatedEntry({
+    required BuildContext context,
+    required LunaModule module,
+  }) {
+    return _buildEntry(
+      context: context,
+      module: module,
+      current:
+          page == module.key.toLowerCase() && currentInstanceId(module) == null,
     );
   }
 
@@ -123,32 +154,63 @@ class LunaDrawer extends StatelessWidget {
     String? label,
     bool? current,
     void Function()? onTap,
+    bool nested = false,
+    IconData? icon,
   }) {
     bool currentPage = current ?? page == module.key.toLowerCase();
+    final contentColor = currentPage
+        ? module.color
+        : nested
+        ? LunaColours.white70
+        : LunaColours.white;
     return SizedBox(
-      height: LunaTextInputBar.defaultAppBarHeight,
+      height: nested
+          ? LunaTextInputBar.defaultAppBarHeight * 0.85
+          : LunaTextInputBar.defaultAppBarHeight,
       child: InkWell(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              child: Icon(
-                module.icon,
-                color: currentPage ? module.color : LunaColours.white,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: currentPage
+                ? module.color.withValues(alpha: 0.12)
+                : Colors.transparent,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 4.0,
+                color: currentPage ? module.color : Colors.transparent,
               ),
-              padding: LunaUI.MARGIN_DEFAULT_HORIZONTAL * 1.5,
-            ),
-            Expanded(
-              child: Text(
-                label ?? module.title,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: currentPage ? module.color : LunaColours.white,
-                  fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: nested
+                      ? LunaUI.DEFAULT_MARGIN_SIZE * 2.5
+                      : LunaUI.DEFAULT_MARGIN_SIZE * 1.5,
+                  right: LunaUI.DEFAULT_MARGIN_SIZE * 1.5,
+                ),
+                child: Icon(
+                  icon ?? module.icon,
+                  color: contentColor,
+                  size: nested ? 20.0 : LunaUI.ICON_SIZE,
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Text(
+                  label ?? module.title,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: contentColor,
+                    fontSize: nested
+                        ? LunaUI.FONT_SIZE_H3
+                        : LunaUI.FONT_SIZE_H2,
+                    fontWeight: currentPage || !nested
+                        ? LunaUI.FONT_WEIGHT_BOLD
+                        : FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         onTap:
             onTap ??

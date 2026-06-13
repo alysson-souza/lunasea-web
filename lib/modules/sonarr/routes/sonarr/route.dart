@@ -59,7 +59,7 @@ class _State extends State<SonarrRoute> {
       ];
     }
     return LunaAppBar.dropdown(
-      title: LunaModule.SONARR.title,
+      title: '${LunaModule.SONARR.title} - ${widget.instance.displayName}',
       useDrawer: true,
       profiles: profiles,
       actions: actions,

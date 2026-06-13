@@ -11,7 +11,9 @@ import 'package:provider/provider.dart';
 void main() {
   tearDown(LunaBackendState.clear);
 
-  testWidgets('drawer lists enabled service instances', (tester) async {
+  testWidgets('drawer groups consolidated module service instances', (
+    tester,
+  ) async {
     await LunaBackendState.hydrate({
       'preferences': {
         'activeProfile': 'default',
@@ -64,8 +66,63 @@ void main() {
     await tester.tap(find.text('Open drawer'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Radarr - NAS Films'), findsOneWidget);
-    expect(find.text('Radarr - Seedbox Films'), findsOneWidget);
+    expect(find.text('Radarr'), findsOneWidget);
+    expect(find.text('NAS Films'), findsOneWidget);
+    expect(find.text('Seedbox Films'), findsOneWidget);
+    expect(find.text('Radarr - NAS Films'), findsNothing);
+    expect(find.text('Radarr - Seedbox Films'), findsNothing);
+  });
+
+  testWidgets('drawer keeps non-consolidated service instances flat', (
+    tester,
+  ) async {
+    await LunaBackendState.hydrate({
+      'preferences': {
+        'activeProfile': 'default',
+        'drawerAutomaticManage': true,
+        'drawerManualOrder': [],
+      },
+      'profiles': [
+        {'id': 'default'},
+      ],
+      'serviceInstances': [
+        LunaServiceInstance(
+          id: 'music',
+          profileId: 'default',
+          module: LunaModule.LIDARR,
+          displayName: 'Music',
+          enabled: true,
+        ).toJson(),
+      ],
+    });
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ProfilesStore()),
+          ChangeNotifierProvider(create: (_) => IndexersStore()),
+          ChangeNotifierProvider(create: (_) => ExternalModulesStore()),
+          ChangeNotifierProvider(create: (_) => SettingsStore()),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            drawer: const LunaDrawer(page: 'dashboard'),
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: Scaffold.of(context).openDrawer,
+                child: const Text('Open drawer'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open drawer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lidarr - Music'), findsOneWidget);
+    expect(find.text('Music'), findsNothing);
   });
 
   testWidgets('drawer omits scalar service module fallback entries', (
