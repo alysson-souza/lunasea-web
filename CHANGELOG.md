@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased]
 
+## [0.4.0](https://github.com/alysson-souza/lunasea-web/compare/0.3.0...0.4.0) (2026-06-14)
+
 ### Bug Fixes
 
 * **routing:** preserve active module routes, instance drill-downs, and selected tabs across browser refreshes
