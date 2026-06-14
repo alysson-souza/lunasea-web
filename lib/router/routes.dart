@@ -82,6 +82,12 @@ mixin LunaRoutesMixin on Enum {
             routeModule,
           );
           if (configured != null) {
+            // Remember the instance this route resolved to. Imperative pushes
+            // (used by all in-module drill-downs) do not update the browser
+            // URL in go_router 14. The route's own builder state can recover
+            // the instance, so cache it here for `currentInstanceId` to reuse
+            // on subsequent `.go()` navigations.
+            _activeInstanceIds[routeModule.key] = configured.id;
             return wrapServiceInstanceRoute(
               context,
               state,
@@ -94,6 +100,12 @@ mixin LunaRoutesMixin on Enum {
             instanceId: selectedInstanceId,
           );
         }
+        // NOTE: we intentionally do NOT clear `_activeInstanceIds` here. The
+        // consolidated (no-instanceId) base route is rebuilt by go_router on
+        // every imperative push — including AFTER the pushed instance route's
+        // builder runs — so clearing here would wipe the instance we just
+        // cached. Consolidated-level widgets always navigate with an explicit
+        // `goInstance`, so a lingering cached id is never consulted there.
         if (isModuleEnabled(context)) {
           return builder?.call(context, state) ?? widget!;
         }
@@ -113,6 +125,14 @@ mixin LunaRoutesMixin on Enum {
     bool buildTree = false,
   }) {
     final pathParams = _withCurrentInstance(params);
+    final routeModule = module;
+    if (buildTree &&
+        routeModule != null &&
+        routeModule.supportsServiceInstances &&
+        !pathParams.containsKey('instanceId') &&
+        !path.contains(':instanceId')) {
+      _activeInstanceIds.remove(routeModule.key);
+    }
     if (buildTree) {
       return LunaRouter.router.goNamed(
         _routeName,
@@ -133,12 +153,17 @@ mixin LunaRoutesMixin on Enum {
     final routeModule = module;
     if (routeModule == null ||
         !routeModule.supportsServiceInstances ||
+        _isModuleRootWithoutInstance(routeModule) ||
         params.containsKey('instanceId')) {
       return params;
     }
     final selectedInstanceId = currentInstanceId(routeModule);
     if (selectedInstanceId == null || selectedInstanceId.isEmpty) return params;
     return <String, String>{...params, 'instanceId': selectedInstanceId};
+  }
+
+  bool _isModuleRootWithoutInstance(LunaModule routeModule) {
+    return path == '/${routeModule.key}';
   }
 
   void goInstance({
@@ -180,12 +205,58 @@ LunaServiceInstance? serviceInstanceFromProfile(
 ) {
   if (instanceId == null) return null;
   for (final instance in profile.instancesFor(module)) {
-    if (instance.id == instanceId && instance.enabled && instance.host.isNotEmpty) return instance;
+    if (instance.id == instanceId &&
+        instance.enabled &&
+        instance.host.isNotEmpty)
+      return instance;
   }
   return null;
 }
 
+/// The instance id each instance-aware module's currently-displayed route
+/// resolved to, keyed by [LunaModule.key]. Maintained by the route builder in
+/// [LunaRoutesMixin.route] - see the comment there for why this is needed
+/// instead of reading the URL or `GoRouter.state`.
+final Map<String, String> _activeInstanceIds = <String, String>{};
+
+@visibleForTesting
+void debugRememberCurrentInstanceIdForTesting(
+  LunaModule module,
+  String instanceId,
+) {
+  _activeInstanceIds[module.key] = instanceId;
+}
+
+@visibleForTesting
+void debugClearCurrentInstanceIdsForTesting() {
+  _activeInstanceIds.clear();
+}
+
 String? currentInstanceId(LunaModule module) {
+  try {
+    final state = LunaRouter.router.state;
+    final fullPath = state.fullPath;
+    if (fullPath != null && fullPath.startsWith('/${module.key}')) {
+      final id = state.pathParameters['instanceId'];
+      if (id != null && id.isNotEmpty) return id;
+      if (!fullPath.contains(':instanceId')) {
+        _activeInstanceIds.remove(module.key);
+        return null;
+      }
+    } else if (fullPath != null) {
+      return null;
+    }
+  } on Object {
+    // Fall back to the route-builder cache and address-bar parsing below.
+  }
+
+  // Primary: the instance the current route resolved to. This is correct even
+  // when the route was reached via an imperative `push` (which leaves the
+  // address-bar URL at the consolidated root, e.g. `/sonarr`).
+  final cached = _activeInstanceIds[module.key];
+  if (cached != null && cached.isNotEmpty) return cached;
+  // Fallback: parse the address-bar URL (covers the very first build before any
+  // instance route has rendered, and direct deep-links).
   try {
     final segments =
         LunaRouter.router.routeInformationProvider.value.uri.pathSegments;

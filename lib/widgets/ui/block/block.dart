@@ -34,6 +34,12 @@ class LunaBlock extends StatelessWidget {
   final Function? onTap;
   final Function? onLongPress;
 
+  /// Stable semantics identifier for the tappable row. Exposed on web as a
+  /// queryable attribute so the block can be reliably targeted (e.g. by
+  /// integration tests / Playwright) regardless of recycled semantic node
+  /// ids. Defaults to [title] when not provided.
+  final String? semanticIdentifier;
+
   final IconData? posterPlaceholderIcon;
   final String? posterUrl;
   final Map? posterHeaders;
@@ -64,6 +70,7 @@ class LunaBlock extends StatelessWidget {
     this.backgroundHeaders = const {},
     this.onTap,
     this.onLongPress,
+    this.semanticIdentifier,
     this.leading,
     this.trailing,
   });
@@ -134,30 +141,60 @@ class LunaBlock extends StatelessWidget {
 
   Widget _buildBlock(BuildContext context) {
     double _height = _calculateHeight();
+    final bool _interactive = onTap != null || onLongPress != null;
+    final String? _label = _semanticLabel();
     return LunaCard(
       context: context,
-      child: InkWell(
-        child: Stack(
-          children: [
-            if (backgroundUrl?.isNotEmpty ?? false)
-              _fadeInBackground(context, _height),
-            Opacity(
-              opacity: disabled! ? LunaUI.OPACITY_DISABLED : 1.0,
-              child: Row(
-                children: [_poster(context, _height), _tile(context, _height)],
-              ),
-            ),
-          ],
-        ),
-        mouseCursor: onTap != null || onLongPress != null
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
+      child: Semantics(
+        identifier: semanticIdentifier ?? _label ?? '',
+        label: _label,
+        button: _interactive,
+        // Carry the tap actions on this labelled node itself so the row can be
+        // activated as a single, named target (by screen readers, keyboard,
+        // and tests), not just via the inner InkWell whose node has no label.
         onTap: onTap as void Function()?,
         onLongPress: onLongPress as void Function()?,
+        // Exposes the row as a single, named, tappable node. The inner text
+        // is wrapped in ExcludeSemantics (see [_scrollableText]) so its
+        // SingleChildScrollViews don't spawn scrollable nodes that sit over
+        // the InkWell and swallow taps. [trailing] keeps its own semantics so
+        // secondary actions (e.g. monitor toggle) remain independently usable.
+        child: InkWell(
+          child: Stack(
+            children: [
+              if (backgroundUrl?.isNotEmpty ?? false)
+                _fadeInBackground(context, _height),
+              Opacity(
+                opacity: disabled! ? LunaUI.OPACITY_DISABLED : 1.0,
+                child: Row(
+                  children: [
+                    _poster(context, _height),
+                    _tile(context, _height),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          mouseCursor: _interactive
+              ? SystemMouseCursors.click
+              : MouseCursor.defer,
+          onTap: onTap as void Function()?,
+          onLongPress: onLongPress as void Function()?,
+        ),
       ),
       height: _height,
       color: backgroundColor,
     );
+  }
+
+  String? _semanticLabel() {
+    final parts = <String>[
+      if (title?.trim().isNotEmpty ?? false) title!.trim(),
+      if (body?.isNotEmpty ?? false)
+        for (final span in body!)
+          if (span.toPlainText().trim().isNotEmpty) span.toPlainText().trim(),
+    ];
+    return parts.isEmpty ? null : parts.join('\n');
   }
 
   Widget _fadeInBackground(BuildContext context, double _height) {
@@ -380,9 +417,15 @@ class LunaBlock extends StatelessWidget {
     required Widget child,
     Axis scrollDirection = Axis.horizontal,
   }) {
-    return SingleChildScrollView(
-      scrollDirection: scrollDirection,
-      child: child,
+    // Excluded from the semantics tree: the row's accessible label lives on the
+    // wrapping [Semantics] in [_buildBlock]. Without this, each text
+    // SingleChildScrollView produces a scrollable node that overlays the
+    // InkWell and prevents tap delivery (notably on web).
+    return ExcludeSemantics(
+      child: SingleChildScrollView(
+        scrollDirection: scrollDirection,
+        child: child,
+      ),
     );
   }
 }
