@@ -14,12 +14,14 @@ import 'package:lunasea/modules/radarr/routes/movie_details/route.dart';
 import 'package:lunasea/modules/radarr/routes/queue/route.dart';
 import 'package:lunasea/modules/radarr/routes/radarr/consolidated_route.dart';
 import 'package:lunasea/modules/radarr/routes/radarr/route.dart';
+import 'package:lunasea/modules/radarr/routes/radarr/widgets/navigation_bar.dart';
 import 'package:lunasea/modules/radarr/routes/releases/route.dart';
 import 'package:lunasea/modules/radarr/routes/system_status/route.dart';
 import 'package:lunasea/modules/radarr/routes/tags/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
 import 'package:lunasea/system/stores/backend_stores.dart';
+import 'package:lunasea/system/preferences/radarr.dart';
 import 'package:lunasea/vendor.dart';
 
 enum RadarrRoutes with LunaRoutesMixin {
@@ -76,16 +78,19 @@ enum RadarrRoutes with LunaRoutesMixin {
         return route(
           builder: (context, state) {
             final profiles = context.read<ProfilesStore>();
-            final instances =
-                profiles.active.enabledInstances(LunaModule.RADARR);
-            final registry =
-                context.read<LunaModuleStateRegistry<RadarrState>>();
-            final instanceStates =
-                instances.map((inst) => registry.get(inst)).toList();
+            final instances = profiles.active.enabledInstances(
+              LunaModule.RADARR,
+            );
+            final registry = context
+                .read<LunaModuleStateRegistry<RadarrState>>();
+            final instanceStates = instances
+                .map((inst) => registry.get(inst))
+                .toList();
             // Provide first instance's RadarrState so existing search/sort/filter
             // widgets that read RadarrState continue to work.
-            final sharedState =
-                instanceStates.isNotEmpty ? instanceStates.first : RadarrState();
+            final sharedState = instanceStates.isNotEmpty
+                ? instanceStates.first
+                : RadarrState();
             return MultiProvider(
               providers: [
                 ChangeNotifierProvider<RadarrConsolidatedState>(
@@ -96,7 +101,13 @@ enum RadarrRoutes with LunaRoutesMixin {
                 ),
                 ChangeNotifierProvider<RadarrState>.value(value: sharedState),
               ],
-              child: const RadarrConsolidatedRoute(),
+              child: RadarrConsolidatedRoute(
+                initialPage: tabIndexFromRoute(
+                  state,
+                  RadarrNavigationBar.tabKeys,
+                  fallback: RadarrPreferences.NAVIGATION_INDEX.read(),
+                ),
+              ),
             );
           },
         );
@@ -108,7 +119,14 @@ enum RadarrRoutes with LunaRoutesMixin {
               state,
               LunaModule.RADARR,
             );
-            return RadarrRoute(instance: instance!);
+            return RadarrRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                RadarrNavigationBar.tabKeys,
+                fallback: RadarrPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case RadarrRoutes.ADD_MOVIE:

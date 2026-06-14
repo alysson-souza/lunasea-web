@@ -15,6 +15,8 @@ class SABnzbdNavigationBar extends StatelessWidget {
 
   static const List<String> titles = ['Queue', 'History'];
 
+  static const List<String> tabKeys = ['queue', 'history'];
+
   const SABnzbdNavigationBar({super.key, required this.pageController});
 
   @override
@@ -24,6 +26,7 @@ class SABnzbdNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }

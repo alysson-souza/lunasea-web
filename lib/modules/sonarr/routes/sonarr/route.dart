@@ -5,8 +5,9 @@ import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrRoute extends StatefulWidget {
   final LunaServiceInstance instance;
+  final int? initialPage;
 
-  const SonarrRoute({super.key, required this.instance});
+  const SonarrRoute({super.key, required this.instance, this.initialPage});
 
   @override
   State<SonarrRoute> createState() => _State();
@@ -20,7 +21,8 @@ class _State extends State<SonarrRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: SonarrPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? SonarrPreferences.NAVIGATION_INDEX.read(),
     );
   }
 

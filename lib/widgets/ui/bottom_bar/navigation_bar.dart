@@ -13,6 +13,7 @@ class LunaBottomNavigationBar extends StatefulWidget {
   final List<Widget>? topActions;
   final ValueChanged<int>? onTabChange;
   final List<Widget?>? leadingOnTab;
+  final List<String>? tabKeys;
 
   LunaBottomNavigationBar({
     super.key,
@@ -22,6 +23,7 @@ class LunaBottomNavigationBar extends StatefulWidget {
     this.topActions,
     this.onTabChange,
     this.leadingOnTab,
+    this.tabKeys,
     this.scrollControllers,
   }) {
     assert(
@@ -38,6 +40,12 @@ class LunaBottomNavigationBar extends StatefulWidget {
       assert(
         icons.length == scrollControllers!.length,
         'An unequal amount of icons and scrollControllers were passed to LunaNavigationBar.',
+      );
+    }
+    if (tabKeys != null) {
+      assert(
+        icons.length == tabKeys!.length,
+        'An unequal amount of icons and tabKeys were passed to LunaNavigationBar.',
       );
     }
   }
@@ -147,6 +155,23 @@ class _State extends State<LunaBottomNavigationBar> {
       widget.pageController!.protectedJumpToPage(idx);
     }
     if (widget.onTabChange != null) widget.onTabChange!(idx);
+    _updateTabLocation(idx);
     setState(() => _index = idx);
+  }
+
+  void _updateTabLocation(int idx) {
+    final tabs = widget.tabKeys;
+    if (tabs == null) return;
+    final router = GoRouter.maybeOf(context);
+    if (router == null) return;
+
+    final current = router.routeInformationProvider.value.uri;
+    final nextQuery = <String, String>{
+      ...current.queryParameters,
+      'tab': tabs[idx],
+    };
+    final next = current.replace(queryParameters: nextQuery);
+    if (next == current) return;
+    router.go(next.toString());
   }
 }

@@ -10,7 +10,9 @@ import 'package:lunasea/system/consolidated/instance_picker_sheet.dart';
 /// the same four tabs as the per-instance view.  The app-bar dropdown lets the
 /// user jump into a specific instance or return to "All Instances".
 class SonarrConsolidatedRoute extends StatefulWidget {
-  const SonarrConsolidatedRoute({super.key});
+  final int? initialPage;
+
+  const SonarrConsolidatedRoute({super.key, this.initialPage});
 
   @override
   State<SonarrConsolidatedRoute> createState() => _State();
@@ -24,7 +26,8 @@ class _State extends State<SonarrConsolidatedRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: SonarrPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? SonarrPreferences.NAVIGATION_INDEX.read(),
     );
   }
 
@@ -43,9 +46,7 @@ class _State extends State<SonarrConsolidatedRoute> {
   void _onAddPressed() {
     final instances = context.read<SonarrConsolidatedState>().instances;
     if (instances.isEmpty) return;
-    LunaInstancePickerSheet()
-        .show(instances: instances)
-        .then((id) {
+    LunaInstancePickerSheet().show(instances: instances).then((id) {
       if (id != null) SonarrRoutes.ADD_SERIES.goInstance(instanceId: id);
     });
   }

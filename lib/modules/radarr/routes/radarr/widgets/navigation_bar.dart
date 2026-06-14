@@ -15,6 +15,8 @@ class RadarrNavigationBar extends StatelessWidget {
     Icons.more_horiz_rounded,
   ];
 
+  static const List<String> tabKeys = ['movies', 'upcoming', 'missing', 'more'];
+
   static List<String> get titles => [
     'radarr.Movies'.tr(),
     'radarr.Upcoming'.tr(),
@@ -31,6 +33,7 @@ class RadarrNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }

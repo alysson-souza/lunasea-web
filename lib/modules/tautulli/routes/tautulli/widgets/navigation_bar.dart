@@ -16,6 +16,8 @@ class TautulliNavigationBar extends StatefulWidget {
     Icons.more_horiz_rounded,
   ];
 
+  static const List<String> tabKeys = ['activity', 'users', 'history', 'more'];
+
   static List<String> get titles => [
     'tautulli.Activity'.tr(),
     'tautulli.Users'.tr(),
@@ -57,6 +59,7 @@ class _State extends State<TautulliNavigationBar> {
       scrollControllers: TautulliNavigationBar.scrollControllers,
       icons: TautulliNavigationBar.icons,
       titles: TautulliNavigationBar.titles,
+      tabKeys: TautulliNavigationBar.tabKeys,
       leadingOnTab: [
         FutureBuilder(
           future: context.watch<TautulliState>().activity,

@@ -5,8 +5,9 @@ import 'package:lunasea/modules/radarr.dart';
 
 class RadarrRoute extends StatefulWidget {
   final LunaServiceInstance instance;
+  final int? initialPage;
 
-  const RadarrRoute({super.key, required this.instance});
+  const RadarrRoute({super.key, required this.instance, this.initialPage});
 
   @override
   State<RadarrRoute> createState() => _State();
@@ -20,7 +21,8 @@ class _State extends State<RadarrRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: RadarrPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? RadarrPreferences.NAVIGATION_INDEX.read(),
     );
   }
 

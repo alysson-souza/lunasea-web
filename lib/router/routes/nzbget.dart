@@ -4,8 +4,10 @@ import 'package:lunasea/modules.dart';
 import 'package:lunasea/modules/nzbget/core/state.dart';
 import 'package:lunasea/modules/nzbget/routes/nzbget.dart';
 import 'package:lunasea/modules/nzbget/routes/statistics.dart';
+import 'package:lunasea/modules/nzbget/widgets/navigation_bar.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/preferences/nzbget.dart';
 import 'package:lunasea/vendor.dart';
 
 enum NZBGetRoutes with LunaRoutesMixin {
@@ -48,7 +50,14 @@ enum NZBGetRoutes with LunaRoutesMixin {
               state,
               LunaModule.NZBGET,
             );
-            return NZBGetRoute(instance: instance!);
+            return NZBGetRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                NZBGetNavigationBar.tabKeys,
+                fallback: NZBGetPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case NZBGetRoutes.STATISTICS:

@@ -10,6 +10,8 @@ class NZBGetNavigationBar extends StatelessWidget {
 
   static const List<String> titles = ['Queue', 'History'];
 
+  static const List<String> tabKeys = ['queue', 'history'];
+
   static const List<IconData> icons = [
     Icons.queue_play_next_rounded,
     Icons.history_rounded,
@@ -24,6 +26,7 @@ class NZBGetNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }

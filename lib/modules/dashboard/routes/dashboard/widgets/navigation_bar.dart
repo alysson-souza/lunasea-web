@@ -19,6 +19,8 @@ class HomeNavigationBar extends StatelessWidget {
     Icons.calendar_today_rounded,
   ];
 
+  static const List<String> tabKeys = ['modules', 'calendar'];
+
   const HomeNavigationBar({super.key, required this.pageController});
 
   @override
@@ -28,6 +30,7 @@ class HomeNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }

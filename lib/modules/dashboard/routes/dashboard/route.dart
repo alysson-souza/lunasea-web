@@ -11,7 +11,9 @@ import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/switch_view_a
 import 'package:lunasea/modules/dashboard/routes/dashboard/widgets/navigation_bar.dart';
 
 class DashboardRoute extends StatefulWidget {
-  const DashboardRoute({super.key});
+  final int? initialPage;
+
+  const DashboardRoute({super.key, this.initialPage});
 
   @override
   State<DashboardRoute> createState() => _State();
@@ -25,7 +27,8 @@ class _State extends State<DashboardRoute> {
   void initState() {
     super.initState();
 
-    int page = DashboardPreferences.NAVIGATION_INDEX.read();
+    int page =
+        widget.initialPage ?? DashboardPreferences.NAVIGATION_INDEX.read();
     _pageController = LunaPageController(initialPage: page);
   }
 

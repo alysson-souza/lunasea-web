@@ -10,7 +10,9 @@ import 'package:lunasea/system/consolidated/instance_picker_sheet.dart';
 /// the same four tabs as the per-instance view.  The app-bar dropdown lets the
 /// user jump into a specific instance or return to "All Instances".
 class RadarrConsolidatedRoute extends StatefulWidget {
-  const RadarrConsolidatedRoute({super.key});
+  final int? initialPage;
+
+  const RadarrConsolidatedRoute({super.key, this.initialPage});
 
   @override
   State<RadarrConsolidatedRoute> createState() => _State();
@@ -24,7 +26,8 @@ class _State extends State<RadarrConsolidatedRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: RadarrPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? RadarrPreferences.NAVIGATION_INDEX.read(),
     );
   }
 
@@ -43,9 +46,7 @@ class _State extends State<RadarrConsolidatedRoute> {
   void _onAddPressed() {
     final instances = context.read<RadarrConsolidatedState>().instances;
     if (instances.isEmpty) return;
-    LunaInstancePickerSheet()
-        .show(instances: instances)
-        .then((id) {
+    LunaInstancePickerSheet().show(instances: instances).then((id) {
       if (id != null) RadarrRoutes.ADD_MOVIE.goInstance(instanceId: id);
     });
   }

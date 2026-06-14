@@ -14,6 +14,8 @@ class LidarrNavigationBar extends StatelessWidget {
     Icons.history_rounded,
   ];
 
+  static const List<String> tabKeys = ['artists', 'missing', 'history'];
+
   static List<String> get titles => ['Artists', 'Missing', 'History'];
 
   const LidarrNavigationBar({super.key, required this.pageController});
@@ -25,6 +27,7 @@ class LidarrNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }

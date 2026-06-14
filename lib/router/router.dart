@@ -9,11 +9,15 @@ class LunaRouter {
   static late GoRouter router;
   static GlobalKey<NavigatorState> navigator = GlobalKey<NavigatorState>();
 
-  void initialize() {
+  void initialize({Uri? initialUri}) {
+    final browserInitialLocation = initialLocationFromUri(
+      initialUri ?? Uri.base,
+    );
     router = GoRouter(
       navigatorKey: navigator,
       errorBuilder: (_, state) => ErrorRoutePage(exception: state.error),
-      initialLocation: LunaRoutes.initialLocation,
+      initialLocation: browserInitialLocation ?? LunaRoutes.initialLocation,
+      overridePlatformDefaultLocation: browserInitialLocation != null,
       routes: LunaRoutes.values.map((r) => r.root.routes).toList(),
     );
   }
@@ -29,4 +33,14 @@ class LunaRouter {
     }
     navigator.currentState!.popUntil((route) => route.isFirst);
   }
+}
+
+@visibleForTesting
+String? initialLocationFromUri(Uri uri) {
+  final fragment = uri.fragment;
+  if (fragment.startsWith('/')) return fragment;
+
+  final path = uri.path;
+  if (path.isEmpty || path == '/') return null;
+  return Uri(path: path, query: uri.query).toString();
 }

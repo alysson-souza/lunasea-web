@@ -11,8 +11,14 @@ import 'package:lunasea/system/filesystem/filesystem.dart';
 class SABnzbdRoute extends StatefulWidget {
   final LunaServiceInstance? instance;
   final bool showDrawer;
+  final int? initialPage;
 
-  const SABnzbdRoute({super.key, this.instance, this.showDrawer = true});
+  const SABnzbdRoute({
+    super.key,
+    this.instance,
+    this.showDrawer = true,
+    this.initialPage,
+  });
 
   @override
   State<SABnzbdRoute> createState() => _State();
@@ -33,7 +39,8 @@ class _State extends State<SABnzbdRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: SABnzbdPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? SABnzbdPreferences.NAVIGATION_INDEX.read(),
     );
     _refreshProfile(refreshPages: false);
   }

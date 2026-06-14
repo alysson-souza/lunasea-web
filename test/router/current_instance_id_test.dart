@@ -50,6 +50,24 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, '/sonarr');
     expect(currentInstanceId(LunaModule.SONARR), isNull);
   });
+
+  testWidgets('instance navigation writes detail route to browser URL', (
+    tester,
+  ) async {
+    final router = _router(initialLocation: '/sonarr');
+    await _pumpRouter(tester, router);
+
+    SonarrRoutes.SERIES.goInstance(
+      instanceId: 'nas-tv',
+      params: {'series': '1'},
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/sonarr/nas-tv/series/1',
+    );
+  });
 }
 
 GoRouter _router({required String initialLocation}) {
@@ -63,10 +81,12 @@ GoRouter _router({required String initialLocation}) {
         routes: [
           GoRoute(
             path: ':instanceId',
+            name: 'sonarr:HOME',
             builder: (_, _) => const SizedBox.shrink(),
             routes: [
               GoRoute(
                 path: 'series/:series',
+                name: 'sonarr:SERIES',
                 builder: (_, _) => const SizedBox.shrink(),
               ),
             ],

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
+* **routing:** preserve active module routes, instance drill-downs, and selected tabs across browser refreshes
 * **radarr:** fixed + button in consolidated view producing "null has not been configured" error — now shows an instance picker and navigates via explicit instance ID
 * **sonarr:** same fix applied to the + button in the consolidated Sonarr view
 * **radarr:** fixed clicking a search result or discovery tile in the Add Movie flow losing instance context and producing the same null error

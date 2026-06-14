@@ -23,9 +23,11 @@ import 'package:lunasea/modules/tautulli/routes/search/route.dart';
 import 'package:lunasea/modules/tautulli/routes/statistics/route.dart';
 import 'package:lunasea/modules/tautulli/routes/synced_items/route.dart';
 import 'package:lunasea/modules/tautulli/routes/tautulli/route.dart';
+import 'package:lunasea/modules/tautulli/routes/tautulli/widgets/navigation_bar.dart';
 import 'package:lunasea/modules/tautulli/routes/users_details/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/preferences/tautulli.dart';
 import 'package:lunasea/vendor.dart';
 
 enum TautulliRoutes with LunaRoutesMixin {
@@ -89,7 +91,14 @@ enum TautulliRoutes with LunaRoutesMixin {
               state,
               LunaModule.TAUTULLI,
             );
-            return TautulliRoute(instance: instance!);
+            return TautulliRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                TautulliNavigationBar.tabKeys,
+                fallback: TautulliPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case TautulliRoutes.ACTIVITY_DETAILS:

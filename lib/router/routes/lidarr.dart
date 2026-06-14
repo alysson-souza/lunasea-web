@@ -10,8 +10,10 @@ import 'package:lunasea/modules/lidarr/routes/details_artist.dart';
 import 'package:lunasea/modules/lidarr/routes/edit_artist.dart';
 import 'package:lunasea/modules/lidarr/routes/lidarr.dart';
 import 'package:lunasea/modules/lidarr/routes/search_results.dart';
+import 'package:lunasea/modules/lidarr/widgets/navigation_bar.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/preferences/lidarr.dart';
 import 'package:lunasea/vendor.dart';
 
 enum LidarrRoutes with LunaRoutesMixin {
@@ -59,7 +61,14 @@ enum LidarrRoutes with LunaRoutesMixin {
               state,
               LunaModule.LIDARR,
             );
-            return LidarrRoute(instance: instance!);
+            return LidarrRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                LidarrNavigationBar.tabKeys,
+                fallback: LidarrPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case LidarrRoutes.ADD_ARTIST:

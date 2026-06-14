@@ -5,8 +5,9 @@ import 'package:lunasea/modules/tautulli.dart';
 
 class TautulliRoute extends StatefulWidget {
   final LunaServiceInstance instance;
+  final int? initialPage;
 
-  const TautulliRoute({super.key, required this.instance});
+  const TautulliRoute({super.key, required this.instance, this.initialPage});
 
   @override
   State<TautulliRoute> createState() => _State();
@@ -20,7 +21,8 @@ class _State extends State<TautulliRoute> {
   void initState() {
     super.initState();
     _pageController = PageController(
-      initialPage: TautulliPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? TautulliPreferences.NAVIGATION_INDEX.read(),
     );
   }
 

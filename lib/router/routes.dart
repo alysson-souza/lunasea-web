@@ -122,7 +122,7 @@ mixin LunaRoutesMixin on Enum {
     Object? extra,
     Map<String, String> params = const <String, String>{},
     Map<String, String> queryParams = const <String, String>{},
-    bool buildTree = false,
+    bool buildTree = true,
   }) {
     final pathParams = _withCurrentInstance(params);
     final routeModule = module;
@@ -171,7 +171,7 @@ mixin LunaRoutesMixin on Enum {
     Object? extra,
     Map<String, String> params = const <String, String>{},
     Map<String, String> queryParams = const <String, String>{},
-    bool buildTree = false,
+    bool buildTree = true,
   }) {
     go(
       extra: extra,
@@ -265,4 +265,16 @@ String? currentInstanceId(LunaModule module) {
   } on Object {
     return null;
   }
+}
+
+int tabIndexFromRoute(
+  GoRouterState state,
+  List<String> tabs, {
+  required int fallback,
+}) {
+  final tab = state.uri.queryParameters['tab'];
+  if (tab == null) return fallback;
+  final index = tabs.indexOf(tab);
+  if (index == -1) return fallback;
+  return index;
 }

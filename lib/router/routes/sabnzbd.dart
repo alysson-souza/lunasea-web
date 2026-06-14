@@ -6,8 +6,10 @@ import 'package:lunasea/modules/sabnzbd/core/state.dart';
 import 'package:lunasea/modules/sabnzbd/routes/history_stages.dart';
 import 'package:lunasea/modules/sabnzbd/routes/sabnzbd.dart';
 import 'package:lunasea/modules/sabnzbd/routes/statistics.dart';
+import 'package:lunasea/modules/sabnzbd/widgets/navigation_bar.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/preferences/sabnzbd.dart';
 import 'package:lunasea/vendor.dart';
 
 enum SABnzbdRoutes with LunaRoutesMixin {
@@ -51,7 +53,14 @@ enum SABnzbdRoutes with LunaRoutesMixin {
               state,
               LunaModule.SABNZBD,
             );
-            return SABnzbdRoute(instance: instance!);
+            return SABnzbdRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                SABnzbdNavigationBar.tabKeys,
+                fallback: SABnzbdPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case SABnzbdRoutes.STATISTICS:

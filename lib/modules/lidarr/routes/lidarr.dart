@@ -7,8 +7,9 @@ import 'package:lunasea/router/routes/lidarr.dart';
 
 class LidarrRoute extends StatefulWidget {
   final LunaServiceInstance instance;
+  final int? initialPage;
 
-  const LidarrRoute({super.key, required this.instance});
+  const LidarrRoute({super.key, required this.instance, this.initialPage});
 
   @override
   State<LidarrRoute> createState() => _State();
@@ -30,7 +31,8 @@ class _State extends State<LidarrRoute> {
   void initState() {
     super.initState();
     _pageController = LunaPageController(
-      initialPage: LidarrPreferences.NAVIGATION_INDEX.read(),
+      initialPage:
+          widget.initialPage ?? LidarrPreferences.NAVIGATION_INDEX.read(),
     );
     _refreshProfile(refreshPages: false);
   }

@@ -1,5 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'package:device_preview/device_preview.dart';
 import 'package:lunasea/core.dart';
@@ -12,6 +15,7 @@ import 'package:lunasea/system/platform.dart';
 Future<void> main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    usePathUrlStrategy();
     runApp(const LunaApp());
   }, (error, stack) => LunaLogger().critical(error, stack));
 }
@@ -64,11 +68,11 @@ class LunaBootstrapLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'LunaSea',
-      home: Scaffold(
-        backgroundColor: Color(0xFF32323E),
-        body: Center(child: CircularProgressIndicator()),
+    return const Directionality(
+      textDirection: ui.TextDirection.ltr,
+      child: ColoredBox(
+        color: Color(0xFF32323E),
+        child: Center(child: CircularProgressIndicator()),
       ),
     );
   }

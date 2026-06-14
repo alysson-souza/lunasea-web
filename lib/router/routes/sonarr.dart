@@ -14,10 +14,12 @@ import 'package:lunasea/modules/sonarr/routes/season_details/route.dart';
 import 'package:lunasea/modules/sonarr/routes/series_details/route.dart';
 import 'package:lunasea/modules/sonarr/routes/sonarr/consolidated_route.dart';
 import 'package:lunasea/modules/sonarr/routes/sonarr/route.dart';
+import 'package:lunasea/modules/sonarr/routes/sonarr/widgets/navigation_bar.dart';
 import 'package:lunasea/modules/sonarr/routes/tags/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
 import 'package:lunasea/system/stores/backend_stores.dart';
+import 'package:lunasea/system/preferences/sonarr.dart';
 import 'package:lunasea/vendor.dart';
 
 enum SonarrRoutes with LunaRoutesMixin {
@@ -72,16 +74,19 @@ enum SonarrRoutes with LunaRoutesMixin {
         return route(
           builder: (context, state) {
             final profiles = context.read<ProfilesStore>();
-            final instances =
-                profiles.active.enabledInstances(LunaModule.SONARR);
-            final registry =
-                context.read<LunaModuleStateRegistry<SonarrState>>();
-            final instanceStates =
-                instances.map((inst) => registry.get(inst)).toList();
+            final instances = profiles.active.enabledInstances(
+              LunaModule.SONARR,
+            );
+            final registry = context
+                .read<LunaModuleStateRegistry<SonarrState>>();
+            final instanceStates = instances
+                .map((inst) => registry.get(inst))
+                .toList();
             // Provide first instance's SonarrState so existing search/sort/filter
             // widgets that read SonarrState continue to work.
-            final sharedState =
-                instanceStates.isNotEmpty ? instanceStates.first : SonarrState();
+            final sharedState = instanceStates.isNotEmpty
+                ? instanceStates.first
+                : SonarrState();
             return MultiProvider(
               providers: [
                 ChangeNotifierProvider<SonarrConsolidatedState>(
@@ -92,7 +97,13 @@ enum SonarrRoutes with LunaRoutesMixin {
                 ),
                 ChangeNotifierProvider<SonarrState>.value(value: sharedState),
               ],
-              child: const SonarrConsolidatedRoute(),
+              child: SonarrConsolidatedRoute(
+                initialPage: tabIndexFromRoute(
+                  state,
+                  SonarrNavigationBar.tabKeys,
+                  fallback: SonarrPreferences.NAVIGATION_INDEX.read(),
+                ),
+              ),
             );
           },
         );
@@ -104,7 +115,14 @@ enum SonarrRoutes with LunaRoutesMixin {
               state,
               LunaModule.SONARR,
             );
-            return SonarrRoute(instance: instance!);
+            return SonarrRoute(
+              instance: instance!,
+              initialPage: tabIndexFromRoute(
+                state,
+                SonarrNavigationBar.tabKeys,
+                fallback: SonarrPreferences.NAVIGATION_INDEX.read(),
+              ),
+            );
           },
         );
       case SonarrRoutes.ADD_SERIES:

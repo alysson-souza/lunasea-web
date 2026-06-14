@@ -15,6 +15,8 @@ class SonarrNavigationBar extends StatelessWidget {
     Icons.more_horiz_rounded,
   ];
 
+  static const List<String> tabKeys = ['series', 'upcoming', 'missing', 'more'];
+
   static List<String> get titles => [
     'sonarr.Series'.tr(),
     'sonarr.Upcoming'.tr(),
@@ -31,6 +33,7 @@ class SonarrNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
+      tabKeys: tabKeys,
     );
   }
 }
