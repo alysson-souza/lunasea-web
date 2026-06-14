@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [Unreleased]
+
+### Bug Fixes
+
+* **radarr:** fixed + button in consolidated view producing "null has not been configured" error — now shows an instance picker and navigates via explicit instance ID
+* **sonarr:** same fix applied to the + button in the consolidated Sonarr view
+* **radarr:** fixed clicking a search result or discovery tile in the Add Movie flow losing instance context and producing the same null error
+* **sonarr:** same fix applied to the Add Series search results tile
+* **radarr:** fixed navigating to movie details after adding a movie losing instance context
+* **sonarr:** same fix applied after adding a series
+* **radarr/sonarr:** fixed "An Error Has Occurred" on the movies/series list immediately after a container restart, caused by the app initialising before the backend was ready — now retries once after 3 seconds
+
 ## [0.3.0](https://github.com/alysson-souza/lunasea-web/compare/0.2...0.3.0) (2026-06-13)
 
 ### Features
