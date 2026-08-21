@@ -1,51 +1,38 @@
-# <img width="40px" src="./assets/images/branding_logo.png" alt="LunaSea"></img>&nbsp;&nbsp;LunaSea
+# <img src="./assets/images/branding_logo.png" width="40" alt=""> LunaSea Web
 
-LunaSea is a browser-based PWA for managing self-hosted media services.
+[![Build](https://github.com/alysson-souza/lunasea-web/actions/workflows/build.yml/badge.svg)](https://github.com/alysson-souza/lunasea-web/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/alysson-souza/lunasea-web)](https://github.com/alysson-souza/lunasea-web/releases/latest)
+[![License](https://img.shields.io/github/license/alysson-souza/lunasea-web)](LICENSE.md)
 
-This build is web-only. It supports Lidarr, Radarr, Sonarr, NZBGet, SABnzbd, Newznab-compatible search, NZBHydra2, Tautulli, and external links.
+LunaSea Web is a browser-based PWA for managing Lidarr, Radarr, Sonarr, download clients, indexers, and Tautulli. It is a web-only fork of [LunaSea](https://github.com/jagandeepbrar/lunasea).
 
-## Security Model
+## Features
 
-LunaSea Web does not include authentication or access control. Anyone who can reach the app can use the configured service connections.
+- Lidarr, Radarr, and Sonarr management
+- NZBGet and SABnzbd monitoring
+- Newznab-compatible search, including NZBHydra2
+- Tautulli integration and custom external links
+- Multiple service instances
+- Consolidated Radarr and Sonarr views
 
-Run it only on trusted networks, or place it behind a protected reverse proxy, Tailscale, Cloudflare Access, Authelia, Authentik, or another access-control layer. Do not expose it directly to the public internet.
+## Quick start
 
-## Run with Docker
-
-Start LunaSea with Docker Compose:
-
-```fish
-docker compose up
-```
-
-Open `http://localhost:8080`.
-
-By default, the app is only exposed on `localhost`.
-
-To build and run the image from this checkout:
+You need [Docker](https://docs.docker.com/get-docker/) with Docker Compose.
 
 ```fish
-docker compose -f compose.example.yaml up --build
+git clone https://github.com/alysson-souza/lunasea-web.git
+cd lunasea-web
+docker compose up -d
 ```
 
-To build and run the image without Compose:
+Open [http://localhost:8080](http://localhost:8080), then add your services in Settings.
 
-```fish
-docker buildx build --load --tag lunasea-web:local .
-docker run --rm \
-  -p 127.0.0.1:8080:8080 \
-  -v lunasea-data:/data \
-  lunasea-web:local
-```
+## Security
 
-## Configure
+LunaSea Web has no login screen or access control. Do not expose it directly to the public internet. For remote access, put it behind authentication or use a trusted private network such as Tailscale.
 
-Open Settings in the app and add each service.
+## Contributing
 
-Service URLs, credentials, profiles, preferences, indexers, external modules, dismissed banners, and logs are stored in the server-side SQLite database. Service traffic is proxied through the same origin as the app, which avoids browser CORS, mixed-content, and private-network restrictions.
+Before opening a pull request, read [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Data Storage
-
-Application state is stored in `/data/lunasea.db`. Keep `/data` on a persistent volume if you want configuration to survive container replacement.
-
-The browser does not own persistent LunaSea configuration. Reloading the page or clearing browser site data does not clear the app configuration. Removing the `/data` volume resets LunaSea Web to its default backend state.
+LunaSea Web is available under the [GNU General Public License v3.0](LICENSE.md).
