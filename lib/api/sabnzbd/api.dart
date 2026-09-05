@@ -1,3 +1,4 @@
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 import 'package:lunasea/vendor.dart';
 import 'package:lunasea/api/sabnzbd/models/action_result.dart';
 import 'package:lunasea/api/sabnzbd/models/categories.dart';
@@ -39,6 +40,7 @@ abstract class SABnzbdAPI {
         'output': 'json',
       },
     ));
+    dio.interceptors.add(const LunaDioErrorInterceptor());
     return _SABnzbdAPI(dio, baseUrl: _baseUrl(host));
   }
 

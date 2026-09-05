@@ -4,6 +4,7 @@ import 'package:lunasea/database/models/log.dart';
 import 'package:lunasea/database/models/profile.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 import 'package:lunasea/vendor.dart';
 
 class LunaBackendClient {
@@ -20,7 +21,11 @@ class LunaBackendClient {
               responseType: ResponseType.json,
               contentType: Headers.jsonContentType,
             ),
-          );
+          ) {
+    if (dio == null) {
+      this.dio.interceptors.add(const LunaDioErrorInterceptor());
+    }
+  }
 
   Future<Map<String, dynamic>> fetchState() async {
     final response = await dio.get('state');

@@ -2,6 +2,7 @@ library;
 
 import 'package:dio/dio.dart';
 import 'package:lunasea/api/sonarr/controllers.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 class SonarrAPI {
   SonarrAPI._internal({
@@ -41,6 +42,7 @@ class SonarrAPI {
         maxRedirects: maxRedirects,
       ),
     );
+    _dio.interceptors.add(const LunaDioErrorInterceptor());
     return SonarrAPI._internal(
       httpClient: _dio,
       calendar: SonarrControllerCalendar(_dio),

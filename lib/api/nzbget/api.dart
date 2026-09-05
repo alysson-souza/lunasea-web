@@ -1,5 +1,6 @@
 import 'package:lunasea/api/nzbget/models/status.dart';
 import 'package:lunasea/api/nzbget/models/version.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 import 'package:lunasea/vendor.dart';
 
 part 'api.g.dart';
@@ -54,6 +55,7 @@ abstract class NZBGetAPI {
     ));
     _attachInterceptor(dio);
     _setResponseTransformer(dio);
+    dio.interceptors.add(const LunaDioErrorInterceptor());
     return _NZBGetAPI(dio, baseUrl: _baseUrl(host, username, password));
   }
 

@@ -2,6 +2,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/database/models/indexer.dart';
 import 'package:lunasea/modules/search.dart';
 import 'package:lunasea/system/gateway/gateway.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 class NewznabAPI {
   static const _USER_AGENT =
@@ -24,6 +25,7 @@ class NewznabAPI {
         maxRedirects: 5,
       ),
     );
+    _dio.interceptors.add(const LunaDioErrorInterceptor());
     return NewznabAPI._internal(_dio, indexer);
   }
 

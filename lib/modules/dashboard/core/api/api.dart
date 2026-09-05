@@ -8,6 +8,7 @@ import 'package:lunasea/modules/dashboard/core/api/data/radarr.dart';
 import 'package:lunasea/modules/dashboard/core/api/data/sonarr.dart';
 import 'package:lunasea/modules.dart';
 import 'package:lunasea/system/gateway/service_endpoint.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 import 'package:lunasea/system/state.dart';
 import 'package:lunasea/system/stores/backend_stores.dart';
 import 'package:lunasea/widgets/ui.dart';
@@ -216,6 +217,7 @@ class API {
         maxRedirects: 5,
       ),
     );
+    _client.interceptors.add(const LunaDioErrorInterceptor());
     Response response = await _client.get('calendar');
     return List<dynamic>.from(response.data);
   }
@@ -244,6 +246,7 @@ class API {
         maxRedirects: 5,
       ),
     );
+    _client.interceptors.add(const LunaDioErrorInterceptor());
     Response response = await _client.get('calendar');
     return List<dynamic>.from(response.data);
   }
@@ -272,6 +275,7 @@ class API {
         maxRedirects: 5,
       ),
     );
+    _client.interceptors.add(const LunaDioErrorInterceptor());
     Response response = await _client.get(
       'calendar',
       queryParameters: {'includeSeries': true, 'includeEpisodeFile': true},

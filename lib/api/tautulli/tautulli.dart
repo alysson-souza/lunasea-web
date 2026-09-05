@@ -7,6 +7,7 @@ library;
 // Imports
 import 'package:dio/dio.dart';
 import 'package:lunasea/api/tautulli/commands.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 /// The core class to handle all connections to Tautulli.
 /// Gives you easy access to all implemented command handlers, initialized and ready to call.
@@ -56,6 +57,7 @@ class TautulliAPI {
         maxRedirects: maxRedirects,
       ),
     );
+    _dio.interceptors.add(const LunaDioErrorInterceptor());
     return TautulliAPI._internal(
       httpClient: _dio,
       activity: TautulliCommandHandlerActivity(_dio),

@@ -2,6 +2,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/sabnzbd.dart';
 import 'package:lunasea/system/gateway/service_endpoint.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 class SABnzbdAPI {
   final Dio _dio;
@@ -37,6 +38,7 @@ class SABnzbdAPI {
       ),
     );
 
+    _client.interceptors.add(const LunaDioErrorInterceptor());
     return SABnzbdAPI._internal(_client);
   }
 

@@ -2,6 +2,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/nzbget.dart';
 import 'package:lunasea/system/gateway/service_endpoint.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 class NZBGetAPI {
   final Dio _dio;
@@ -39,6 +40,7 @@ class NZBGetAPI {
       ),
     );
 
+    _client.interceptors.add(const LunaDioErrorInterceptor());
     return NZBGetAPI._internal(_client);
   }
 

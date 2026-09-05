@@ -9,6 +9,7 @@ library;
 // Imports
 import 'package:dio/dio.dart';
 import 'package:lunasea/api/radarr/commands.dart';
+import 'package:lunasea/system/network/dio_error_interceptor.dart';
 
 /// The core class to handle all connections to Radarr.
 /// Gives you easy access to all implemented command handlers, initialized and ready to call.
@@ -70,6 +71,7 @@ class RadarrAPI {
         responseType: ResponseType.json,
       ),
     );
+    _dio.interceptors.add(const LunaDioErrorInterceptor());
     return RadarrAPI._internal(
       httpClient: _dio,
       command: RadarrCommandHandlerCommand(_dio),
