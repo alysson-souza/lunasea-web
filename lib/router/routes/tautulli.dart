@@ -27,6 +27,7 @@ import 'package:lunasea/modules/tautulli/routes/tautulli/widgets/navigation_bar.
 import 'package:lunasea/modules/tautulli/routes/users_details/route.dart';
 import 'package:lunasea/router/routes.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/system/stores/backend_stores.dart';
 import 'package:lunasea/system/preferences/tautulli.dart';
 import 'package:lunasea/vendor.dart';
 
@@ -63,7 +64,10 @@ enum TautulliRoutes with LunaRoutesMixin {
 
   @override
   bool isModuleEnabled(BuildContext context) {
-    return context.read<TautulliState>().enabled;
+    // For the consolidated route (no instanceId in path), check if any instance
+    // is enabled.  Per-instance routes use the same check via the registry.
+    final profiles = context.read<ProfilesStore>();
+    return profiles.active.enabledInstances(LunaModule.TAUTULLI).isNotEmpty;
   }
 
   @override

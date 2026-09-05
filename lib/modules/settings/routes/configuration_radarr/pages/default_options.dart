@@ -76,7 +76,6 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
               await context.read<SettingsStore>().setRadarrMoviesDefaultView(
                 _opt,
               );
-              context.read<RadarrState>().moviesViewType = _opt;
             }
           },
         );
@@ -108,10 +107,6 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
             await context.read<SettingsStore>().setRadarrMoviesDefaultSorting(
               sorting,
             );
-            context.read<RadarrState>().moviesSortType = sorting;
-            context.read<RadarrState>().moviesSortAscending = context
-                .read<SettingsStore>()
-                .radarrMoviesDefaultSortingAscending;
           }
         },
       ),
@@ -135,10 +130,6 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
             await context
                 .read<SettingsStore>()
                 .setRadarrMoviesDefaultSortingAscending(value);
-            context.read<RadarrState>().moviesSortType = context
-                .read<SettingsStore>()
-                .radarrMoviesDefaultSorting;
-            context.read<RadarrState>().moviesSortAscending = value;
           },
         ),
       ),
@@ -169,7 +160,6 @@ class _State extends State<ConfigurationRadarrDefaultOptionsRoute>
             await context.read<SettingsStore>().setRadarrMoviesDefaultFilter(
               filter,
             );
-            context.read<RadarrState>().moviesFilterType = filter;
           }
         },
       ),

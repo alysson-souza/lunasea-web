@@ -76,7 +76,6 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
               await context.read<SettingsStore>().setSonarrSeriesDefaultView(
                 _opt,
               );
-              context.read<SonarrState>().seriesViewType = _opt;
             }
           },
         );
@@ -108,10 +107,6 @@ class _State extends State<ConfigurationSonarrDefaultOptionsRoute>
             await context.read<SettingsStore>().setSonarrSeriesDefaultSorting(
               sorting,
             );
-            context.read<SonarrState>().seriesSortType = sorting;
-            context.read<SonarrState>().seriesSortAscending = context
-                .read<SettingsStore>()
-                .sonarrSeriesDefaultSortingAscending;
           }
         },
       ),

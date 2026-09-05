@@ -296,8 +296,17 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
 
   @override
   Widget builder(BuildContext context) {
-    return ChangeNotifierProvider<SonarrSeasonDetailsState>.value(
-      value: this.context.watch<SonarrSeasonDetailsState>(),
+    // The root navigator cannot inherit the route's providers. Carry both
+    // states into the sheet so its actions use the selected Sonarr instance.
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SonarrState>.value(
+          value: this.context.read<SonarrState>(),
+        ),
+        ChangeNotifierProvider<SonarrSeasonDetailsState>.value(
+          value: this.context.watch<SonarrSeasonDetailsState>(),
+        ),
+      ],
       builder: (context, _) => Consumer<SonarrSeasonDetailsState>(
         builder: (context, state, _) => FutureBuilder(
           future: Future.wait([

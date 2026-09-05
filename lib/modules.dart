@@ -13,15 +13,6 @@ import 'package:lunasea/router/routes/sabnzbd.dart';
 import 'package:lunasea/router/routes/settings.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
 import 'package:lunasea/router/routes/tautulli.dart';
-import 'package:lunasea/modules/search.dart';
-import 'package:lunasea/modules/settings.dart';
-import 'package:lunasea/modules/lidarr.dart';
-import 'package:lunasea/modules/radarr.dart';
-import 'package:lunasea/modules/sonarr.dart';
-import 'package:lunasea/modules/sabnzbd.dart';
-import 'package:lunasea/modules/nzbget.dart';
-import 'package:lunasea/modules/tautulli.dart';
-import 'package:lunasea/modules/dashboard/core/state.dart';
 
 const MODULE_DASHBOARD_KEY = 'dashboard';
 const MODULE_EXTERNAL_MODULES_KEY = 'external_modules';
@@ -489,35 +480,6 @@ extension LunaModuleExtension on LunaModule {
       throw Exception('WAKE_ON_LAN does not have a shortcut item');
     }
     return ShortcutItem(type: key, localizedTitle: title);
-  }
-
-  LunaModuleState? state(BuildContext context) {
-    switch (this) {
-      case LunaModule.WAKE_ON_LAN:
-        return null;
-      case LunaModule.DASHBOARD:
-        return context.read<DashboardState>();
-      case LunaModule.SETTINGS:
-        return context.read<SettingsState>();
-      case LunaModule.SEARCH:
-        return context.read<SearchState>();
-      case LunaModule.LIDARR:
-        return context.read<LidarrState>();
-      case LunaModule.RADARR:
-        return context.read<RadarrState>();
-      case LunaModule.SONARR:
-        return context.read<SonarrState>();
-      case LunaModule.NZBGET:
-        return context.read<NZBGetState>();
-      case LunaModule.SABNZBD:
-        return context.read<SABnzbdState>();
-      case LunaModule.OVERSEERR:
-        return null;
-      case LunaModule.TAUTULLI:
-        return context.read<TautulliState>();
-      case LunaModule.EXTERNAL_MODULES:
-        return null;
-    }
   }
 
   Widget informationBanner() {

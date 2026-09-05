@@ -22,10 +22,47 @@ class LunaState {
 
   static BuildContext get context => LunaRouter.navigator.currentContext!;
 
-  /// Calls `.reset()` on all states which extend [LunaModuleState].
+  /// Resets every module state: service-module registries dispose states of
+  /// removed instances, recreate instances whose configuration changed, and
+  /// refetch the rest; global states are reset directly.
   static void reset([BuildContext? context]) {
     final ctx = context ?? LunaState.context;
-    LunaModule.values.forEach((module) => module.state(ctx)?.reset());
+    final profile = ctx.read<ProfilesStore>().active;
+    void resetServiceModule(
+      LunaModule module,
+      LunaModuleStateRegistry registry,
+    ) {
+      registry.sync(profile.instancesFor(module));
+      registry.resetAll();
+    }
+
+    resetServiceModule(
+      LunaModule.LIDARR,
+      ctx.read<LunaModuleStateRegistry<LidarrState>>(),
+    );
+    resetServiceModule(
+      LunaModule.RADARR,
+      ctx.read<LunaModuleStateRegistry<RadarrState>>(),
+    );
+    resetServiceModule(
+      LunaModule.SONARR,
+      ctx.read<LunaModuleStateRegistry<SonarrState>>(),
+    );
+    resetServiceModule(
+      LunaModule.NZBGET,
+      ctx.read<LunaModuleStateRegistry<NZBGetState>>(),
+    );
+    resetServiceModule(
+      LunaModule.SABNZBD,
+      ctx.read<LunaModuleStateRegistry<SABnzbdState>>(),
+    );
+    resetServiceModule(
+      LunaModule.TAUTULLI,
+      ctx.read<LunaModuleStateRegistry<TautulliState>>(),
+    );
+    ctx.read<DashboardState>().reset();
+    ctx.read<SettingsState>().reset();
+    ctx.read<SearchState>().reset();
   }
 
   static MultiProvider providers({required Widget child}) {
@@ -70,12 +107,6 @@ class LunaState {
             create: (instance) => TautulliState(instance: instance),
           ),
         ),
-        ChangeNotifierProvider(create: (_) => LidarrState()),
-        ChangeNotifierProvider(create: (_) => RadarrState()),
-        ChangeNotifierProvider(create: (_) => SonarrState()),
-        ChangeNotifierProvider(create: (_) => NZBGetState()),
-        ChangeNotifierProvider(create: (_) => SABnzbdState()),
-        ChangeNotifierProvider(create: (_) => TautulliState()),
       ],
       child: child,
     );
@@ -151,6 +182,14 @@ class LunaModuleStateRegistry<T extends LunaModuleState>
       changed = true;
     }
     if (changed) notifyListeners();
+  }
+
+  /// Resets every cached state without recreating or disposing them. States
+  /// whose configuration changed should be recreated via [sync] instead.
+  void resetAll() {
+    for (final entry in _states.values) {
+      entry.state.reset();
+    }
   }
 
   @override

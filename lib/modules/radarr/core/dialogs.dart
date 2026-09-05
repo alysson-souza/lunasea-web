@@ -393,8 +393,16 @@ class RadarrDialogs {
   Future<void> setEditTags(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<RadarrMoviesEditState>(),
+      // The root dialog needs the selected instance as well as the edit state.
+      builder: (_) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<RadarrState>.value(
+            value: context.read<RadarrState>(),
+          ),
+          ChangeNotifierProvider<RadarrMoviesEditState>.value(
+            value: context.read<RadarrMoviesEditState>(),
+          ),
+        ],
         builder: (context, _) => Selector<RadarrState, Future<List<RadarrTag>>>(
           selector: (_, state) => state.tags!,
           builder: (context, future, _) => FutureBuilder(
@@ -506,8 +514,15 @@ class RadarrDialogs {
   Future<void> setAddTags(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<RadarrAddMovieDetailsState>(),
+      builder: (_) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<RadarrState>.value(
+            value: context.read<RadarrState>(),
+          ),
+          ChangeNotifierProvider<RadarrAddMovieDetailsState>.value(
+            value: context.read<RadarrAddMovieDetailsState>(),
+          ),
+        ],
         builder: (context, _) => Selector<RadarrState, Future<List<RadarrTag>>>(
           selector: (_, state) => state.tags!,
           builder: (context, future, _) => FutureBuilder(

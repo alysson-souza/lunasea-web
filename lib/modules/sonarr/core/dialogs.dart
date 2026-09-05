@@ -198,8 +198,16 @@ class SonarrDialogs {
   Future<void> setAddTags(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (dContext) => ChangeNotifierProvider.value(
-        value: context.read<SonarrSeriesAddDetailsState>(),
+      // The root dialog needs the selected instance as well as the add state.
+      builder: (dContext) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<SonarrState>.value(
+            value: context.read<SonarrState>(),
+          ),
+          ChangeNotifierProvider<SonarrSeriesAddDetailsState>.value(
+            value: context.read<SonarrSeriesAddDetailsState>(),
+          ),
+        ],
         builder: (context, _) =>
             Selector<SonarrState, Future<List<SonarrTag>>?>(
               selector: (_, state) => state.tags,
@@ -271,8 +279,15 @@ class SonarrDialogs {
   Future<void> setEditTags(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (dContext) => ChangeNotifierProvider.value(
-        value: context.read<SonarrSeriesEditState>(),
+      builder: (dContext) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<SonarrState>.value(
+            value: context.read<SonarrState>(),
+          ),
+          ChangeNotifierProvider<SonarrSeriesEditState>.value(
+            value: context.read<SonarrSeriesEditState>(),
+          ),
+        ],
         builder: (context, _) =>
             Selector<SonarrState, Future<List<SonarrTag>>?>(
               selector: (_, state) => state.tags,

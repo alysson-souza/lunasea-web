@@ -4,9 +4,18 @@ import 'package:lunasea/modules/radarr.dart';
 
 class RadarrBottomModalSheets {
   Future<void> configureManualImport(BuildContext context) async {
+    // Carry the route's instance and import state across the root navigator
+    // boundary, including when this sheet opens another sheet.
     await LunaBottomModalSheet().show(
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<RadarrManualImportDetailsTileState>(),
+      builder: (_) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<RadarrState>.value(
+            value: context.read<RadarrState>(),
+          ),
+          ChangeNotifierProvider<RadarrManualImportDetailsTileState>.value(
+            value: context.read<RadarrManualImportDetailsTileState>(),
+          ),
+        ],
         builder: (context, _) => LunaListViewModal(
           children: [
             LunaHeader(
@@ -60,10 +69,13 @@ class RadarrBottomModalSheets {
               ],
               trailing: const LunaIconButton.arrow(),
               onTap: () async {
-                List<RadarrLanguage> languages =
-                    await context.read<RadarrState>().languages!;
-                await RadarrDialogs()
-                    .setManualImportLanguages(context, languages);
+                List<RadarrLanguage> languages = await context
+                    .read<RadarrState>()
+                    .languages!;
+                await RadarrDialogs().setManualImportLanguages(
+                  context,
+                  languages,
+                );
               },
             ),
           ],
@@ -74,8 +86,15 @@ class RadarrBottomModalSheets {
 
   Future<void> selectQuality(BuildContext context) async {
     await LunaBottomModalSheet().show(
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<RadarrManualImportDetailsTileState>(),
+      builder: (_) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<RadarrState>.value(
+            value: context.read<RadarrState>(),
+          ),
+          ChangeNotifierProvider<RadarrManualImportDetailsTileState>.value(
+            value: context.read<RadarrManualImportDetailsTileState>(),
+          ),
+        ],
         builder: (context, _) => LunaListViewModal(
           children: [
             LunaHeader(text: 'radarr.SelectQuality'.tr()),
@@ -91,11 +110,14 @@ class RadarrBottomModalSheets {
               ],
               trailing: const LunaIconButton.arrow(),
               onTap: () async {
-                List<RadarrQualityDefinition> profiles =
-                    await context.read<RadarrState>().qualityDefinitions!;
+                List<RadarrQualityDefinition> profiles = await context
+                    .read<RadarrState>()
+                    .qualityDefinitions!;
                 Tuple2<bool, RadarrQualityDefinition?> result =
-                    await RadarrDialogs()
-                        .selectQualityDefinition(context, profiles);
+                    await RadarrDialogs().selectQualityDefinition(
+                      context,
+                      profiles,
+                    );
                 if (result.item1)
                   context
                       .read<RadarrManualImportDetailsTileState>()
@@ -105,7 +127,8 @@ class RadarrBottomModalSheets {
             LunaBlock(
               title: 'Proper',
               trailing: Switch(
-                value: context
+                value:
+                    context
                         .watch<RadarrManualImportDetailsTileState>()
                         .manualImport
                         .quality
@@ -118,15 +141,17 @@ class RadarrBottomModalSheets {
                       .manualImport;
                   _import.quality?.revision?.version = value ? 2 : 1;
                   context
-                      .read<RadarrManualImportDetailsTileState>()
-                      .manualImport = _import;
+                          .read<RadarrManualImportDetailsTileState>()
+                          .manualImport =
+                      _import;
                 },
               ),
             ),
             LunaBlock(
               title: 'Real',
               trailing: Switch(
-                value: context
+                value:
+                    context
                         .watch<RadarrManualImportDetailsTileState>()
                         .manualImport
                         .quality
@@ -139,8 +164,9 @@ class RadarrBottomModalSheets {
                       .manualImport;
                   _import.quality?.revision?.real = value ? 1 : 0;
                   context
-                      .read<RadarrManualImportDetailsTileState>()
-                      .manualImport = _import;
+                          .read<RadarrManualImportDetailsTileState>()
+                          .manualImport =
+                      _import;
                 },
               ),
             ),
@@ -154,13 +180,16 @@ class RadarrBottomModalSheets {
     bool result = false;
     RadarrMovie? movie;
     context
-        .read<RadarrManualImportDetailsTileState>()
-        .configureMoviesSearchQuery = '';
+            .read<RadarrManualImportDetailsTileState>()
+            .configureMoviesSearchQuery =
+        '';
 
     List<RadarrMovie> _sortAndFilter(List<RadarrMovie> movies, String query) {
       List<RadarrMovie> _filtered = movies
-        ..sort((a, b) =>
-            a.sortTitle!.toLowerCase().compareTo(b.sortTitle!.toLowerCase()));
+        ..sort(
+          (a, b) =>
+              a.sortTitle!.toLowerCase().compareTo(b.sortTitle!.toLowerCase()),
+        );
       _filtered = _filtered
           .where((movie) => movie.title!.toLowerCase().contains(query))
           .toList();
@@ -168,8 +197,15 @@ class RadarrBottomModalSheets {
     }
 
     await LunaBottomModalSheet().show(
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<RadarrManualImportDetailsTileState>(),
+      builder: (_) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<RadarrState>.value(
+            value: context.read<RadarrState>(),
+          ),
+          ChangeNotifierProvider<RadarrManualImportDetailsTileState>.value(
+            value: context.read<RadarrManualImportDetailsTileState>(),
+          ),
+        ],
         builder: (context, _) => FutureBuilder(
           future: context.watch<RadarrState>().movies,
           builder: (context, AsyncSnapshot<List<RadarrMovie>> snapshot) {
@@ -209,9 +245,7 @@ class RadarrBottomModalSheets {
                     body: [
                       TextSpan(
                         text: overview,
-                        style: const TextStyle(
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: const TextStyle(fontStyle: FontStyle.italic),
                       ),
                     ],
                     onTap: () {
@@ -227,7 +261,8 @@ class RadarrBottomModalSheets {
                       const RadarrManualImportDetailsConfigureMoviesSearchBar(),
                   hideLeading: true,
                 ),
-                appBarHeight: LunaAppBar.APPBAR_HEIGHT +
+                appBarHeight:
+                    LunaAppBar.APPBAR_HEIGHT +
                     LunaTextInputBar.defaultAppBarHeight,
               );
             }

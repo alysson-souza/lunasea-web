@@ -106,16 +106,48 @@ void main() {
 
     expect(created, 0);
   });
+
+  test(
+    'reset after sync refreshes retained states and drops removed instances',
+    () {
+      final registry = LunaModuleStateRegistry<_FakeModuleState>(
+        create: _FakeModuleState.new,
+      );
+      addTearDown(registry.dispose);
+      final retained = LunaServiceInstance(
+        id: 'retained',
+        profileId: 'default',
+        module: LunaModule.RADARR,
+      );
+      final removed = LunaServiceInstance(
+        id: 'removed',
+        profileId: 'default',
+        module: LunaModule.RADARR,
+      );
+      final retainedState = registry.get(retained);
+      final removedState = registry.get(removed);
+
+      registry.sync([retained]);
+      registry.resetAll();
+
+      expect(registry.get(retained), same(retainedState));
+      expect(retainedState.resets, 1);
+      expect(retainedState.disposed, isFalse);
+      expect(removedState.disposed, isTrue);
+      expect(removedState.resets, 0);
+    },
+  );
 }
 
 class _FakeModuleState extends LunaModuleState {
   final String host;
   bool disposed = false;
+  int resets = 0;
 
   _FakeModuleState(LunaServiceInstance instance) : host = instance.host;
 
   @override
-  void reset() {}
+  void reset() => resets++;
 
   @override
   void dispose() {
