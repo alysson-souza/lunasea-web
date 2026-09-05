@@ -40,6 +40,7 @@ output/
 *.packages
 coverage/
 lib/system/environment.dart
+lunasea-web-config.json
 
 # Keys & Service Accounts
 keys/

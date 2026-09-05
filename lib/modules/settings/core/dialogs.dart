@@ -1214,6 +1214,7 @@ class SettingsDialogs {
     String fileName,
   ) async {
     bool flag = false;
+    final isXml = fileName.toLowerCase().endsWith('.xml');
 
     void setValues(bool value) {
       flag = value;
@@ -1235,7 +1236,13 @@ class SettingsDialogs {
           text: 'settings.ImportConfigurationHint1'.tr(args: [fileName]),
         ),
         LunaDialog.textContent(text: ''),
-        LunaDialog.textContent(text: 'settings.ImportConfigurationHint2'.tr()),
+        LunaDialog.textContent(
+          text: (isXml
+                  ? 'settings.ImportConfigurationHint3'
+                  : 'settings.ImportConfigurationHint2')
+              .tr(),
+        ),
+        LunaDialog.textContent(text: 'settings.ImportConfigurationHint4'.tr()),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
