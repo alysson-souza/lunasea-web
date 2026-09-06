@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased]
 
+## [0.4.1](https://github.com/alysson-souza/lunasea-web/compare/0.4.0...0.4.1) (2026-09-06)
+
+### Bug Fixes
+
+* **instances:** keep modal actions on the selected service instance
+* **errors:** show request details while redacting API keys
+* **configuration:** make JSON and XML import scope clear
+
 ## [0.4.0](https://github.com/alysson-souza/lunasea-web/compare/0.3.0...0.4.0) (2026-06-14)
 
 ### Bug Fixes
