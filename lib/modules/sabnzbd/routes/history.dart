@@ -4,123 +4,115 @@ import 'package:lunasea/modules/sabnzbd.dart';
 
 class SABnzbdHistory extends StatefulWidget {
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
+  final ScrollController scrollController;
 
-  const SABnzbdHistory({super.key, required this.refreshIndicatorKey});
+  const SABnzbdHistory({
+    super.key,
+    required this.refreshIndicatorKey,
+    required this.scrollController,
+  });
 
   @override
   State<SABnzbdHistory> createState() => _State();
 }
 
-class _State extends State<SABnzbdHistory>
-    with AutomaticKeepAliveClientMixin, LunaLoadCallbackMixin {
+class _State extends State<SABnzbdHistory> with AutomaticKeepAliveClientMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Future<List<SABnzbdHistoryData>>? _future;
-  List<SABnzbdHistoryData>? _results = [];
 
   @override
   bool get wantKeepAlive => true;
 
   @override
-  Future<void> loadCallback() async {
-    if (mounted) setState(() => _results = []);
-    final _api = context.read<SABnzbdState>().api(context);
-    if (mounted)
-      setState(() {
-        _future = _api.getHistory();
-      });
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
+    final state = context.watch<SABnzbdState>();
     return LunaScaffold(
       scaffoldKey: _scaffoldKey,
-      body: _body(),
-      appBar: _appBar() as PreferredSizeWidget?,
-    );
-  }
-
-  Widget _appBar() {
-    return LunaAppBar.empty(
-      child: SABnzbdHistorySearchBar(
-        scrollController: SABnzbdNavigationBar.scrollControllers[1],
+      body: LunaRefreshIndicator(
+        context: context,
+        key: widget.refreshIndicatorKey,
+        onRefresh: state.refreshHistory,
+        child: _body(state),
       ),
-      height: LunaTextInputBar.defaultAppBarHeight,
-    );
-  }
-
-  Widget _body() {
-    return LunaRefreshIndicator(
-      context: context,
-      key: widget.refreshIndicatorKey,
-      onRefresh: loadCallback,
-      child: FutureBuilder(
-        future: _future,
-        builder: (context, AsyncSnapshot<List<SABnzbdHistoryData>> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              {
-                if (snapshot.hasError || snapshot.data == null) {
-                  return LunaMessage.error(
-                    onTap: widget.refreshIndicatorKey.currentState!.show,
-                  );
-                }
-                _results = snapshot.data;
-                return _list;
-              }
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return const LunaLoader();
-          }
-        },
+      appBar: LunaAppBar.empty(
+        child: SABnzbdHistorySearchBar(
+          scrollController: widget.scrollController,
+        ),
+        height: LunaTextInputBar.defaultAppBarHeight,
       ),
     );
   }
 
-  Widget get _list {
-    if (_results?.isEmpty ?? true) {
-      return LunaMessage(
-        text: 'No History Found',
-        buttonText: 'Refresh',
-        onTap: loadCallback,
-      );
+  Widget _body(SABnzbdState state) {
+    if (state.historyUpdatedAt == null && state.historyError == null) {
+      return const LunaLoader();
     }
-    return Selector<SABnzbdState, Tuple2<String, bool>>(
-      selector: (_, model) =>
-          Tuple2(model.historySearchFilter, model.historyHideFailed),
-      builder: (context, data, _) {
-        List<SABnzbdHistoryData> _filtered = _filter(data.item1);
-        _filtered = data.item2 ? _hide(_filtered) : _filtered;
-        return _listBody(_filtered);
+    if (state.historyUpdatedAt == null && state.historyError != null) {
+      return LunaMessage.error(onTap: state.refreshHistory);
+    }
+    final search = state.historySearchFilter.toLowerCase();
+    final filtered = state.history.where((entry) {
+      return (search.isEmpty || entry.name.toLowerCase().contains(search)) &&
+          (!state.historyHideFailed || entry.failed);
+    }).toList();
+    final enabled = !state.historyStale && !state.queueStale;
+    final showFooter =
+        state.historyStale || state.queueStale || state.hasMoreHistory;
+    return LunaListViewBuilder(
+      controller: widget.scrollController,
+      itemCount: filtered.length + (filtered.isEmpty || showFooter ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == filtered.length) {
+          return Column(
+            children: [
+              if (filtered.isEmpty)
+                LunaMessage.inList(text: 'No History Found'),
+              if (showFooter) _pagination(state),
+            ],
+          );
+        }
+        final job = filtered[index];
+        return SABnzbdHistoryTile(
+          key: ValueKey('${state.instance!.ref.key}:${job.nzoId}'),
+          data: job,
+          state: state,
+          enabled: enabled,
+        );
       },
     );
   }
 
-  Widget _listBody(List filtered) {
-    if (filtered.isEmpty)
-      return LunaListView(
-        controller: SABnzbdNavigationBar.scrollControllers[1],
-        children: [LunaMessage.inList(text: 'No History Found')],
-      );
-    return LunaListViewBuilder(
-      controller: SABnzbdNavigationBar.scrollControllers[1],
-      itemCount: filtered.length,
-      itemBuilder: (context, index) =>
-          SABnzbdHistoryTile(data: filtered[index], refresh: loadCallback),
+  Widget _pagination(SABnzbdState state) {
+    return Padding(
+      padding: LunaUI.MARGIN_H_DEFAULT_V_HALF,
+      child: Column(
+        children: [
+          if (state.historyStale) ...[
+            const Text('History unavailable. Showing last successful update.'),
+            Text(
+              state.historyError.toString(),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            TextButton(
+              onPressed: state.historyLoading ? null : state.refreshHistory,
+              child: const Text('Retry'),
+            ),
+          ],
+          if (state.queueStale)
+            const Text('Queue unavailable. History actions are disabled.'),
+          if (state.hasMoreHistory) ...[
+            Text(
+              '${state.history.length} of ${state.historyTotal} records loaded',
+            ),
+            TextButton(
+              onPressed: state.historyLoading || state.historyStale
+                  ? null
+                  : state.loadMoreHistory,
+              child: const Text('Load More'),
+            ),
+          ],
+        ],
+      ),
     );
-  }
-
-  List<SABnzbdHistoryData> _filter(String filter) => _results!
-      .where(
-        (entry) => filter.isEmpty
-            ? true
-            : entry.name.toLowerCase().contains(filter.toLowerCase()),
-      )
-      .toList();
-
-  List<SABnzbdHistoryData> _hide(List<SABnzbdHistoryData> data) {
-    if (data.isEmpty) return data;
-    return data.where((entry) => entry.failed).toList();
   }
 }

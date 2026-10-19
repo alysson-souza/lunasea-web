@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 
 class SABnzbdNavigationBar extends StatelessWidget {
-  static List<ScrollController> scrollControllers = List.generate(
-    icons.length,
-    (_) => ScrollController(),
-  );
+  final List<ScrollController> scrollControllers;
   final PageController? pageController;
+  final bool updateRoute;
 
   static const List<IconData> icons = [
     Icons.queue_play_next_rounded,
@@ -17,7 +15,12 @@ class SABnzbdNavigationBar extends StatelessWidget {
 
   static const List<String> tabKeys = ['queue', 'history'];
 
-  const SABnzbdNavigationBar({super.key, required this.pageController});
+  const SABnzbdNavigationBar({
+    super.key,
+    required this.pageController,
+    required this.scrollControllers,
+    this.updateRoute = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class SABnzbdNavigationBar extends StatelessWidget {
       scrollControllers: scrollControllers,
       icons: icons,
       titles: titles,
-      tabKeys: tabKeys,
+      tabKeys: updateRoute ? tabKeys : null,
     );
   }
 }

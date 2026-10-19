@@ -4,8 +4,18 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased]
 
+### Features
+
+* **sabnzbd:** add consolidated queues and history with instance-scoped controls, pagination, partial-failure handling, and profile-aware navigation
+
 ### Bug Fixes
 
+* **sabnzbd:** keep queue and history content stable during background refreshes; use flat, source-labelled job lists without instance sections or combined server statistics
+* **sabnzbd:** make the title selector work in both directions without advancing transitions, preserve tabs, and remove polling indicators from individual views
+* **sabnzbd:** restore embedded download-client sheets, keep modal tabs local to their caller, and rebind sources after profile or connection changes
+* **sabnzbd:** refresh after mutations, preserve loaded history across pagination and detail navigation, and restore owned stage records through browser Back, Forward, and reload
+* **sabnzbd:** distinguish unavailable histories from empty results and safely reject actions from dialogs whose source has changed
+* **errors:** redact job passwords and credentials inside submitted NZB URLs from readable request errors and logs
 * **settings:** return from service instances to the corresponding module configuration page
 * **settings:** return connection details to the service-instance list after Back or deletion
 * **routing:** preserve caller pages and browser URLs for Search, Sonarr interactive searches, Radarr queue imports, Tautulli drill-downs, and History/Queue detail links

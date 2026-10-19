@@ -33,6 +33,9 @@ class SABnzbdAPI {
         headers: instance.headers,
         followRedirects: true,
         maxRedirects: 5,
+        connectTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
         contentType: Headers.jsonContentType,
         responseType: ResponseType.json,
       ),
@@ -243,17 +246,17 @@ class SABnzbdAPI {
       );
       return response.data['status'] != null && response.data['status'];
     } on DioException catch (error, stack) {
-      logError('Failed to set job password ($nzoId, $password)', error, stack);
+      logError('Failed to set job password for job $nzoId', error, stack);
       return Future.error(error);
     } catch (error, stack) {
-      logError('Failed to set job password ($nzoId, $password)', error, stack);
+      logError('Failed to set job password for job $nzoId', error, stack);
       return Future.error(error);
     }
   }
 
   Future<bool> setJobPriority(String nzoId, int priority) async {
     try {
-      await _dio.get(
+      final response = await _dio.get(
         '',
         queryParameters: {
           'mode': 'queue',
@@ -262,7 +265,11 @@ class SABnzbdAPI {
           'value2': priority,
         },
       );
-      return true;
+      final data = response.data;
+      if (data is Map && data.containsKey('status')) {
+        return data['status'] == true;
+      }
+      return data is List;
     } on DioException catch (error, stack) {
       logError('Failed to set job priority ($nzoId, $priority)', error, stack);
       return Future.error(error);
@@ -293,75 +300,113 @@ class SABnzbdAPI {
     }
   }
 
-  Future<List<dynamic>> getStatusAndQueue({int limit = 100}) async {
-    try {
-      Response response = await _dio.get(
-        '',
-        queryParameters: {'mode': 'queue', 'limit': limit},
-      );
-      SABnzbdStatusData status = SABnzbdStatusData(
-        paused: response.data['queue']['paused'] ?? false,
-        speed: double.tryParse(response.data['queue']['kbpersec']) ?? 0.0,
-        sizeLeft: double.tryParse(response.data['queue']['mbleft']) ?? 0.0,
-        timeLeft: response.data['queue']['timeleft'] ?? '00:00:00',
-        speedlimit: int.tryParse(response.data['queue']['speedlimit']) ?? 0,
-      );
-      List<SABnzbdQueueData> queue = [];
-      for (var entry in response.data['queue']['slots']) {
-        queue.add(
-          SABnzbdQueueData(
-            name: entry['filename'] ?? '',
-            nzoId: entry['nzo_id'] ?? '',
-            sizeTotal: double.tryParse(entry['mb'])?.round() ?? 0,
-            sizeLeft: double.tryParse(entry['mbleft'])?.round() ?? 0,
-            status: entry['status'] ?? 'Unknown Status',
-            timeLeft: entry['timeleft'] ?? 'Unknown Time Left',
-            category: entry['cat'] ?? 'Unknown Category',
-          ),
-        );
-      }
-      return [status, queue];
-    } on DioException catch (error, stack) {
-      logError('Failed to fetch status and queue', error, stack);
-      return Future.error(error);
-    } catch (error, stack) {
-      logError('Failed to fetch status and queue', error, stack);
-      return Future.error(error);
+  static num _number(dynamic value) {
+    if (value == null || value == '') return 0;
+    if (value is num) return value;
+    if (value is String) {
+      final parsed = num.tryParse(value);
+      if (parsed != null) return parsed;
     }
+    throw FormatException('Invalid SABnzbd number', value);
   }
 
-  Future<List<SABnzbdHistoryData>> getHistory() async {
-    try {
-      Response response = await _dio.get(
-        '',
-        queryParameters: {'mode': 'history', 'limit': 200},
-      );
-      List<SABnzbdHistoryData> entries = [];
-      for (var entry in response.data['history']['slots']) {
-        entries.add(
-          SABnzbdHistoryData(
-            nzoId: entry['nzo_id'] ?? '',
-            name: entry['name'] ?? '',
-            size: entry['bytes'] ?? 0,
-            status: entry['status'] ?? '',
-            failureMessage: entry['fail_message'] ?? '',
-            timestamp: entry['completed'] ?? 0,
-            actionLine: entry['action_line'] ?? '',
-            category: entry['category'] == '*' ? 'Default' : entry['category'],
-            downloadTime: entry['download_time'] ?? 0,
-            stageLog: entry['stage_log'] ?? [],
-            storageLocation: entry['storage'] ?? '',
-          ),
-        );
-      }
-      return entries;
-    } on DioException catch (error, stack) {
-      logError('Failed to fetch history', error, stack);
-      return Future.error(error);
-    } catch (error, stack) {
-      logError('Failed to fetch history', error, stack);
-      return Future.error(error);
+  static Map<String, dynamic> _object(dynamic value) {
+    if (value is! Map) {
+      throw FormatException('Invalid SABnzbd response', value);
     }
+    if (value['status'] == false || value['error'] != null) {
+      throw StateError(value['error']?.toString() ?? 'SABnzbd request failed.');
+    }
+    return Map<String, dynamic>.from(value);
+  }
+
+  Future<SABnzbdQueueSnapshot> getQueue({
+    int start = 0,
+    int limit = 100,
+  }) async {
+    final response = await _dio.get(
+      '',
+      queryParameters: {'mode': 'queue', 'start': start, 'limit': limit},
+    );
+    final data = _object(_object(response.data)['queue']);
+    final slots = data['slots'] as List;
+    return SABnzbdQueueSnapshot(
+      status: SABnzbdStatusData(
+        paused: data['paused'] == true,
+        speed: _number(data['kbpersec']).toDouble(),
+        sizeLeft: _number(data['mbleft']).toDouble(),
+        timeLeft: data['timeleft']?.toString() ?? '00:00:00',
+        speedlimit: _number(data['speedlimit']).toInt(),
+      ),
+      items: [
+        for (final slot in slots)
+          SABnzbdQueueData(
+            name: slot['filename']?.toString() ?? '',
+            nzoId: slot['nzo_id']?.toString() ?? '',
+            sizeTotal: _number(slot['mb']).round(),
+            sizeLeft: _number(slot['mbleft']).round(),
+            status: slot['status']?.toString() ?? 'Unknown Status',
+            timeLeft: slot['timeleft']?.toString() ?? 'Unknown Time Left',
+            category: slot['cat']?.toString() ?? 'Unknown Category',
+          ),
+      ],
+      total: _number(data['noofslots']).toInt(),
+      start: data['start'] == null ? start : _number(data['start']).toInt(),
+      limit: data['limit'] == null ? limit : _number(data['limit']).toInt(),
+    );
+  }
+
+  Future<Map<String, dynamic>> _fetchHistory(
+    Map<String, dynamic> queryParameters,
+  ) async {
+    final response = await _dio.get(
+      '',
+      queryParameters: {'mode': 'history', ...queryParameters},
+    );
+    return _object(_object(response.data)['history']);
+  }
+
+  static SABnzbdHistoryData _parseHistoryItem(dynamic value) {
+    final slot = _object(value);
+    return SABnzbdHistoryData(
+      nzoId: slot['nzo_id']?.toString() ?? '',
+      name: slot['name']?.toString() ?? '',
+      size: _number(slot['bytes']).toInt(),
+      status: slot['status']?.toString() ?? '',
+      failureMessage: slot['fail_message']?.toString() ?? '',
+      timestamp: _number(slot['completed']).toInt(),
+      actionLine: slot['action_line']?.toString() ?? '',
+      category: slot['category'] == '*'
+          ? 'Default'
+          : slot['category']?.toString(),
+      downloadTime: _number(slot['download_time']).toInt(),
+      stageLog: slot['stage_log'] as List? ?? [],
+      storageLocation: slot['storage']?.toString() ?? '',
+    );
+  }
+
+  Future<SABnzbdHistoryData?> getHistoryItem(String nzoId) async {
+    final data = await _fetchHistory({'nzo_ids': nzoId});
+    final slots = data['slots'] as List;
+    for (final slot in slots) {
+      final item = _parseHistoryItem(slot);
+      if (item.nzoId == nzoId) return item;
+    }
+    return null;
+  }
+
+  Future<SABnzbdHistoryPage> getHistoryPage({
+    int start = 0,
+    int limit = 200,
+  }) async {
+    final data = await _fetchHistory({'start': start, 'limit': limit});
+    final slots = data['slots'] as List;
+    return SABnzbdHistoryPage(
+      items: [for (final slot in slots) _parseHistoryItem(slot)],
+      total: _number(data['noofslots']).toInt(),
+      start: data['start'] == null ? start : _number(data['start']).toInt(),
+      limit: data['limit'] == null ? limit : _number(data['limit']).toInt(),
+    );
   }
 
   Future<bool> moveQueue(String nzoId, int index) async {
@@ -370,7 +415,8 @@ class SABnzbdAPI {
         '',
         queryParameters: {'mode': 'switch', 'value': nzoId, 'value2': index},
       );
-      return response.data['result'] != null &&
+      return response.data['status'] != false &&
+          response.data['result'] != null &&
           response.data['result']['position'] != null;
     } on DioException catch (error, stack) {
       logError('Failed to move queue entry ($nzoId, $index)', error, stack);
@@ -472,10 +518,10 @@ class SABnzbdAPI {
       );
       return response.data['status'] != null && response.data['status'];
     } on DioException catch (error, stack) {
-      logError('Failed to upload NZB by URL ($url)', error, stack);
+      logError('Failed to upload NZB by URL', error, stack);
       return Future.error(error);
     } catch (error, stack) {
-      logError('Failed to upload NZB by URL ($url)', error, stack);
+      logError('Failed to upload NZB by URL', error, stack);
       return Future.error(error);
     }
   }
@@ -569,14 +615,14 @@ class SABnzbdAPI {
       return response.data['status'] != null && response.data['status'];
     } on DioException catch (error, stack) {
       logError(
-        'Failed to retry job with new password ($nzoId, $password)',
+        'Failed to retry job with new password for job $nzoId',
         error,
         stack,
       );
       return Future.error(error);
     } catch (error, stack) {
       logError(
-        'Failed to retry job with new password ($nzoId, $password)',
+        'Failed to retry job with new password for job $nzoId',
         error,
         stack,
       );

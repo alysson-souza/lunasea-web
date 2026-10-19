@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sabnzbd.dart';
+import 'package:lunasea/modules/sabnzbd/core/action_target.dart';
 
 class SABnzbdQueueTile extends StatefulWidget {
   final int index;
   final SABnzbdQueueData data;
-  final Function refresh;
-  final BuildContext queueContext;
+  final SABnzbdState? state;
+  final bool enabled;
+  final String? sourceLabel;
+  final bool reorderable;
 
   const SABnzbdQueueTile({
     required this.data,
     required this.index,
-    required this.queueContext,
-    required this.refresh,
+    this.state,
+    this.enabled = true,
+    this.sourceLabel,
+    this.reorderable = true,
     super.key,
   });
 
@@ -25,185 +30,156 @@ class _State extends State<SABnzbdQueueTile> {
   Widget build(BuildContext context) {
     return LunaBlock(
       title: widget.data.name,
-      body: [TextSpan(text: widget.data.subtitle)],
+      body: [
+        if (widget.sourceLabel != null) TextSpan(text: widget.sourceLabel),
+        TextSpan(text: widget.data.subtitle),
+      ],
       bottomHeight: LunaLinearPercentIndicator.height,
       bottom: LunaLinearPercentIndicator(
         percent: min(1.0, max(0, widget.data.percentageDone / 100)),
       ),
-      trailing: LunaReorderableListViewDragger(index: widget.index),
-      onTap: _handlePopup,
+      trailing: widget.reorderable && widget.enabled
+          ? LunaReorderableListViewDragger(index: widget.index)
+          : null,
+      onTap: widget.enabled ? _handlePopup : null,
     );
   }
 
   Future<void> _handlePopup() async {
-    _Helper _helper = _Helper(widget.queueContext, widget.data, widget.refresh);
-    List values = await SABnzbdDialogs.queueSettings(
-      widget.queueContext,
-      widget.data.name,
-      widget.data.isPaused,
-    );
-    if (values[0])
-      switch (values[1]) {
-        case 'status':
-          widget.data.isPaused ? _helper._resumeJob() : _helper._pauseJob();
-          break;
-        case 'category':
-          _helper._category();
-          break;
-        case 'priority':
-          _helper._priority();
-          break;
-        case 'password':
-          _helper._password();
-          break;
-        case 'rename':
-          _helper._rename();
-          break;
-        case 'delete':
-          _helper._delete();
-          break;
-        default:
-          LunaLogger().warning('Unknown Case: ${values[1]}');
-      }
+    if (!widget.enabled) return;
+    final data = widget.data;
+    final owner = widget.state ?? context.read<SABnzbdState>();
+    final sourceName =
+        owner.instance?.displayName ?? widget.sourceLabel ?? 'SABnzbd';
+    final jobName = data.name;
+    try {
+      final target = SABnzbdActionTarget.capture(context, state: owner);
+      final helper = _Helper(
+        context,
+        data,
+        target,
+        () => mounted && widget.enabled,
+      );
+      final values = await SABnzbdDialogs.queueSettings(
+        context,
+        jobName,
+        data.isPaused,
+      );
+      if (values[0]) await helper.perform(values[1]);
+    } catch (error) {
+      showLunaErrorSnackBar(
+        title: 'Failed to Update Job ($sourceName: $jobName)',
+        error: error,
+      );
+    }
   }
 }
 
 class _Helper {
   final BuildContext context;
   final SABnzbdQueueData data;
-  final Function refresh;
+  final SABnzbdActionTarget target;
+  final bool Function() isEnabled;
 
-  _Helper(this.context, this.data, this.refresh);
+  _Helper(this.context, this.data, this.target, this.isEnabled);
 
-  Future<void> _pauseJob() async {
-    await context
-        .read<SABnzbdState>()
-        .api(context)
-        .pauseSingleJob(data.nzoId)
-        .then((_) {
-          showLunaSuccessSnackBar(title: 'Job Paused', message: data.name);
-          refresh();
-        })
-        .catchError((error) {
-          showLunaErrorSnackBar(title: 'Failed to Pause Job', error: error);
-        });
+  void _validate() {
+    if (!isEnabled()) {
+      throw StateError('The SABnzbd job is no longer available.');
+    }
+    target.validate(context);
   }
 
-  Future<void> _resumeJob() async {
-    await context
-        .read<SABnzbdState>()
-        .api(context)
-        .resumeSingleJob(data.nzoId)
-        .then((_) {
-          showLunaSuccessSnackBar(title: 'Job Resumed', message: data.name);
-          refresh();
-        })
-        .catchError((error) {
-          showLunaErrorSnackBar(title: 'Failed to Resume Job', error: error);
-        });
+  Future<void> perform(String action) async {
+    _validate();
+    switch (action) {
+      case 'status':
+        await _run(
+          (api) => data.isPaused
+              ? api.resumeSingleJob(data.nzoId)
+              : api.pauseSingleJob(data.nzoId),
+          data.isPaused ? 'Job Resumed' : 'Job Paused',
+        );
+        break;
+      case 'category':
+        await _category();
+        break;
+      case 'priority':
+        await _priority();
+        break;
+      case 'password':
+        await _password();
+        break;
+      case 'rename':
+        await _rename();
+        break;
+      case 'delete':
+        await _delete();
+        break;
+      default:
+        LunaLogger().warning('Unknown Case: $action');
+    }
+  }
+
+  Future<void> _run(
+    Future<bool> Function(SABnzbdAPI) operation,
+    String title, {
+    String? message,
+  }) async {
+    _validate();
+    await target.run(context, operation);
+    showLunaSuccessSnackBar(title: title, message: message ?? data.name);
   }
 
   Future<void> _category() async {
-    List<SABnzbdCategoryData> categories = await context
-        .read<SABnzbdState>()
-        .api(context)
-        .getCategories();
-    List values = await SABnzbdDialogs.changeCategory(context, categories);
-    if (values[0])
-      await context
-          .read<SABnzbdState>()
-          .api(context)
-          .setCategory(data.nzoId, values[1])
-          .then((_) {
-            showLunaSuccessSnackBar(
-              title: values[1] == ''
-                  ? 'Category Set (No Category)'
-                  : 'Category Set (${values[1]})',
-              message: data.name,
-            );
-            refresh();
-          })
-          .catchError((error) {
-            showLunaErrorSnackBar(
-              title: 'Failed to Set Category',
-              error: error,
-            );
-          });
+    final categories = await target.state.api(context).getCategories();
+    _validate();
+    final values = await SABnzbdDialogs.changeCategory(context, categories);
+    if (values[0]) {
+      await _run(
+        (api) => api.setCategory(data.nzoId, values[1]),
+        values[1] == ''
+            ? 'Category Set (No Category)'
+            : 'Category Set (${values[1]})',
+      );
+    }
   }
 
   Future<void> _priority() async {
-    List values = await SABnzbdDialogs.changePriority(context);
-    if (values[0])
-      await context
-          .read<SABnzbdState>()
-          .api(context)
-          .setJobPriority(data.nzoId, values[1])
-          .then((_) {
-            showLunaSuccessSnackBar(
-              title: 'Priority Set (${(values[2])})',
-              message: data.name,
-            );
-            refresh();
-          })
-          .catchError((error) {
-            showLunaErrorSnackBar(
-              title: 'Failed to Set Priority',
-              error: error,
-            );
-          });
+    final values = await SABnzbdDialogs.changePriority(context);
+    if (values[0]) {
+      await _run(
+        (api) => api.setJobPriority(data.nzoId, values[1]),
+        'Priority Set (${values[2]})',
+      );
+    }
   }
 
   Future<void> _rename() async {
-    List values = await SABnzbdDialogs.renameJob(context, data.name);
-    if (values[0])
-      context
-          .read<SABnzbdState>()
-          .api(context)
-          .renameJob(data.nzoId, values[1])
-          .then((_) {
-            showLunaSuccessSnackBar(title: 'Job Renamed', message: values[1]);
-            refresh();
-          })
-          .catchError((error) {
-            showLunaErrorSnackBar(title: 'Failed to Rename Job', error: error);
-          });
+    final values = await SABnzbdDialogs.renameJob(context, data.name);
+    if (values[0]) {
+      await _run(
+        (api) => api.renameJob(data.nzoId, values[1]),
+        'Job Renamed',
+        message: values[1],
+      );
+    }
   }
 
   Future<void> _delete() async {
-    List values = await SABnzbdDialogs.deleteJob(context);
-    if (values[0])
-      await context
-          .read<SABnzbdState>()
-          .api(context)
-          .deleteJob(data.nzoId)
-          .then((_) {
-            showLunaSuccessSnackBar(title: 'Job Deleted', message: data.name);
-            refresh();
-          })
-          .catchError((error) {
-            showLunaErrorSnackBar(title: 'Failed to Delete Job', error: error);
-          });
+    final values = await SABnzbdDialogs.deleteJob(context);
+    if (values[0]) {
+      await _run((api) => api.deleteJob(data.nzoId), 'Job Deleted');
+    }
   }
 
   Future<void> _password() async {
-    List values = await SABnzbdDialogs.setPassword(context);
-    if (values[0])
-      await context
-          .read<SABnzbdState>()
-          .api(context)
-          .setJobPassword(data.nzoId, data.name, values[1])
-          .then((_) {
-            showLunaSuccessSnackBar(
-              title: 'Job Password Set',
-              message: data.name,
-            );
-            refresh();
-          })
-          .catchError((error) {
-            showLunaErrorSnackBar(
-              title: 'Failed to Set Job Password',
-              error: error,
-            );
-          });
+    final values = await SABnzbdDialogs.setPassword(context);
+    if (values[0]) {
+      await _run(
+        (api) => api.setJobPassword(data.nzoId, data.name, values[1]),
+        'Job Password Set',
+      );
+    }
   }
 }

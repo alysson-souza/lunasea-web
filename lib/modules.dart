@@ -108,6 +108,7 @@ extension LunaModuleEnablementExtension on LunaModule {
   bool get supportsConsolidatedView {
     switch (this) {
       case LunaModule.RADARR:
+      case LunaModule.SABNZBD:
       case LunaModule.SONARR:
         return true;
       default:
@@ -410,6 +411,8 @@ extension LunaModuleRoutingExtension on LunaModule {
     switch (this) {
       case LunaModule.RADARR:
         return RadarrRoutes.CONSOLIDATED.go(buildTree: true);
+      case LunaModule.SABNZBD:
+        return SABnzbdRoutes.CONSOLIDATED.go(buildTree: true);
       case LunaModule.SONARR:
         return SonarrRoutes.CONSOLIDATED.go(buildTree: true);
       default:
@@ -425,6 +428,7 @@ extension LunaModuleRoutingExtension on LunaModule {
     final profiles = context.read<ProfilesStore>();
     final instances = profiles.enabledInstances(profiles.activeProfile, this);
     if (instances.isEmpty) return null;
+    if (this == LunaModule.SABNZBD) return route;
     if (this == LunaModule.RADARR || this == LunaModule.SONARR) {
       return '$route/${instances.first.id}';
     }

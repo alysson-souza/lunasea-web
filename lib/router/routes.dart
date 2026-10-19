@@ -27,7 +27,7 @@ enum LunaRoutes {
   lidarr('lidarr', root: LidarrRoutes.HOME),
   nzbget('nzbget', root: NZBGetRoutes.HOME),
   radarr('radarr', root: RadarrRoutes.CONSOLIDATED),
-  sabnzbd('sabnzbd', root: SABnzbdRoutes.HOME),
+  sabnzbd('sabnzbd', root: SABnzbdRoutes.CONSOLIDATED),
   search('search', root: SearchRoutes.HOME),
   settings('settings', root: SettingsRoutes.HOME),
   sonarr('sonarr', root: SonarrRoutes.CONSOLIDATED),

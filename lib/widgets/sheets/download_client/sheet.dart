@@ -22,9 +22,7 @@ class DownloadClientSheet extends LunaBottomModalSheet {
   Future<dynamic> show({Widget Function(BuildContext context)? builder}) async {
     final target = await getDownloadClient();
     if (target != null) {
-      return showModal(
-        builder: (context) => routeForTarget(target),
-      );
+      return showModal(builder: (context) => routeForTarget(target));
     }
   }
 
@@ -32,16 +30,35 @@ class DownloadClientSheet extends LunaBottomModalSheet {
   Widget routeForTarget(DownloadClientTarget target, {Widget? child}) {
     final module = target.instance.module;
     if (module == LunaModule.SABNZBD) {
-      return ChangeNotifierProvider<SABnzbdState>(
-        create: (_) => SABnzbdState(instance: target.instance),
-        child:
-            child ?? SABnzbdRoute(instance: target.instance, showDrawer: false),
+      return Consumer2<ProfilesStore, LunaModuleStateRegistry<SABnzbdState>>(
+        builder: (context, profiles, registry, _) {
+          final ref = target.instance.ref;
+          if (profiles.activeProfile != ref.profileId) {
+            return InvalidRoutePage();
+          }
+          for (final instance in profiles.active.instancesFor(module)) {
+            if (instance.ref != ref ||
+                !instance.enabled ||
+                instance.host.isEmpty) {
+              continue;
+            }
+            final source = registry.get(instance);
+            return ChangeNotifierProvider<SABnzbdState>.value(
+              key: ObjectKey(source),
+              value: source,
+              child:
+                  child ?? SABnzbdRoute(instance: instance, showDrawer: false),
+            );
+          }
+          return InvalidRoutePage();
+        },
       );
     }
     if (module == LunaModule.NZBGET) {
       return ChangeNotifierProvider<NZBGetState>(
         create: (_) => NZBGetState(instance: target.instance),
-        child: child ?? NZBGetRoute(instance: target.instance, showDrawer: false),
+        child:
+            child ?? NZBGetRoute(instance: target.instance, showDrawer: false),
       );
     }
     return InvalidRoutePage();

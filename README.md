@@ -13,7 +13,11 @@ LunaSea Web is a browser-based PWA for managing Lidarr, Radarr, Sonarr, download
 - Newznab-compatible search, including NZBHydra2
 - Tautulli integration and custom external links
 - Multiple service instances
-- Consolidated Radarr and Sonarr views
+- Consolidated Radarr, Sonarr, and SABnzbd views
+
+The consolidated SABnzbd view combines jobs into one queue and one history list, with source labels on each job. History supports search and failed-job filtering. Server controls target one selected instance; server statistics and queue reordering remain in the individual instance view.
+
+Use the title menu to switch between All Instances and a server without a page transition. The selected Queue or History tab stays selected. Background polling is silent; pull down to refresh explicitly.
 
 ## Quick start
 

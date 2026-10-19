@@ -8,6 +8,8 @@ import 'package:lunasea/utils/profile_tools.dart';
 
 enum _AppBarType { DEFAULT, EMPTY, DROPDOWN, INSTANCE_FILTER }
 
+enum _InstanceMenuChoice { all }
+
 class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   static const APPBAR_HEIGHT = kToolbarHeight;
 
@@ -26,6 +28,8 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final List<LunaServiceInstance>? instances;
   final ValueChanged<String>? onInstanceSelected;
+  final VoidCallback? onAllInstancesSelected;
+  final String? selectedInstanceId;
 
   @override
   Size get preferredSize {
@@ -50,6 +54,8 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.instances,
     this.onInstanceSelected,
+    this.onAllInstancesSelected,
+    this.selectedInstanceId,
   });
 
   /// Create a new [AppBar] widget pre-styled for LunaSea.
@@ -164,11 +170,16 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     );
   }
 
-  /// Create an [AppBar] with an instance-filter dropdown for consolidated modules.
+  /// Create an [AppBar] with an instance-filter dropdown.
+  ///
+  /// Supplying [onAllInstancesSelected] keeps the selector available with a
+  /// single instance, allowing navigation back to the consolidated view.
   factory LunaAppBar.instanceFilter({
     required String title,
     required List<LunaServiceInstance> instances,
     required ValueChanged<String> onInstanceSelected,
+    VoidCallback? onAllInstancesSelected,
+    String? selectedInstanceId,
     bool useDrawer = true,
     bool hideLeading = false,
     List<Widget>? actions,
@@ -182,7 +193,7 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
         scrollControllers != null,
         'if pageController is defined, scrollControllers should as well.',
       );
-    if (instances.length < 2)
+    if (instances.length < 2 && onAllInstancesSelected == null)
       return LunaAppBar._internal(
         title: title,
         actions: actions,
@@ -198,6 +209,8 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
       title: title,
       instances: instances,
       onInstanceSelected: onInstanceSelected,
+      onAllInstancesSelected: onAllInstancesSelected,
+      selectedInstanceId: selectedInstanceId,
       actions: actions,
       bottom: bottom,
       useDrawer: useDrawer,
@@ -382,11 +395,27 @@ class _State extends State<LunaAppBar> {
     );
   }
 
+  PopupMenuItem<Object> _instanceMenuItem({
+    required Object value,
+    required bool selected,
+    required Widget child,
+  }) {
+    if (widget.onAllInstancesSelected != null ||
+        widget.selectedInstanceId != null) {
+      return CheckedPopupMenuItem<Object>(
+        value: value,
+        checked: selected,
+        child: child,
+      );
+    }
+    return PopupMenuItem<Object>(value: value, child: child);
+  }
+
   Widget _instanceFilter(BuildContext context) {
     return AppBar(
       backgroundColor: widget.backgroundColor,
       automaticallyImplyLeading: !(widget.hideLeading),
-      title: LunaPopupMenuButton<String?>(
+      title: LunaPopupMenuButton<Object>(
         tooltip: 'Switch Instance',
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -406,29 +435,45 @@ class _State extends State<LunaAppBar> {
         ),
         onSelected: (result) {
           HapticFeedback.selectionClick();
-          if (result != null) widget.onInstanceSelected!(result);
+          if ((widget.onAllInstancesSelected != null ||
+                  widget.selectedInstanceId != null) &&
+              result ==
+                  (widget.selectedInstanceId ?? _InstanceMenuChoice.all)) {
+            return;
+          }
+          if (result == _InstanceMenuChoice.all) {
+            widget.onAllInstancesSelected?.call();
+          } else if (result is String) {
+            widget.onInstanceSelected!(result);
+          }
         },
         itemBuilder: (context) {
-          return <PopupMenuEntry<String?>>[
-            PopupMenuItem<String?>(
-              value: null,
+          return <PopupMenuEntry<Object>>[
+            _instanceMenuItem(
+              value: _InstanceMenuChoice.all,
+              selected: widget.selectedInstanceId == null,
               child: Text(
                 'lunasea.AllInstances'.tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: LunaUI.FONT_SIZE_H3,
-                  color: LunaColours.accent,
+                  color: widget.selectedInstanceId == null
+                      ? LunaColours.accent
+                      : Colors.white,
                   fontWeight: LunaUI.FONT_WEIGHT_BOLD,
                 ),
               ),
             ),
             for (final instance in widget.instances!)
-              PopupMenuItem<String?>(
+              _instanceMenuItem(
                 value: instance.id,
+                selected: widget.selectedInstanceId == instance.id,
                 child: Text(
                   instance.displayName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: LunaUI.FONT_SIZE_H3,
-                    color: Colors.white,
+                    color: widget.selectedInstanceId == instance.id
+                        ? LunaColours.accent
+                        : Colors.white,
                   ),
                 ),
               ),

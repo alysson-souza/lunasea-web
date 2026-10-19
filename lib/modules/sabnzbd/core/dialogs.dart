@@ -6,6 +6,7 @@ class SABnzbdDialogs {
   SABnzbdDialogs._();
 
   static Future<List<dynamic>> globalSettings(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['View Web GUI', Icons.language_rounded, 'web_gui'],
       ['Add NZB', Icons.add_rounded, 'add_nzb'],
@@ -20,7 +21,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, String value) {
       _flag = flag;
       _value = value;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -41,7 +42,11 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> queueSettings(
-      BuildContext context, String title, bool isPaused) async {
+    BuildContext context,
+    String title,
+    bool isPaused,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       isPaused
           ? ['Resume Job', Icons.play_arrow_rounded, 'status']
@@ -58,7 +63,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, String value) {
       _flag = flag;
       _value = value;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -79,7 +84,11 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> historySettings(
-      BuildContext context, String title, bool failed) async {
+    BuildContext context,
+    String title,
+    bool failed,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       if (failed) ['Retry Job', Icons.autorenew_rounded, 'retry'],
       if (failed) ['Set Password', Icons.vpn_key_rounded, 'password'],
@@ -91,7 +100,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, String value) {
       _flag = flag;
       _value = value;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -114,14 +123,17 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> changeCategory(
-      BuildContext context, List<SABnzbdCategoryData> categories) async {
+    BuildContext context,
+    List<SABnzbdCategoryData> categories,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     String? _value = '';
 
     void _setValues(bool flag, String? value) {
       _flag = flag;
       _value = value;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -142,6 +154,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> sortQueue(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['Age (Ascending)', Icons.access_time_rounded, 'avg_age', 'asc'],
       ['Age (Descending)', Icons.access_time_rounded, 'avg_age', 'desc'],
@@ -160,7 +173,7 @@ class SABnzbdDialogs {
       _sort = sort;
       _dir = dir;
       _name = name;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -169,11 +182,16 @@ class SABnzbdDialogs {
       content: List.generate(
         _options.length,
         (index) => LunaDialog.tile(
-            text: _options[index][0],
-            icon: _options[index][1],
-            iconColor: LunaColours().byListIndex(index),
-            onTap: () => _setValues(true, _options[index][2],
-                _options[index][3], _options[index][0])),
+          text: _options[index][0],
+          icon: _options[index][1],
+          iconColor: LunaColours().byListIndex(index),
+          onTap: () => _setValues(
+            true,
+            _options[index][2],
+            _options[index][3],
+            _options[index][0],
+          ),
+        ),
       ),
       contentPadding: LunaDialog.listDialogContentPadding(),
     );
@@ -181,6 +199,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> addNZB(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['Add by URL', Icons.link_rounded, 'link'],
       ['Add by File', Icons.sd_card_rounded, 'file'],
@@ -190,7 +209,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, String value) {
       _flag = flag;
       _value = value;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -211,6 +230,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> addNZBUrl(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController();
@@ -218,7 +238,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
         _flag = flag;
-        Navigator.of(context).pop();
+        navigator.pop();
       }
     }
 
@@ -226,10 +246,7 @@ class SABnzbdDialogs {
       context: context,
       title: 'Add NZB by URL',
       buttons: [
-        LunaDialog.button(
-          text: 'Add',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Add', onPressed: () => _setValues(true)),
       ],
       content: [
         Form(
@@ -255,7 +272,10 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> renameJob(
-      BuildContext context, String originalName) async {
+    BuildContext context,
+    String originalName,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController()..text = originalName;
@@ -263,7 +283,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
         _flag = flag;
-        Navigator.of(context).pop();
+        navigator.pop();
       }
     }
 
@@ -271,10 +291,7 @@ class SABnzbdDialogs {
       context: context,
       title: 'Rename Job',
       buttons: [
-        LunaDialog.button(
-          text: 'Rename',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Rename', onPressed: () => _setValues(true)),
       ],
       content: [
         Form(
@@ -294,6 +311,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> setPassword(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController();
@@ -301,7 +319,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
         _flag = flag;
-        Navigator.of(context).pop();
+        navigator.pop();
       }
     }
 
@@ -309,10 +327,7 @@ class SABnzbdDialogs {
       context: context,
       title: 'Set Password',
       buttons: [
-        LunaDialog.button(
-          text: 'Set',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Set', onPressed: () => _setValues(true)),
       ],
       content: [
         Form(
@@ -334,7 +349,10 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> speedLimit(
-      BuildContext context, int currentSpeed) async {
+    BuildContext context,
+    int currentSpeed,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['20%', Icons.timeline_rounded, 20],
       ['40%', Icons.timeline_rounded, 40],
@@ -349,7 +367,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, int limit) {
       _flag = flag;
       _limit = limit;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -358,10 +376,11 @@ class SABnzbdDialogs {
       content: List.generate(
         _options.length,
         (index) => LunaDialog.tile(
-            text: _options[index][0],
-            icon: _options[index][1],
-            iconColor: LunaColours().byListIndex(index),
-            onTap: () => _setValues(true, _options[index][2])),
+          text: _options[index][0],
+          icon: _options[index][1],
+          iconColor: LunaColours().byListIndex(index),
+          onTap: () => _setValues(true, _options[index][2]),
+        ),
       ),
       contentPadding: LunaDialog.listDialogContentPadding(),
     );
@@ -369,6 +388,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> pauseFor(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['5 Minutes', Icons.access_time_rounded, 5],
       ['15 Minutes', Icons.access_time_rounded, 15],
@@ -384,7 +404,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag, int duration) {
       _flag = flag;
       _duration = duration;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -405,6 +425,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> customPauseFor(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController();
@@ -412,7 +433,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
         _flag = flag;
-        Navigator.of(context).pop();
+        navigator.pop();
       }
     }
 
@@ -420,10 +441,7 @@ class SABnzbdDialogs {
       context: context,
       title: 'Custom Pause Duration',
       buttons: [
-        LunaDialog.button(
-          text: 'Pause',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Pause', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.richText(
@@ -431,24 +449,26 @@ class SABnzbdDialogs {
             LunaDialog.textSpanContent(text: 'Please enter how long in '),
             LunaDialog.bolded(text: 'minutes'),
             LunaDialog.textSpanContent(
-                text: ' you want to pause the queue for.'),
+              text: ' you want to pause the queue for.',
+            ),
           ],
           alignment: TextAlign.center,
         ),
         Form(
           key: _formKey,
           child: LunaDialog.textFormInput(
-              controller: _textController,
-              title: 'Pause Duration in Minutes',
-              keyboardType: TextInputType.number,
-              onSubmitted: (_) => _setValues(true),
-              validator: (value) {
-                int? _value = int.tryParse(value!);
-                if (_value == null || _value < 1) {
-                  return 'Must be at least 1';
-                }
-                return null;
-              }),
+            controller: _textController,
+            title: 'Pause Duration in Minutes',
+            keyboardType: TextInputType.number,
+            onSubmitted: (_) => _setValues(true),
+            validator: (value) {
+              int? _value = int.tryParse(value!);
+              if (_value == null || _value < 1) {
+                return 'Must be at least 1';
+              }
+              return null;
+            },
+          ),
         ),
       ],
       contentPadding: LunaDialog.inputTextDialogContentPadding(),
@@ -457,6 +477,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> changePriority(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['Category Default', Icons.low_priority_rounded, -100],
       ['Force', Icons.low_priority_rounded, 2],
@@ -473,7 +494,7 @@ class SABnzbdDialogs {
       _flag = flag;
       _priority = priority;
       _name = name;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -494,7 +515,9 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> changeOnCompleteAction(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['Shutdown SABnzbd', Icons.settings_power_rounded, 'shutdown_program'],
       ['Shutdown Machine', Icons.settings_power_rounded, 'shutdown_pc'],
@@ -510,7 +533,7 @@ class SABnzbdDialogs {
       _flag = flag;
       _action = action;
       _name = name;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -531,6 +554,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> clearAllHistory(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     List<List<dynamic>> _options = [
       ['Clear All', Icons.clear_all_rounded, 'all', false],
       ['Clear Completed', Icons.clear_all_rounded, 'completed', false],
@@ -547,7 +571,7 @@ class SABnzbdDialogs {
       _action = action;
       _delete = delete;
       _name = name;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -560,7 +584,11 @@ class SABnzbdDialogs {
           icon: _options[index][1],
           iconColor: LunaColours().byListIndex(index),
           onTap: () => _setValues(
-              true, _options[index][2], _options[index][3], _options[index][0]),
+            true,
+            _options[index][2],
+            _options[index][3],
+            _options[index][0],
+          ),
         ),
       ),
       contentPadding: LunaDialog.listDialogContentPadding(),
@@ -569,6 +597,7 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> customSpeedLimit(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     final _formKey = GlobalKey<FormState>();
     final _textController = TextEditingController();
@@ -576,7 +605,7 @@ class SABnzbdDialogs {
     void _setValues(bool flag) {
       if (_formKey.currentState!.validate()) {
         _flag = flag;
-        Navigator.of(context).pop();
+        navigator.pop();
       }
     }
 
@@ -584,14 +613,12 @@ class SABnzbdDialogs {
       context: context,
       title: 'Custom Speed Limit',
       buttons: [
-        LunaDialog.button(
-          text: 'Set',
-          onPressed: () => _setValues(true),
-        ),
+        LunaDialog.button(text: 'Set', onPressed: () => _setValues(true)),
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Please enter a percentage between 1 and 100.'),
+          text: 'Please enter a percentage between 1 and 100.',
+        ),
         Form(
           key: _formKey,
           child: LunaDialog.textFormInput(
@@ -615,11 +642,12 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> deleteJob(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
 
     void _setValues(bool flag) {
       _flag = flag;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -634,7 +662,8 @@ class SABnzbdDialogs {
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to delete this job?'),
+          text: 'Are you sure you want to delete this job?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -642,11 +671,12 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> deleteHistory(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
 
     void _setValues(bool flag) {
       _flag = flag;
-      Navigator.of(context).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(
@@ -661,7 +691,8 @@ class SABnzbdDialogs {
       ],
       content: [
         LunaDialog.textContent(
-            text: 'Are you sure you want to delete the history for this job?'),
+          text: 'Are you sure you want to delete the history for this job?',
+        ),
       ],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
@@ -669,13 +700,14 @@ class SABnzbdDialogs {
   }
 
   static Future<List<dynamic>> defaultPage(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     bool _flag = false;
     int _index = 0;
 
     void _setValues(bool flag, int index) {
       _flag = flag;
       _index = index;
-      Navigator.of(context, rootNavigator: true).pop();
+      navigator.pop();
     }
 
     await LunaDialog.dialog(

@@ -21,6 +21,12 @@ class _State extends State<SABnzbdHistorySearchBar> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,13 +38,23 @@ class _State extends State<SABnzbdHistorySearchBar> {
               controller: _controller,
               scrollController: widget.scrollController,
               autofocus: false,
+              labelText: 'Search loaded history',
               onChanged: (value) =>
                   context.read<SABnzbdState>().historySearchFilter = value,
               margin: EdgeInsets.zero,
             ),
           ),
         ),
-        SABnzbdHistoryHideButton(controller: widget.scrollController),
+        Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: Consumer<SABnzbdState>(
+            builder: (context, state, _) => FilterChip(
+              label: const Text('Failed only'),
+              selected: state.historyHideFailed,
+              onSelected: (value) => state.historyHideFailed = value,
+            ),
+          ),
+        ),
       ],
     );
   }
