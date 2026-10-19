@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
+## [0.5.0](https://github.com/alysson-souza/lunasea-web/compare/0.4.1...0.5.0) (2026-10-19)
 
 ### Features
 
