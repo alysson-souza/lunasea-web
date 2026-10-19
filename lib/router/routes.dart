@@ -82,11 +82,7 @@ mixin LunaRoutesMixin on Enum {
             routeModule,
           );
           if (configured != null) {
-            // Remember the instance this route resolved to. Imperative pushes
-            // (used by all in-module drill-downs) do not update the browser
-            // URL in go_router 14. The route's own builder state can recover
-            // the instance, so cache it here for `currentInstanceId` to reuse
-            // on subsequent `.go()` navigations.
+            // Ancestor route rebuilds can temporarily omit the active instance.
             _activeInstanceIds[routeModule.key] = configured.id;
             return wrapServiceInstanceRoute(
               context,
@@ -213,10 +209,7 @@ LunaServiceInstance? serviceInstanceFromProfile(
   return null;
 }
 
-/// The instance id each instance-aware module's currently-displayed route
-/// resolved to, keyed by [LunaModule.key]. Maintained by the route builder in
-/// [LunaRoutesMixin.route] - see the comment there for why this is needed
-/// instead of reading the URL or `GoRouter.state`.
+/// The last resolved instance for each module while ancestor routes rebuild.
 final Map<String, String> _activeInstanceIds = <String, String>{};
 
 @visibleForTesting
@@ -250,9 +243,7 @@ String? currentInstanceId(LunaModule module) {
     // Fall back to the route-builder cache and address-bar parsing below.
   }
 
-  // Primary: the instance the current route resolved to. This is correct even
-  // when the route was reached via an imperative `push` (which leaves the
-  // address-bar URL at the consolidated root, e.g. `/sonarr`).
+  // Fall back to the last resolved instance while route state is unavailable.
   final cached = _activeInstanceIds[module.key];
   if (cached != null && cached.isNotEmpty) return cached;
   // Fallback: parse the address-bar URL (covers the very first build before any

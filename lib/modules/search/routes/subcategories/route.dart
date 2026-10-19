@@ -33,7 +33,7 @@ class _State extends State<SubcategoriesRoute> with LunaScrollControllerMixin {
           icon: Icons.search_rounded,
           onPressed: () async {
             context.read<SearchState>().activeSubcategory = null;
-            SearchRoutes.SEARCH.go();
+            SearchRoutes.SEARCH.go(buildTree: false);
           },
         ),
       ],

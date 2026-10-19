@@ -75,7 +75,7 @@ class _State extends State<ResultsRoute> with LunaScrollControllerMixin {
         const DownloadClientButton(),
         LunaIconButton(
           icon: Icons.search_rounded,
-          onPressed: () => SearchRoutes.SEARCH.go(),
+          onPressed: () => SearchRoutes.SEARCH.go(buildTree: false),
         ),
       ],
       scrollControllers: [scrollController],

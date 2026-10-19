@@ -102,6 +102,7 @@ class _State extends State<TautulliUserDetailsIPAddresses>
       ),
       backgroundHeaders: context.read<TautulliState>().headers,
       onTap: () => TautulliRoutes.IP_DETAILS.go(
+        buildTree: false,
         params: {'ip_address': record.ipAddress!},
       ),
     );

@@ -10,6 +10,7 @@ class LunaRouter {
   static GlobalKey<NavigatorState> navigator = GlobalKey<NavigatorState>();
 
   void initialize({Uri? initialUri}) {
+    GoRouter.optionURLReflectsImperativeAPIs = true;
     final browserInitialLocation = initialLocationFromUri(
       initialUri ?? Uri.base,
     );

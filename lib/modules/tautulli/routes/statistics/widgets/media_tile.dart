@@ -87,6 +87,7 @@ class _State extends State<TautulliStatisticsMediaTile> {
 
   void _onTap() {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': widget.data['rating_key'].toString(),
         'media_type': widget.mediaType.value,

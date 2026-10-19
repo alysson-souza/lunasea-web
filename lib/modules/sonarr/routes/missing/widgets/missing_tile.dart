@@ -156,10 +156,11 @@ class _State extends State<SonarrMissingTile> {
     final instanceId = widget.instanceId;
     if (instanceId != null) {
       return SonarrRoutes.RELEASES.goInstance(
+        buildTree: false,
         instanceId: instanceId,
         queryParams: queryParams,
       );
     }
-    return SonarrRoutes.RELEASES.go(queryParams: queryParams);
+    return SonarrRoutes.RELEASES.go(buildTree: false, queryParams: queryParams);
   }
 }

@@ -110,7 +110,10 @@ class _State extends State<SonarrUpcomingTile> {
     };
     final instanceId = widget.instanceId;
     if (instanceId != null) {
-      SonarrRoutes.SERIES_SEASON.goInstance(instanceId: instanceId, params: params);
+      SonarrRoutes.SERIES_SEASON.goInstance(
+        instanceId: instanceId,
+        params: params,
+      );
     } else {
       SonarrRoutes.SERIES_SEASON.go(params: params);
     }
@@ -149,11 +152,13 @@ class _State extends State<SonarrUpcomingTile> {
     final instanceId = widget.instanceId;
     if (instanceId != null) {
       SonarrRoutes.RELEASES.goInstance(
+        buildTree: false,
         instanceId: instanceId,
         queryParams: {'episode': widget.record.id.toString()},
       );
     } else {
       SonarrRoutes.RELEASES.go(
+        buildTree: false,
         queryParams: {'episode': widget.record.id.toString()},
       );
     }

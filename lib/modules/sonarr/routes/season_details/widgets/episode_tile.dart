@@ -113,6 +113,7 @@ class _State extends State<SonarrEpisodeTile> {
       },
       onLongPress: () async {
         SonarrRoutes.RELEASES.go(
+          buildTree: false,
           queryParams: {'episode': widget.episode.id!.toString()},
         );
       },

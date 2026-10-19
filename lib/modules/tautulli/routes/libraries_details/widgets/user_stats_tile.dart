@@ -33,6 +33,9 @@ class TautulliLibrariesDetailsUserStatsTile extends StatelessWidget {
   }
 
   void _onTap(BuildContext context) {
-    TautulliRoutes.USER_DETAILS.go(params: {'user': user.userId!.toString()});
+    TautulliRoutes.USER_DETAILS.go(
+      buildTree: false,
+      params: {'user': user.userId!.toString()},
+    );
   }
 }

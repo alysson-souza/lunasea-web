@@ -43,6 +43,7 @@ extension TautulliMediaDetailsSwitcherTypeExtension
     required int ratingKey,
   }) {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': ratingKey.toString(),
         'media_type': mediaType.value,

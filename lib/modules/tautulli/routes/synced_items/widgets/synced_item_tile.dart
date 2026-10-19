@@ -71,6 +71,7 @@ class TautulliSyncedItemTile extends StatelessWidget {
 
   Future<void> _onTap(BuildContext context) async {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': syncedItem.ratingKey.toString(),
         'media_type': TautulliMediaType.from(syncedItem.metadataType).value,

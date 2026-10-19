@@ -106,7 +106,10 @@ class SonarrHistoryTile extends StatelessWidget {
     switch (type) {
       case SonarrHistoryTileType.ALL:
         final id = history.series?.id ?? series?.id ?? -1;
-        return SonarrRoutes.SERIES.go(params: {'series': id.toString()});
+        return SonarrRoutes.SERIES.go(
+          buildTree: false,
+          params: {'series': id.toString()},
+        );
       case SonarrHistoryTileType.SERIES:
         if (_hasEpisodeInfo()) {
           final seriesId =

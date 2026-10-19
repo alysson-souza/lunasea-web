@@ -77,6 +77,7 @@ class _State extends State<SonarrSeasonDetailsNavigationBar> {
 
   Future<void> _manual() async {
     return SonarrRoutes.RELEASES.go(
+      buildTree: false,
       queryParams: {
         'series': widget.seriesId.toString(),
         'season': widget.seasonNumber.toString(),

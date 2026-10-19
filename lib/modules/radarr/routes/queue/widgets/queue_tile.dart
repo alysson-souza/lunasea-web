@@ -33,6 +33,7 @@ class RadarrQueueTile extends StatelessWidget {
             color: record.lunaStatusColor,
           ),
           onLongPress: () => RadarrRoutes.MOVIE.go(
+            buildTree: false,
             params: {'movie': record.movieId!.toString()},
           ),
         );
@@ -41,7 +42,9 @@ class RadarrQueueTile extends StatelessWidget {
   }
 
   TextSpan _subtitle1() {
-    return TextSpan(text: record.lunaMovieTitle(movie!));
+    return TextSpan(
+      text: movie == null ? record.title : record.lunaMovieTitle(movie!),
+    );
   }
 
   TextSpan _subtitle2() {
@@ -137,6 +140,7 @@ class RadarrQueueTile extends StatelessWidget {
           icon: Icons.download_done_rounded,
           text: 'radarr.Import'.tr(),
           onTap: () => RadarrRoutes.MANUAL_IMPORT_DETAILS.go(
+            buildTree: false,
             queryParams: {'path': record.outputPath!},
           ),
         ),

@@ -58,6 +58,7 @@ class RadarrHistoryTile extends StatelessWidget {
       onLongPress: movieHistory
           ? null
           : () => RadarrRoutes.MOVIE.go(
+              buildTree: false,
               params: {'movie': history.movieId!.toString()},
             ),
     );

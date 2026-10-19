@@ -36,6 +36,9 @@ class TautulliActivityDetailsUserAction extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context, int userId) {
-    TautulliRoutes.USER_DETAILS.go(params: {'user': userId.toString()});
+    TautulliRoutes.USER_DETAILS.go(
+      buildTree: false,
+      params: {'user': userId.toString()},
+    );
   }
 }

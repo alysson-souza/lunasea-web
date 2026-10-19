@@ -44,6 +44,7 @@ class _State extends State<SonarrQueueTile> {
     switch (widget.type) {
       case SonarrQueueTileType.ALL:
         SonarrRoutes.SERIES.go(
+          buildTree: false,
           params: {'series': widget.queueRecord.seriesId!.toString()},
         );
         break;

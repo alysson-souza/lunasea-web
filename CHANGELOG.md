@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * **settings:** return from service instances to the corresponding module configuration page
+* **settings:** return connection details to the service-instance list after Back or deletion
+* **routing:** preserve caller pages and browser URLs for Search, Sonarr interactive searches, Radarr queue imports, Tautulli drill-downs, and History/Queue detail links
+* **radarr:** keep retained History and Queue pages readable after deleting a movie
 
 ## [0.4.1](https://github.com/alysson-souza/lunasea-web/compare/0.4.0...0.4.1) (2026-09-06)
 

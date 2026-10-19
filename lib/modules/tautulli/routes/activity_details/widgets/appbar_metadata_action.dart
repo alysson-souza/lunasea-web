@@ -37,6 +37,7 @@ class TautulliActivityDetailsMetadataAction extends StatelessWidget {
 
   void _onPressed(BuildContext context, TautulliSession session) {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': session.ratingKey.toString(),
         'media_type': session.mediaType!.value,

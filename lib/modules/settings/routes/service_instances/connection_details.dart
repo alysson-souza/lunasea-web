@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
 import 'package:lunasea/database/models/service_instance.dart';
 import 'package:lunasea/modules/settings.dart';
+import 'package:lunasea/router/routes/settings.dart';
 import 'package:lunasea/system/backend_state.dart';
 import 'package:lunasea/widgets/pages/instance_not_configured.dart';
 
@@ -44,6 +45,13 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
     return LunaAppBar(
       title: instance.displayName,
       scrollControllers: [scrollController],
+      onBack: _returnToInstances,
+    );
+  }
+
+  void _returnToInstances() {
+    SettingsRoutes.CONFIGURATION_SERVICE_INSTANCES.go(
+      params: {'service': widget.module.key},
     );
   }
 
@@ -157,7 +165,10 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           prefill: instance.username,
         );
         if (!values.item1) return;
-        await _saveAndAutoTest(instance, _copy(instance, username: values.item2));
+        await _saveAndAutoTest(
+          instance,
+          _copy(instance, username: values.item2),
+        );
       },
     );
   }
@@ -180,7 +191,10 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
           prefill: instance.password,
         );
         if (!values.item1) return;
-        await _saveAndAutoTest(instance, _copy(instance, password: values.item2));
+        await _saveAndAutoTest(
+          instance,
+          _copy(instance, password: values.item2),
+        );
       },
     );
   }
@@ -197,7 +211,7 @@ class _State extends State<ServiceInstanceConnectionDetailsRoute>
       onTap: () async {
         await SettingsServiceInstanceSettings.delete(instance);
         _remove(instance);
-        if (mounted) Navigator.of(context).pop();
+        if (mounted) _returnToInstances();
       },
     );
   }

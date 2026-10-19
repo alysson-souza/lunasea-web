@@ -19,7 +19,7 @@ class SearchSubcategoryAllTile extends StatelessWidget {
         ),
         onTap: () async {
           context.read<SearchState>().activeSubcategory = null;
-          SearchRoutes.RESULTS.go();
+          SearchRoutes.RESULTS.go(buildTree: false);
         },
       ),
     );

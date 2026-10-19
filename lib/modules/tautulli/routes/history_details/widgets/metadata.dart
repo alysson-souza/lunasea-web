@@ -41,6 +41,7 @@ class TautulliHistoryDetailsMetadata extends StatelessWidget {
 
   void _onPressed(BuildContext context, TautulliHistoryRecord record) {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': record.ratingKey.toString(),
         'media_type': record.mediaType!.value,

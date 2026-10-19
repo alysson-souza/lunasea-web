@@ -49,6 +49,7 @@ class _State extends State<TautulliStatisticsRecentlyWatchedTile> {
 
   Future<void> _onTap() async {
     TautulliRoutes.MEDIA_DETAILS.go(
+      buildTree: false,
       params: {
         'rating_key': widget.data['rating_key'].toString(),
         'media_type': TautulliMediaType.from(widget.data['media_type']).value,

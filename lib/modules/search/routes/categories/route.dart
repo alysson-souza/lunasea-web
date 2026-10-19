@@ -96,6 +96,6 @@ class _State extends State<CategoriesRoute>
   Future<void> _enterSearch() async {
     context.read<SearchState>().activeCategory = null;
     context.read<SearchState>().activeSubcategory = null;
-    SearchRoutes.SEARCH.go();
+    SearchRoutes.SEARCH.go(buildTree: false);
   }
 }

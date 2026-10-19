@@ -85,6 +85,7 @@ class _State extends State<TautulliStatisticsUserTile> {
 
   Future<void> _onTap() async {
     TautulliRoutes.USER_DETAILS.go(
+      buildTree: false,
       params: {'user': widget.data['user_id']!.toString()},
     );
   }

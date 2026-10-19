@@ -28,6 +28,7 @@ class TautulliHistoryTile extends StatelessWidget {
             '' as int?,
       ),
       onTap: () => TautulliRoutes.HISTORY_DETAILS.go(
+        buildTree: false,
         queryParams: {
           'reference_id': history.referenceId.toString(),
           'session_key': history.sessionKey.toString(),

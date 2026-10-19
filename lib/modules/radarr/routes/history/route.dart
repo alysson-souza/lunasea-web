@@ -99,7 +99,10 @@ class _State extends State<HistoryRoute> with LunaScrollControllerMixin {
         RadarrMovie? _movie = movies!.firstWhereOrNull(
           (movie) => movie.id == history.movieId,
         );
-        return RadarrHistoryTile(history: history, title: _movie!.title!);
+        return RadarrHistoryTile(
+          history: history,
+          title: _movie?.title ?? history.sourceTitle ?? LunaUI.TEXT_EMDASH,
+        );
       },
     );
   }
