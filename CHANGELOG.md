@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased]
 
+### Bug Fixes
+
+* **settings:** return from service instances to the corresponding module configuration page
+
 ## [0.4.1](https://github.com/alysson-souza/lunasea-web/compare/0.4.0...0.4.1) (2026-09-06)
 
 ### Bug Fixes

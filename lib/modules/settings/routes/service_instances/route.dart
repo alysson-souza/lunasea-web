@@ -32,6 +32,7 @@ class _State extends State<ServiceInstancesRoute>
     return LunaAppBar(
       title: '${widget.module.title} Service Instances',
       scrollControllers: [scrollController],
+      onBack: widget.module.settingsRoute!.go,
     );
   }
 

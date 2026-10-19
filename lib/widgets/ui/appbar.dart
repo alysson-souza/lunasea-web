@@ -17,6 +17,7 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final bool hideLeading;
   final bool useDrawer;
+  final VoidCallback? onBack;
   final Widget? child;
   final double? height;
   final List<String?>? profiles;
@@ -45,6 +46,7 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.pageController,
     this.scrollControllers,
     this.hideLeading = false,
+    this.onBack,
     this.backgroundColor,
     this.instances,
     this.onInstanceSelected,
@@ -63,6 +65,7 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
     PreferredSizeWidget? bottom,
     bool useDrawer = false,
     bool hideLeading = false,
+    VoidCallback? onBack,
     PageController? pageController,
     Color? backgroundColor,
     List<ScrollController>? scrollControllers,
@@ -80,6 +83,7 @@ class LunaAppBar extends StatefulWidget implements PreferredSizeWidget {
       pageController: pageController,
       scrollControllers: scrollControllers,
       hideLeading: hideLeading,
+      onBack: onBack,
       backgroundColor: backgroundColor,
       type: _AppBarType.DEFAULT,
     );
@@ -284,7 +288,7 @@ class _State extends State<LunaAppBar> {
     return SizedBox(
       child: LunaIconButton.appBar(
         icon: Icons.arrow_back_ios_new_rounded,
-        onPressed: LunaRouter().popSafely,
+        onPressed: widget.onBack ?? LunaRouter().popSafely,
         onLongPress: LunaRouter().popToRootRoute,
       ),
       height: kToolbarHeight,
